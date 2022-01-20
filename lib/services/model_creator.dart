@@ -29,7 +29,7 @@ class ModelCreator {
   static MovieResponse getMovieWithCastResponse(Movie movie) {
     var cast = <CastResponse>[];
     for (var castMember in movie.cast) {
-      cast.add(new CastResponse(castMember.id, castMember.name, castMember.characterName));
+      cast.add(new CastResponse(castMember.id, castMember.name, castMember.characterName, castMember.profilePath));
     }
     return new MovieResponse(movie.id, movie.title, movie.releaseDate, movie.posterImagePath, cast);
   }
@@ -37,7 +37,7 @@ class ModelCreator {
   static TvResponse getTvShowWithCastResponse(TvShow tvShow) {
     var cast = <CastResponse>[];
     for (var castMember in tvShow.cast) {
-      cast.add(new CastResponse(castMember.id, castMember.name, castMember.characterName));
+      cast.add(new CastResponse(castMember.id, castMember.name, castMember.characterName, castMember.profilePath));
     }
     return new TvResponse(tvShow.id, tvShow.name, tvShow.firstAirDate, tvShow.lastAirDate, tvShow.posterPath, cast);
   }

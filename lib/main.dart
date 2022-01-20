@@ -1,4 +1,5 @@
 import 'package:familiar_faces/contracts/grouped_movie_response.dart';
+import 'package:familiar_faces/screens/movie_filter_screen.dart';
 import 'package:familiar_faces/services/tmdb_service.dart';
 import 'package:flutter/material.dart';
 
@@ -7,14 +8,11 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
+      theme: ThemeData(primarySwatch: Colors.green, brightness: Brightness.dark),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -50,9 +48,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -77,14 +72,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future getGroupedMovies() async {
     loading = true;
-    print('wtf');
 
-      _groupedMovies = await TmdbService.getGroupedMovieResponse(550);
-      print(_groupedMovies);
-      setState(() {
-        loading = false;
-        hasMovies = true;
-      });
-
+    _groupedMovies = await TmdbService.getGroupedMovieResponse(550);
+    var movie = await TmdbService.getMovieWithCastAsync(550);
+    setState(() {
+      loading = false;
+      hasMovies = true;
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => MovieFilterScreen(
+                groupedMovieResponse: _groupedMovies!,
+                movieResponse: movie,
+              )),
+    );
   }
 }

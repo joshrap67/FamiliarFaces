@@ -30,7 +30,7 @@ class TvShow {
           characterName += i == characterNames.length - 1 ? '$charName' : '$charName, ';
         }
       }
-      cast.add(new Cast(castMember['id'], castMember['name'], characterName));
+      cast.add(new Cast(castMember['id'], castMember['name'], characterName, castMember['profile_path']));
     }
   }
 }
