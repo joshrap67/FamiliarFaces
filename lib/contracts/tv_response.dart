@@ -3,8 +3,8 @@ import 'cast_response.dart';
 class TvResponse {
   late int id;
   String? name;
-  String? firstAirDate;
-  String? lastAirDate;
+  DateTime? firstAirDate;
+  DateTime? lastAirDate;
   String? posterPath;
   List<CastResponse> cast = <CastResponse>[];
 

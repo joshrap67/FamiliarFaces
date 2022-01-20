@@ -8,14 +8,8 @@ class SearchMediaResponse {
   late int id;
   String? title;
   late MediaType mediaType;
-  String? releaseDate;
+  DateTime? releaseDate;
   String? posterPath;
 
-  SearchMediaResponse(int id, String? title, MediaType mediaType, String? releaseDate, String? posterPath) {
-    id = id;
-    title = title;
-    mediaType = mediaType;
-    releaseDate = releaseDate;
-    posterPath = posterPath;
-  }
+  SearchMediaResponse(this.id, this.title, this.mediaType, this.releaseDate, this.posterPath);
 }

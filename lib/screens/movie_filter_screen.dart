@@ -33,17 +33,19 @@ class _MovieFilterScreenState extends State<MovieFilterScreen> {
         ),
       ),
       body: Container(
-        child: ListView.separated(
-            separatorBuilder: (BuildContext context, int index) => Divider(
-                  height: 15,
-                ),
-            itemCount: widget.movieResponse.cast.length,
-            itemBuilder: (BuildContext context, int index) {
-              return MovieCastRow(
-                castMember: widget.movieResponse.cast[index],
-                rowClicked: (actor) => {actorClicked(actor)},
-              );
-            }),
+        child: Scrollbar(
+          child: ListView.separated(
+              separatorBuilder: (BuildContext context, int index) => Divider(
+                    height: 15,
+                  ),
+              itemCount: widget.movieResponse.cast.length,
+              itemBuilder: (BuildContext context, int index) {
+                return MovieCastRow(
+                  castMember: widget.movieResponse.cast[index],
+                  rowClicked: (actor) => {actorClicked(actor)},
+                );
+              }),
+        ),
       ),
     );
   }

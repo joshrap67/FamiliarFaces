@@ -13,7 +13,7 @@ class PersonCredit {
 		title = rawJson['title'];
 		name = rawJson['name'];
 		mediaType = rawJson['media_type'];
-		characterName = rawJson['character_name'];
+		characterName = rawJson['character'];
 		releaseDate = rawJson['release_date'];
 		firstAirDate = rawJson['first_air_date'];
 		posterPath = rawJson['poster_path'];

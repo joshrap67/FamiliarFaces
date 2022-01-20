@@ -28,17 +28,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   GroupedMovieResponse? _groupedMovies;
   bool loading = false;
   bool hasMovies = false;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-      getGroupedMovies();
-    });
-  }
+  int _selectedIndex = 1;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -48,26 +42,66 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+      body: Form(
+        key: _formKey,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                children: [
+                  Container(
+                    child: Text('Hello'),
+                  ),
+                  Expanded(
+                    child: TextFormField(),
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Container(
+                    child: Text('Hello'),
+                  ),
+                  Expanded(
+                    child: TextFormField(),
+                  )
+                ],
+              ),
+              MaterialButton(
+                onPressed: getGroupedMovies,
+                child: Text('Where have i seen this actor?'),
+                color: Colors.greenAccent,
+              )
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.movie),
+            label: 'My Media',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info_outline),
+            label: 'About',
+          ),
+        ],
+        onTap: _onItemTapped,
+      ),
     );
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   Future getGroupedMovies() async {
@@ -82,10 +116,11 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => MovieFilterScreen(
-                groupedMovieResponse: _groupedMovies!,
-                movieResponse: movie,
-              )),
+        builder: (context) => MovieFilterScreen(
+          groupedMovieResponse: _groupedMovies!,
+          movieResponse: movie,
+        ),
+      ),
     );
   }
 }

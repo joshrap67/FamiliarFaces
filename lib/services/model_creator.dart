@@ -31,7 +31,7 @@ class ModelCreator {
     for (var castMember in movie.cast) {
       cast.add(new CastResponse(castMember.id, castMember.name, castMember.characterName, castMember.profilePath));
     }
-    return new MovieResponse(movie.id, movie.title, movie.releaseDate, movie.posterImagePath, cast);
+    return new MovieResponse(movie.id, movie.title, parseDate(movie.releaseDate), movie.posterImagePath, cast);
   }
 
   static TvResponse getTvShowWithCastResponse(TvShow tvShow) {
@@ -39,7 +39,8 @@ class ModelCreator {
     for (var castMember in tvShow.cast) {
       cast.add(new CastResponse(castMember.id, castMember.name, castMember.characterName, castMember.profilePath));
     }
-    return new TvResponse(tvShow.id, tvShow.name, tvShow.firstAirDate, tvShow.lastAirDate, tvShow.posterPath, cast);
+    return new TvResponse(
+        tvShow.id, tvShow.name, parseDate(tvShow.firstAirDate), parseDate(tvShow.lastAirDate), tvShow.posterPath, cast);
   }
 
   static GroupedMovieResponse getGroupedMovieResponse(List<Person> people) {
@@ -73,16 +74,23 @@ class ModelCreator {
     }
   }
 
-  static String? getReleaseDate(String? releaseDate, String? firstAirDate, String? mediaType) {
-// todo datetime
+  static parseDate(String? date) {
+    if (date?.isEmpty ?? true) {
+      return null;
+    } else {
+      return DateTime.parse(date!);
+    }
+  }
+
+  static DateTime? getReleaseDate(String? releaseDate, String? firstAirDate, String? mediaType) {
     var mediaTypeEnum = getMediaType(mediaType);
     switch (mediaTypeEnum) {
       case MediaType.Movie:
-        return releaseDate;
+        return parseDate(releaseDate);
       case MediaType.TV:
-        return firstAirDate;
+        return parseDate(firstAirDate);
       default:
-        return releaseDate;
+        return null;
     }
   }
 

@@ -9,7 +9,7 @@ class Person {
   Person.fromJsonWithCombinedCredits(Map<String, dynamic> rawJson) {
     id = rawJson['id'];
     name = rawJson['name'];
-    profileImagePath = rawJson['profile_image_path'];
+    profileImagePath = rawJson['profile_path'];
     var rawCredits = rawJson['combined_credits']['cast'] as List<dynamic>;
     for (var rawCredit in rawCredits) {
       credits.add(new PersonCredit.fromJson(rawCredit));
