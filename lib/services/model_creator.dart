@@ -9,21 +9,18 @@ import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/movie_response.dart';
 import 'package:familiar_faces/contracts/person_credit_response.dart';
 import 'package:familiar_faces/contracts/person_response.dart';
-import 'package:familiar_faces/contracts/search_movie_response.dart';
+import 'package:familiar_faces/contracts/search_media_response.dart';
 import 'package:familiar_faces/contracts/tv_response.dart';
+import 'package:familiar_faces/imports/utils.dart';
 
 class ModelCreator {
-  static SearchMovieResponse getSearchResult(MovieSearchResult movieSearchResult) {
-    var returnResult = new SearchMovieResponse();
-    for (var result in movieSearchResult.results) {
-      returnResult.results.add(new SearchMediaResponse(
-          result.id,
-          getTitle(result.title, result.name, result.mediaType),
-          getMediaType(result.mediaType),
-          getReleaseDate(result.releaseDate, result.firstAirDate, result.mediaType),
-          result.posterPath));
-    }
-    return returnResult;
+  static List<SearchMediaResponse> getSearchMediaResponses(List<MediaResult> mediaResults) {
+    return mediaResults.map((mediaResult) => new SearchMediaResponse(
+        mediaResult.id,
+        getTitle(mediaResult.title, mediaResult.name, mediaResult.mediaType),
+        getMediaType(mediaResult.mediaType),
+        getReleaseDate(mediaResult.releaseDate, mediaResult.firstAirDate, mediaResult.mediaType),
+        mediaResult.posterPath)).toList();
   }
 
   static MovieResponse getMovieWithCastResponse(Movie movie) {
@@ -75,7 +72,7 @@ class ModelCreator {
   }
 
   static parseDate(String? date) {
-    if (date?.isEmpty ?? true) {
+    if (isStringNullOrEmpty(date)) {
       return null;
     } else {
       return DateTime.parse(date!);

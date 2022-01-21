@@ -1,9 +1,5 @@
 import 'media_type.dart';
 
-class SearchMovieResponse {
-  List<SearchMediaResponse> results = <SearchMediaResponse>[];
-}
-
 class SearchMediaResponse {
   late int id;
   String? title;

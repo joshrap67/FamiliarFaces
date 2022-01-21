@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/person_credit_response.dart';
+import 'package:familiar_faces/imports/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class ActorMovieRow extends StatefulWidget {
   const ActorMovieRow({Key? key, required this.movie}) : super(key: key);
@@ -61,7 +61,7 @@ class _ActorMovieRowState extends State<ActorMovieRow> {
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            '${widget.movie.title} (${DateFormat('yyyy').format(widget.movie.releaseDate!)})',
+                            '${widget.movie.title} (${filterDate(widget.movie.releaseDate)})',
                             style: TextStyle(fontSize: 24),
                           ),
                         ),

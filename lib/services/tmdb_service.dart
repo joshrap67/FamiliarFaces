@@ -7,10 +7,11 @@ import 'package:familiar_faces/api_models/tvShow.dart';
 import 'package:familiar_faces/contracts/grouped_movie_response.dart';
 import 'package:familiar_faces/contracts/movie_response.dart';
 import 'package:familiar_faces/contracts/person_response.dart';
-import 'package:familiar_faces/contracts/search_movie_response.dart';
+import 'package:familiar_faces/contracts/search_media_response.dart';
 import 'package:familiar_faces/contracts/tv_response.dart';
 import 'package:familiar_faces/gateways/http_action.dart';
 import 'package:familiar_faces/gateways/tmdbGateway.dart';
+import 'package:familiar_faces/imports/utils.dart';
 
 import 'model_creator.dart';
 
@@ -74,18 +75,23 @@ class TmdbService {
     return contract;
   }
 
-  static Future<SearchMovieResponse> searchMovie(String query) async {
+  static Future<List<SearchMediaResponse>> searchMulti(String query) async {
+    if (isStringNullOrEmpty(query)) {
+      return <SearchMediaResponse>[];
+    }
+
     var queryParams = getCommonQuery();
     queryParams.putIfAbsent('query', () => query);
 
     var apiResult = await makeApiRequest(HttpAction.GET, 'search/multi', queryParams);
+
     if (!apiResult.success()) {
       throw new Exception('Can\'t complete query=$query. ${apiResult.errorMessage}');
     }
     var jsonMap = jsonDecode(apiResult.data!);
 
     var searchResult = new MovieSearchResult.fromJson(jsonMap);
-    var contract = ModelCreator.getSearchResult(searchResult);
+    var contract = ModelCreator.getSearchMediaResponses(searchResult.results);
     return contract;
   }
 
