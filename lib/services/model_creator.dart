@@ -4,7 +4,6 @@ import 'package:familiar_faces/api_models/person.dart';
 import 'package:familiar_faces/api_models/person_credit.dart';
 import 'package:familiar_faces/api_models/tvShow.dart';
 import 'package:familiar_faces/contracts/cast_response.dart';
-import 'package:familiar_faces/contracts/grouped_movie_response.dart';
 import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/movie_response.dart';
 import 'package:familiar_faces/contracts/person_credit_response.dart';
@@ -15,12 +14,14 @@ import 'package:familiar_faces/imports/utils.dart';
 
 class ModelCreator {
   static List<SearchMediaResponse> getSearchMediaResponses(List<MediaResult> mediaResults) {
-    return mediaResults.map((mediaResult) => new SearchMediaResponse(
-        mediaResult.id,
-        getTitle(mediaResult.title, mediaResult.name, mediaResult.mediaType),
-        getMediaType(mediaResult.mediaType),
-        getReleaseDate(mediaResult.releaseDate, mediaResult.firstAirDate, mediaResult.mediaType),
-        mediaResult.posterPath)).toList();
+    return mediaResults
+        .map((mediaResult) => new SearchMediaResponse(
+            mediaResult.id,
+            getTitle(mediaResult.title, mediaResult.name, mediaResult.mediaType),
+            getMediaType(mediaResult.mediaType),
+            getReleaseDate(mediaResult.releaseDate, mediaResult.firstAirDate, mediaResult.mediaType),
+            mediaResult.posterPath))
+        .toList();
   }
 
   static MovieResponse getMovieWithCastResponse(Movie movie) {
@@ -38,14 +39,6 @@ class ModelCreator {
     }
     return new TvResponse(
         tvShow.id, tvShow.name, parseDate(tvShow.firstAirDate), parseDate(tvShow.lastAirDate), tvShow.posterPath, cast);
-  }
-
-  static GroupedMovieResponse getGroupedMovieResponse(List<Person> people) {
-    var returnValue = new GroupedMovieResponse(<PersonResponse>[]);
-    for (var person in people) {
-      returnValue.people.add(getPersonResponse(person));
-    }
-    return returnValue;
   }
 
   static MediaType getMediaType(String? mediaType) {
@@ -68,14 +61,6 @@ class ModelCreator {
         return name;
       default:
         return title;
-    }
-  }
-
-  static parseDate(String? date) {
-    if (isStringNullOrEmpty(date)) {
-      return null;
-    } else {
-      return DateTime.parse(date!);
     }
   }
 

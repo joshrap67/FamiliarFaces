@@ -19,6 +19,8 @@ class _ActorFilmographyState extends State<ActorFilmography> {
   late bool showImage;
   static const String placeholderUrl = 'https://picsum.photos/200';
 
+  // todo on return re query all saved media in case somewhere down the stack they added a media to their seen list and its on this original page
+
   @override
   void initState() {
     url = 'https://image.tmdb.org/t/p/w500/${widget.actor.profileImagePath}';

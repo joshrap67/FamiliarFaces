@@ -79,19 +79,20 @@ class _ActorMovieRowState extends State<ActorMovieRow> {
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 8.0),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: AutoSizeText(
-                              "SEEN",
-                              minFontSize: 5,
-                              style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+                      if (widget.movie.isSeen)
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 8.0),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: AutoSizeText(
+                                "SEEN",
+                                minFontSize: 5,
+                                style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+                              ),
                             ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),

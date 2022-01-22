@@ -77,19 +77,6 @@ class _MovieCastRowState extends State<MovieCastRow> {
                             ),
                           ),
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 8.0),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: AutoSizeText(
-                                "Seen in 4 other movies",
-                                minFontSize: 5,
-                                style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
-                              ),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),

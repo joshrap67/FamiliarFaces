@@ -14,6 +14,14 @@ String getImageUrl(String? path) {
   }
 }
 
+parseDate(String? date) {
+  if (isStringNullOrEmpty(date)) {
+    return null;
+  } else {
+    return DateTime.parse(date!);
+  }
+}
+
 String filterDate(DateTime? date) {
   return DateFormat('yyyy').format(date!);
 }

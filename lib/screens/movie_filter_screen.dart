@@ -1,16 +1,16 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:familiar_faces/contracts/cast_response.dart';
-import 'package:familiar_faces/contracts/grouped_movie_response.dart';
 import 'package:familiar_faces/contracts/movie_response.dart';
+import 'package:familiar_faces/contracts/person_response.dart';
 import 'package:familiar_faces/screens/actor_filmography.dart';
 import 'package:familiar_faces/screens/movie_cast_row.dart';
 import 'package:flutter/material.dart';
 
 class MovieFilterScreen extends StatefulWidget {
-  const MovieFilterScreen({Key? key, required this.groupedMovieResponse, required this.movieResponse})
+  const MovieFilterScreen({Key? key, required this.movieCast, required this.movieResponse})
       : super(key: key);
 
-  final GroupedMovieResponse groupedMovieResponse;
+  final List<PersonResponse> movieCast;
   final MovieResponse movieResponse;
 
   @override
@@ -55,7 +55,7 @@ class _MovieFilterScreenState extends State<MovieFilterScreen> {
       context,
       MaterialPageRoute(
           builder: (context) => ActorFilmography(
-                actor: widget.groupedMovieResponse.people.firstWhere((element) => element.id == actor.id),
+                actor: widget.movieCast.firstWhere((element) => element.id == actor.id),
               )),
     );
   }

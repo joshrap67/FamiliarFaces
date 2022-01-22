@@ -4,7 +4,6 @@ import 'package:familiar_faces/api_models/movie.dart';
 import 'package:familiar_faces/api_models/movie_search_result.dart';
 import 'package:familiar_faces/api_models/person.dart';
 import 'package:familiar_faces/api_models/tvShow.dart';
-import 'package:familiar_faces/contracts/grouped_movie_response.dart';
 import 'package:familiar_faces/contracts/movie_response.dart';
 import 'package:familiar_faces/contracts/person_response.dart';
 import 'package:familiar_faces/contracts/search_media_response.dart';
@@ -12,27 +11,45 @@ import 'package:familiar_faces/contracts/tv_response.dart';
 import 'package:familiar_faces/gateways/http_action.dart';
 import 'package:familiar_faces/gateways/tmdbGateway.dart';
 import 'package:familiar_faces/imports/utils.dart';
+import 'package:familiar_faces/services/saved_media_database.dart';
+import 'package:familiar_faces/sql_contracts/saved_media.dart';
 
 import 'model_creator.dart';
 
 class TmdbService {
-  static Future<GroupedMovieResponse> getGroupedMovieResponse(int movieId, {String? characterName}) async {
+  // todo rename mediaService
+  static Future<List<PersonResponse>> getGroupedMovieResponse(int movieId, {String? characterName}) async {
     var movieWithCast = await getMovieWithCastAsync(movieId);
+    List<SavedMedia> savedMedia = await SavedMediaDatabase.instance.getAll();
     if (characterName != null && movieWithCast.cast.any((element) => element.characterName == characterName)) {
       // only get the grouped movies for the character the user specified. the happy path
       var credits = await getPersonCreditsAsync(
           movieWithCast.cast.firstWhere((element) => element.characterName == characterName).id);
-      return new GroupedMovieResponse({credits}.toList());
+      applySeenMedia(credits, savedMedia);
+      return ({credits}.toList());
     } else {
-      // bad bath, loop through every actor in the movie and return their credits grouped together
+      // bad path, loop through every actor in the movie and return their credits grouped together
       List<PersonResponse> allActors = <PersonResponse>[];
       await Future.wait(movieWithCast.cast
           .map((castMember) => TmdbService.getPersonCreditsAsync(castMember.id).then((value) => allActors.add(value))));
-      return new GroupedMovieResponse(List.from(allActors));
+      var list = new List<PersonResponse>.from(allActors);
+      list.forEach((element) {
+        applySeenMedia(element, savedMedia);
+      });
+      return list;
+    }
+  }
+
+  static void applySeenMedia(PersonResponse personResponse, List<SavedMedia> savedMedia) {
+    for (var credit in personResponse.credits) {
+      if (savedMedia.any((element) => element.mediaId == credit.id)) {
+        credit.isSeen = true;
+      }
     }
   }
 
   static Future<PersonResponse> getPersonCreditsAsync(int personId) async {
+    List<SavedMedia> savedMedia = await SavedMediaDatabase.instance.getAll();
     var queryParams = getCommonQuery();
     queryParams.putIfAbsent('append_to_response', () => 'combined_credits');
     var apiResult = await makeApiRequest(HttpAction.GET, 'person/$personId', queryParams);
@@ -42,6 +59,7 @@ class TmdbService {
     var jsonMap = jsonDecode(apiResult.data!);
     var personCredit = new Person.fromJsonWithCombinedCredits(jsonMap);
     var contract = ModelCreator.getPersonResponse(personCredit);
+    applySeenMedia(contract, savedMedia);
     return contract;
   }
 
@@ -92,6 +110,8 @@ class TmdbService {
 
     var searchResult = new MovieSearchResult.fromJson(jsonMap);
     var contract = ModelCreator.getSearchMediaResponses(searchResult.results);
+    // drop any records with a null title as that makes no sense for user to click
+    contract.removeWhere((element) => element.title == null);
     return contract;
   }
 

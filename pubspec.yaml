@@ -29,6 +29,8 @@ dependencies:
   cached_network_image: ^3.2.0
   flutter_typeahead: ^3.2.4
   rounded_loading_button: ^2.0.8
+  sqflite: ^2.0.2
+  path: ^1.8.0
 
 
   # The following adds the Cupertino Icons font to your application.

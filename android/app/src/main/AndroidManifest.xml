@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.joshrap.familiarfaces.familiar_faces">
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="familiar_faces"
         android:icon="@mipmap/ic_launcher">
