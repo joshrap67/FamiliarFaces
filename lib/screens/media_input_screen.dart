@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/cast_response.dart';
 import 'package:familiar_faces/contracts/movie_response.dart';
 import 'package:familiar_faces/contracts/search_media_response.dart';
+import 'package:familiar_faces/screens/actor_filmography.dart';
 import 'package:familiar_faces/screens/movie_filter_screen.dart';
 import 'package:familiar_faces/services/tmdb_service.dart';
 import 'package:familiar_faces/imports/utils.dart';
@@ -17,7 +18,10 @@ class MediaInputScreen extends StatefulWidget {
   _MediaInputScreenState createState() => _MediaInputScreenState();
 }
 
-class _MediaInputScreenState extends State<MediaInputScreen> {
+class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepAliveClientMixin<MediaInputScreen> {
+  @override
+  bool get wantKeepAlive => true; // ensures the tab is not disposed when clicking around
+
   SearchMediaResponse? _selectedSearch;
 
   String _buttonText() => _selectedCharacter == null ? 'WHERE HAVE I SEEN THIS CAST?' : 'WHERE HAVE I SEEN THIS ACTOR?';
@@ -36,153 +40,159 @@ class _MediaInputScreenState extends State<MediaInputScreen> {
   @override
   void dispose() {
     _mediaSearchController.dispose();
+	_characterSearchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => hideKeyboard(context),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Stack(
-                        alignment: Alignment.centerRight,
-                        children: [
-                          TypeAheadFormField<SearchMediaResponse>(
-                              textFieldConfiguration: TextFieldConfiguration(
-                                controller: _mediaSearchController,
-                                decoration: InputDecoration(
-                                    prefixIcon: Icon(Icons.search),
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Media',
-                                    hintText: 'Search Movie or TV Show'),
-                              ),
-                              debounceDuration: Duration(milliseconds: 300),
-                              suggestionsCallback: (query) => TmdbService.searchMulti(query),
-                              itemBuilder: (context, SearchMediaResponse result) {
-                                return ListTile(
-                                  title: Text('${result.title}'),
-                                  leading: Container(
-                                    height: 50,
-                                    width: 50,
-                                    child: CachedNetworkImage(
-                                      imageUrl: getImageUrl(result.posterPath),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                );
-                              },
-                              onSuggestionSelected: onMediaSelected),
-                          IconButton(
-                            icon: Icon(Icons.clear),
-                            tooltip: 'Clear media',
-                            onPressed: onMediaInputCleared,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Stack(
-                        alignment: Alignment.centerRight,
-                        children: [
-                          TypeAheadFormField<CastResponse>(
+    super.build(context);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Stack(
+                      alignment: Alignment.centerRight,
+                      children: [
+                        TypeAheadFormField<SearchMediaResponse>(
                             textFieldConfiguration: TextFieldConfiguration(
-                              enabled: _selectedSearch != null,
-                              controller: _characterSearchController,
+                              controller: _mediaSearchController,
                               decoration: InputDecoration(
-                                  labelText: 'Character',
-                                  prefixIcon: Icon(Icons.person),
+                                  prefixIcon: Icon(Icons.search),
                                   border: OutlineInputBorder(),
-                                  hintText: 'Search Character (optional)'),
+                                  labelText: 'Movie/TV Show',
+                                  hintText: 'Search Movie or TV Show'),
                             ),
-                            suggestionsCallback: (query) => getCharacterResults(query),
-                            itemBuilder: (context, CastResponse result) {
+                            debounceDuration: Duration(milliseconds: 300),
+                            suggestionsCallback: (query) => TmdbService.searchMulti(query),
+							transitionBuilder: (context, suggestionsBox, controller) {
+								return suggestionsBox;
+							},
+							noItemsFoundBuilder: (context){
+                            	return Text('');
+							},
+                            itemBuilder: (context, SearchMediaResponse result) {
                               return ListTile(
-                                title: Text('${result.characterName}'),
+                                title: Text('${result.title}'),
                                 leading: Container(
                                   height: 50,
                                   width: 50,
                                   child: CachedNetworkImage(
-                                    imageUrl: getImageUrl(result.profilePath),
+                                    imageUrl: getImageUrl(result.posterPath),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
                               );
                             },
-                            hideSuggestionsOnKeyboardHide: false,
-                            onSuggestionSelected: onCharacterSelected,
-                          ),
-                          Visibility(
-                            maintainSize: true,
-                            maintainAnimation: true,
-                            maintainInteractivity: true,
-                            maintainState: true,
-                            visible: _selectedSearch != null,
-                            child: IconButton(
-                              icon: Icon(Icons.clear),
-                              tooltip: 'Clear character',
-                              onPressed: onCharacterInputCleared,
-                            ),
-                          ),
-                        ],
-                      ),
+                            onSuggestionSelected: onMediaSelected),
+                        IconButton(
+                          icon: Icon(Icons.clear),
+                          tooltip: 'Clear media',
+                          onPressed: onMediaInputCleared,
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Stack(
+                      alignment: Alignment.centerRight,
+                      children: [
+                        TypeAheadFormField<CastResponse>(
+                          textFieldConfiguration: TextFieldConfiguration(
+                            enabled: _selectedSearch != null,
+                            controller: _characterSearchController,
+                            decoration: InputDecoration(
+                                labelText: 'Character',
+                                prefixIcon: Icon(Icons.person),
+                                border: OutlineInputBorder(),
+                                hintText: 'Search Character (optional)'),
+                          ),
+                          suggestionsCallback: (query) => getCharacterResults(query),
+                          itemBuilder: (context, CastResponse result) {
+                            return ListTile(
+                              title: Text('${result.characterName}'),
+                              leading: Container(
+                                height: 50,
+                                width: 50,
+                                child: CachedNetworkImage(
+                                  imageUrl: getImageUrl(result.profilePath),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            );
+                          },
+                          hideSuggestionsOnKeyboardHide: false,
+                          onSuggestionSelected: onCharacterSelected,
+                        ),
+                        Visibility(
+                          maintainSize: true,
+                          maintainAnimation: true,
+                          maintainInteractivity: true,
+                          maintainState: true,
+                          visible: _selectedSearch != null,
+                          child: IconButton(
+                            icon: Icon(Icons.clear),
+                            tooltip: 'Clear character',
+                            onPressed: onCharacterInputCleared,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        if (_selectedSearch != null)
+          Column(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height * .3,
+                width: 250,
+                child: CachedNetworkImage(
+                  imageUrl: getImageUrl(_selectedSearch!.posterPath),
+                  fit: BoxFit.scaleDown,
                 ),
               ),
+              if (_selectedSearch != null)
+                AutoSizeText(
+                  '${_selectedSearch!.title} (${filterDate(_selectedSearch!.releaseDate)})',
+                  minFontSize: 10,
+                  style: TextStyle(
+                    fontSize: 25,
+                  ),
+                ),
             ],
           ),
-          if (_selectedSearch != null)
-            Column(
-              children: [
-                Container(
-                  height: 300,
-                  width: 250,
-                  child: CachedNetworkImage(
-                    imageUrl: getImageUrl(_selectedSearch!.posterPath),
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                if (_selectedSearch != null)
-                  AutoSizeText(
-                    '${_selectedSearch!.title} (${filterDate(_selectedSearch!.releaseDate)})',
-                    style: TextStyle(
-                      fontSize: 25,
-                    ),
-                  ),
-              ],
-            ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: RoundedLoadingButton(
-                  controller: _btnController,
-                  onPressed: onButtonPressed,
-                  child: Text(_buttonText()),
-                  color: Colors.greenAccent,
-                ),
+        Expanded(
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: RoundedLoadingButton(
+                controller: _btnController,
+                onPressed: onButtonPressed,
+                child: Text(_buttonText()),
+                color: Colors.greenAccent,
               ),
             ),
-          )
-        ],
-      ),
+          ),
+        )
+      ],
     );
   }
 
@@ -222,7 +232,6 @@ class _MediaInputScreenState extends State<MediaInputScreen> {
     setState(() {
       _selectedSearch = selected;
       _mediaSearchController.text = selected.title!;
-      // todo change button text to say "Where have i seen this actor"
     });
     // new media so clear any character inputs
     _castForSelectedMedia = null;
@@ -261,25 +270,37 @@ class _MediaInputScreenState extends State<MediaInputScreen> {
     }
 
     try {
-      // todo handle if character was selected
-      var _groupedMovies = await TmdbService.getGroupedMovieResponse(_selectedSearch!.id);
-
-      var movie;
-      if (_castForSelectedMedia != null && _castForSelectedMedia!.id == _selectedSearch!.id) {
-        // earlier query already has results, no need to waste API call
-        movie = _castForSelectedMedia!;
-      } else {
-        movie = await TmdbService.getMovieWithCastAsync(_selectedSearch!.id);
-      }
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MovieFilterScreen(
-            movieCast: _groupedMovies,
-            movieResponse: movie,
+      if (_selectedCharacter != null) {
+        var actorCredits = await TmdbService.getPersonCreditsAsync(_selectedCharacter!.id);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ActorFilmography(
+              actor: actorCredits,
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        var groupedMovies = await TmdbService.getGroupedMovieResponse(_selectedSearch!.id);
+
+        var movie;
+        if (_castForSelectedMedia != null && _castForSelectedMedia!.id == _selectedSearch!.id) {
+          // earlier query already has results, no need to waste API call
+          movie = _castForSelectedMedia!;
+        } else {
+          movie = await TmdbService.getMovieWithCastAsync(_selectedSearch!.id);
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MovieFilterScreen(
+              movieCast: groupedMovies,
+              movieResponse: movie,
+            ),
+          ),
+        );
+        // no character specified so get credits of all cast of the movie
+      }
     } catch (e) {
       print(e);
       showSnackbar('Error searching for actors', context);

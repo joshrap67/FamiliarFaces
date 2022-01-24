@@ -84,11 +84,12 @@ class _MovieCastRowState extends State<MovieCastRow> {
               ),
             ),
             IconButton(
-                icon: const Icon(Icons.arrow_forward_ios),
-                iconSize: 36,
-                color: Color(0xAB69F0AE),
-                tooltip: 'Full filmography',
-                onPressed: () => widget.rowClicked!(widget.castMember))
+              icon: const Icon(Icons.arrow_forward_ios),
+              iconSize: 36,
+              color: Color(0xAB69F0AE),
+              tooltip: 'Full filmography',
+              onPressed: () => widget.rowClicked!(widget.castMember),
+            )
           ],
         ),
       ),

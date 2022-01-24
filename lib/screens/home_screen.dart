@@ -1,3 +1,4 @@
+import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/screens/about_screen.dart';
 import 'package:familiar_faces/screens/media_input_screen.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final MediaListScreen _mediaListScreen = new MediaListScreen();
   final MediaInputScreen _mediaInputScreen = new MediaInputScreen();
   final AboutScreen _aboutScreen = new AboutScreen();
-  final _pageOptions = [];
+  final List<Widget> _pageOptions = [];
+  final pageController = PageController(initialPage: 1);
 
   @override
   void initState() {
@@ -32,7 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Center(child: Text('Familiar Faces')),
       ),
       resizeToAvoidBottomInset: false,
-      body: _pageOptions[_selectedIndex],
+      body: GestureDetector(
+        onTap: () => hideKeyboard(context),
+        child: PageView(
+          children: _pageOptions,
+          controller: pageController,
+          onPageChanged: _onItemTapped,
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         type: BottomNavigationBarType.fixed,
@@ -51,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'About',
           ),
         ],
-        onTap: _onItemTapped,
+        onTap: (index) => pageController.jumpToPage(index),
       ),
     );
   }

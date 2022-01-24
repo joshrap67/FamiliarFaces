@@ -5,9 +5,11 @@ import 'package:familiar_faces/imports/utils.dart';
 import 'package:flutter/material.dart';
 
 class ActorMovieRow extends StatefulWidget {
-  const ActorMovieRow({Key? key, required this.movie}) : super(key: key);
+  const ActorMovieRow({Key? key, required this.movie, this.rowClicked, this.addToSeenClicked}) : super(key: key);
 
   final PersonCreditResponse movie;
+  final Function(PersonCreditResponse)? rowClicked;
+  final Function(PersonCreditResponse)? addToSeenClicked;
 
   @override
   _ActorMovieRowState createState() => _ActorMovieRowState();
@@ -30,7 +32,7 @@ class _ActorMovieRowState extends State<ActorMovieRow> {
     return Container(
       height: 150,
       decoration: BoxDecoration(
-        color: Color(0xff2a2f38),
+        color: widget.movie.isSeen ? Color(0xff009257) : Color(0xff2a2f38),
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10),
             topRight: Radius.circular(10),
@@ -44,37 +46,49 @@ class _ActorMovieRowState extends State<ActorMovieRow> {
             flex: 3,
             child: Row(
               children: [
-                SizedBox(
-                  width: 100,
-                  height: 140,
-                  child: CachedNetworkImage(
-                    imageUrl: showImage ? url : placeholderUrl,
-                    placeholder: (context, url) => const CircularProgressIndicator(),
-                    fit: BoxFit.fitWidth,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: 100,
+                    height: 140,
+                    child: CachedNetworkImage(
+                      imageUrl: showImage ? url : placeholderUrl,
+                      placeholder: (context, url) => Center(
+                        child: SizedBox(
+                          child: const CircularProgressIndicator(),
+                          height: 50,
+                          width: 50,
+                        ),
+                      ),
+                      fit: BoxFit.fitWidth,
+                    ),
                   ),
                 ),
                 Expanded(
                   child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            '${widget.movie.title} (${filterDate(widget.movie.releaseDate)})',
-                            style: TextStyle(fontSize: 24),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: AutoSizeText(
+                              '${widget.movie.title} (${filterDate(widget.movie.releaseDate)})',
+                              minFontSize: 12,
+                              style: TextStyle(fontSize: 24),
+                            ),
                           ),
                         ),
                       ),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(8.0, 2.0, 8.0, 8.0),
+                          padding: const EdgeInsets.fromLTRB(8.0, 2.0, 8.0, 0.0),
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: AutoSizeText(
                               '${widget.movie.characterName}',
                               minFontSize: 10,
-                              style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+                              style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
                             ),
                           ),
                         ),
@@ -93,9 +107,23 @@ class _ActorMovieRowState extends State<ActorMovieRow> {
                             ),
                           ),
                         ),
+                      if (!widget.movie.isSeen)
+                        Expanded(
+                          child: MaterialButton(
+                            onPressed: () => widget.addToSeenClicked!(widget.movie),
+                            child: Text('ADD TO SEEN'),
+                          ),
+                        )
                     ],
                   ),
                 ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward_ios),
+                  iconSize: 36,
+                  color: widget.movie.isSeen ? Colors.white : Color(0xAB69F0AE),
+                  tooltip: 'Full Cast',
+                  onPressed: () => widget.rowClicked!(widget.movie),
+                )
               ],
             ),
           )

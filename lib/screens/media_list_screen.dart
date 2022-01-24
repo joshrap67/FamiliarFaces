@@ -19,7 +19,7 @@ class _MediaListScreenState extends State<MediaListScreen> {
   List<SavedMedia> _searchedSavedMedia = <SavedMedia>[];
   final TextEditingController _mediaSearchController = TextEditingController();
   bool _isLoading = true;
-  bool _isAdding = false;
+  bool _isEditing = false;
 
   @override
   void initState() {
@@ -35,110 +35,135 @@ class _MediaListScreenState extends State<MediaListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        if (!_isAdding)
-          Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    onChanged: searchSavedMedia,
-                    decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(),
-                        labelText: 'Search my media',
-                        hintText: 'Search Movie or TV Show'),
+        Column(
+          children: [
+            if (!_isEditing)
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        onChanged: searchSavedMedia,
+                        decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.search),
+                            border: OutlineInputBorder(),
+                            labelText: 'Search my media',
+                            hintText: 'Search Movie or TV Show'),
+                      ),
+                    ),
                   ),
+                  // todo PopupMenuButton
+                  IconButton(
+                    icon: Icon(Icons.sort),
+                    onPressed: () {},
+                  )
+                ],
+              ),
+            if (_isEditing)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          TypeAheadFormField<SearchMediaResponse>(
+                              textFieldConfiguration: TextFieldConfiguration(
+                                controller: _mediaSearchController,
+                                decoration: InputDecoration(
+                                    prefixIcon: Icon(Icons.search),
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Movie/TV Show',
+                                    hintText: 'Search Movie or TV Show'),
+                              ),
+                              debounceDuration: Duration(milliseconds: 300),
+                              suggestionsCallback: (query) => TmdbService.searchMulti(query),
+                              itemBuilder: (context, SearchMediaResponse result) {
+                                return ListTile(
+                                  title: Text('${result.title}'),
+                                  leading: Container(
+                                    height: 50,
+                                    width: 50,
+                                    child: CachedNetworkImage(
+                                      imageUrl: getImageUrl(result.posterPath),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                );
+                              },
+                              onSuggestionSelected: onMediaSelected),
+                          IconButton(
+                            icon: Icon(Icons.clear),
+                            tooltip: 'Clear media',
+                            onPressed: onMediaInputCleared,
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.done),
+                      onPressed: () => setAdding(false),
+                    )
+                  ],
                 ),
               ),
-              // todo PopupMenuButton
-              IconButton(
-                icon: Icon(Icons.sort),
-                onPressed: () {},
-              )
-            ],
-          ),
-        if (_isAdding)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Stack(
-                    alignment: Alignment.centerRight,
-                    children: [
-                      TypeAheadFormField<SearchMediaResponse>(
-                          textFieldConfiguration: TextFieldConfiguration(
-                            controller: _mediaSearchController,
-                            decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.search),
-                                border: OutlineInputBorder(),
-                                labelText: 'Media',
-                                hintText: 'Search Movie or TV Show'),
-                          ),
-                          debounceDuration: Duration(milliseconds: 300),
-                          suggestionsCallback: (query) => TmdbService.searchMulti(query),
-                          itemBuilder: (context, SearchMediaResponse result) {
-                            return ListTile(
-                              title: Text('${result.title}'),
-                              leading: Container(
-                                height: 50,
-                                width: 50,
-                                child: CachedNetworkImage(
-                                  imageUrl: getImageUrl(result.posterPath),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            );
-                          },
-                          onSuggestionSelected: onMediaSelected),
-                      IconButton(
-                        icon: Icon(Icons.clear),
-                        tooltip: 'Clear media',
-                        onPressed: onMediaInputCleared,
+            Expanded(
+              child: ListView.separated(
+                separatorBuilder: (BuildContext context, int index) => Divider(height: 10),
+                itemCount: _savedMedia.length,
+                key: GlobalKey(),
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_savedMedia[index].title ?? "N/A"),
+                    tileColor: Colors.white10,
+                    leading: Container(
+                      height: 50,
+                      width: 50,
+                      child: CachedNetworkImage(
+                        imageUrl: getImageUrl(_savedMedia[index].posterPath),
+                        fit: BoxFit.cover,
                       ),
-                    ],
-                  ),
+                    ),
+                    trailing: _isEditing
+                        ? IconButton(
+                            icon: Icon(Icons.delete),
+                            color: Colors.redAccent,
+                            onPressed: () => deleteSavedMedia(_savedMedia[index]),
+                          )
+                        : null,
+                  );
+                },
+              ),
+            )
+          ],
+        ),
+        if (!_isEditing)
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Ink(
+                decoration: const ShapeDecoration(
+                  color: Colors.greenAccent,
+                  shape: CircleBorder(),
                 ),
-                IconButton(
-                  icon: Icon(Icons.done),
-                  onPressed: () => setAdding(false),
-                )
-              ],
+                width: 56,
+                height: 56,
+                child: IconButton(
+                  icon: const Icon(Icons.edit),
+                  // iconSize: 56,
+                  color: Colors.white,
+                  onPressed: () {
+                    setAdding(true);
+                  },
+                ),
+              ),
             ),
-          ),
-        if (!_isAdding)
-          MaterialButton(
-            child: Text('ADD NEW MEDIA'),
-            color: Colors.greenAccent,
-            onPressed: () => setAdding(true),
-          ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: _savedMedia.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(_savedMedia[index].title ?? "N/A"),
-                tileColor: Colors.white10,
-                leading: Container(
-                  height: 50,
-                  width: 50,
-                  child: CachedNetworkImage(
-                    imageUrl: getImageUrl(_savedMedia[index].posterPath),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.delete),
-                  color: Colors.redAccent,
-                  onPressed: () {},
-                ),
-              );
-            },
-          ),
-        )
+          )
       ],
     );
   }
@@ -154,7 +179,6 @@ class _MediaListScreenState extends State<MediaListScreen> {
   }
 
   onMediaSelected(SearchMediaResponse selected) async {
-    // todo save to sql
     if (_savedMedia.any((element) => element.mediaId == selected.id)) {
       showSnackbar('You already have added this media to your list.', context);
     } else {
@@ -167,6 +191,13 @@ class _MediaListScreenState extends State<MediaListScreen> {
     }
   }
 
+  void deleteSavedMedia(SavedMedia mediaToDelete) async {
+    await SavedMediaDatabase.instance.delete(mediaToDelete.id!);
+    setState(() {
+      _savedMedia.removeWhere((element) => mediaToDelete.id! == element.id!);
+    });
+  }
+
   onMediaInputCleared() {
     setState(() {
       _mediaSearchController.text = "";
@@ -176,7 +207,7 @@ class _MediaListScreenState extends State<MediaListScreen> {
 
   setAdding(bool isAdding) {
     setState(() {
-      _isAdding = isAdding;
+      _isEditing = isAdding;
     });
   }
 

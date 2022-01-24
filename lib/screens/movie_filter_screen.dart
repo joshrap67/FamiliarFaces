@@ -7,8 +7,7 @@ import 'package:familiar_faces/screens/movie_cast_row.dart';
 import 'package:flutter/material.dart';
 
 class MovieFilterScreen extends StatefulWidget {
-  const MovieFilterScreen({Key? key, required this.movieCast, required this.movieResponse})
-      : super(key: key);
+  const MovieFilterScreen({Key? key, required this.movieCast, required this.movieResponse}) : super(key: key);
 
   final List<PersonResponse> movieCast;
   final MovieResponse movieResponse;
@@ -17,11 +16,8 @@ class MovieFilterScreen extends StatefulWidget {
   _MovieFilterScreenState createState() => _MovieFilterScreenState();
 }
 
-// todo floating search?
 class _MovieFilterScreenState extends State<MovieFilterScreen> {
-  // todo so what i am going to do is only show this page if they didn't search a specific character.
-  // each row will be the name, image, and character name. Clicking on them will open up the page
-  // that will be used if they did specify the character name
+  // todo give warning that tv show shows all seasons and could have a spoiler in terms of who is in the show
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,16 +31,16 @@ class _MovieFilterScreenState extends State<MovieFilterScreen> {
       body: Container(
         child: Scrollbar(
           child: ListView.separated(
-              separatorBuilder: (BuildContext context, int index) => Divider(
-                    height: 15,
-                  ),
-              itemCount: widget.movieResponse.cast.length,
-              itemBuilder: (BuildContext context, int index) {
-                return MovieCastRow(
-                  castMember: widget.movieResponse.cast[index],
-                  rowClicked: (actor) => {actorClicked(actor)},
-                );
-              }),
+            key: new GlobalKey(),
+            separatorBuilder: (BuildContext context, int index) => Divider(height: 15),
+            itemCount: widget.movieResponse.cast.length,
+            itemBuilder: (BuildContext context, int index) {
+              return MovieCastRow(
+                castMember: widget.movieResponse.cast[index],
+                rowClicked: (actor) => {actorClicked(actor)},
+              );
+            },
+          ),
         ),
       ),
     );
@@ -54,9 +50,10 @@ class _MovieFilterScreenState extends State<MovieFilterScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => ActorFilmography(
-                actor: widget.movieCast.firstWhere((element) => element.id == actor.id),
-              )),
+        builder: (context) => ActorFilmography(
+          actor: widget.movieCast.firstWhere((element) => element.id == actor.id),
+        ),
+      ),
     );
   }
 }
