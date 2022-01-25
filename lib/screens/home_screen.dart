@@ -17,13 +17,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final MediaListScreen _mediaListScreen = new MediaListScreen();
   final MediaInputScreen _mediaInputScreen = new MediaInputScreen();
-  final AboutScreen _aboutScreen = new AboutScreen();
+  final AboutScreen _settingsScreen = new AboutScreen();
   final List<Widget> _pageOptions = [];
   final pageController = PageController(initialPage: 1);
 
   @override
   void initState() {
-    _pageOptions.addAll([_mediaListScreen, _mediaInputScreen, _aboutScreen]);
+    _pageOptions.addAll([_mediaListScreen, _mediaInputScreen, _settingsScreen]);
     super.initState();
   }
 
@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('Familiar Faces')),
+        title: Text('Familiar Faces'),
       ),
       resizeToAvoidBottomInset: false,
       body: GestureDetector(
@@ -56,8 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.info_outline),
-            label: 'About',
+            icon: Icon(Icons.settings),
+            label: 'Settings',
           ),
         ],
         onTap: (index) => pageController.jumpToPage(index),

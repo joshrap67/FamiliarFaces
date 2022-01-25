@@ -1,5 +1,7 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/search_media_response.dart';
+import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/services/saved_media_database.dart';
 import 'package:familiar_faces/services/tmdb_service.dart';
@@ -15,10 +17,10 @@ class MediaListScreen extends StatefulWidget {
 }
 
 class _MediaListScreenState extends State<MediaListScreen> {
-  List<SavedMedia> _savedMedia = <SavedMedia>[];
-  List<SavedMedia> _searchedSavedMedia = <SavedMedia>[];
+  List<SavedMedia> _allSavedMedia = <SavedMedia>[];
+  List<SavedMedia> _displayedSavedMedia = <SavedMedia>[];
   final TextEditingController _mediaSearchController = TextEditingController();
-  bool _isLoading = true;
+  SortingValues _sortValue = SortingValues.ReleaseDateDescending;
   bool _isEditing = false;
 
   @override
@@ -39,7 +41,7 @@ class _MediaListScreenState extends State<MediaListScreen> {
       children: [
         Column(
           children: [
-            if (!_isEditing)
+            if (_isEditing)
               Row(
                 children: [
                   Expanded(
@@ -55,14 +57,15 @@ class _MediaListScreenState extends State<MediaListScreen> {
                       ),
                     ),
                   ),
-                  // todo PopupMenuButton
+                  sortIcon(),
                   IconButton(
-                    icon: Icon(Icons.sort),
-                    onPressed: () {},
-                  )
+                    icon: Icon(Icons.done),
+                    tooltip: 'Done',
+                    onPressed: () => setAdding(false),
+                  ),
                 ],
               ),
-            if (_isEditing)
+            if (!_isEditing)
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -77,11 +80,15 @@ class _MediaListScreenState extends State<MediaListScreen> {
                                 decoration: InputDecoration(
                                     prefixIcon: Icon(Icons.search),
                                     border: OutlineInputBorder(),
-                                    labelText: 'Movie/TV Show',
+                                    labelText: 'Add Movie/TV Show',
                                     hintText: 'Search Movie or TV Show'),
                               ),
                               debounceDuration: Duration(milliseconds: 300),
-                              suggestionsCallback: (query) => TmdbService.searchMulti(query),
+                              suggestionsCallback: (query) =>
+                                  TmdbService.searchMulti(query, savedMedia: _allSavedMedia),
+                              noItemsFoundBuilder: (context) {
+                                return Text('');
+                              },
                               itemBuilder: (context, SearchMediaResponse result) {
                                 return ListTile(
                                   title: Text('${result.title}'),
@@ -104,27 +111,26 @@ class _MediaListScreenState extends State<MediaListScreen> {
                         ],
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.done),
-                      onPressed: () => setAdding(false),
-                    )
+                    sortIcon()
                   ],
                 ),
               ),
             Expanded(
               child: ListView.separated(
                 separatorBuilder: (BuildContext context, int index) => Divider(height: 10),
-                itemCount: _savedMedia.length,
+                itemCount: _displayedSavedMedia.length,
                 key: GlobalKey(),
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(_savedMedia[index].title ?? "N/A"),
-                    tileColor: Colors.white10,
+                    title: AutoSizeText(
+                      '${_displayedSavedMedia[index].title} (${filterDate(_displayedSavedMedia[index].releaseDate)})',
+                      minFontSize: 12,
+                    ),
                     leading: Container(
                       height: 50,
                       width: 50,
                       child: CachedNetworkImage(
-                        imageUrl: getImageUrl(_savedMedia[index].posterPath),
+                        imageUrl: getImageUrl(_displayedSavedMedia[index].posterPath),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -132,13 +138,13 @@ class _MediaListScreenState extends State<MediaListScreen> {
                         ? IconButton(
                             icon: Icon(Icons.delete),
                             color: Colors.redAccent,
-                            onPressed: () => deleteSavedMedia(_savedMedia[index]),
+                            onPressed: () => deleteSavedMedia(_displayedSavedMedia[index]),
                           )
                         : null,
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
         if (!_isEditing)
@@ -168,25 +174,114 @@ class _MediaListScreenState extends State<MediaListScreen> {
     );
   }
 
+  Widget sortIcon() {
+    return PopupMenuButton(
+      icon: Icon(Icons.sort_rounded),
+      itemBuilder: (context) => <PopupMenuEntry<SortingValues>>[
+        PopupMenuItem<SortingValues>(
+          value: SortingValues.AlphaAscending,
+          child: Container(
+            child: Text(
+              'Alpha Ascending',
+              style:
+                  TextStyle(decoration: _sortValue == SortingValues.AlphaAscending ? TextDecoration.underline : null),
+            ),
+          ),
+        ),
+        PopupMenuItem<SortingValues>(
+          value: SortingValues.AlphaDescending,
+          child: Text(
+            'Alpha Descending',
+            style: TextStyle(decoration: _sortValue == SortingValues.AlphaDescending ? TextDecoration.underline : null),
+          ),
+        ),
+        PopupMenuItem<SortingValues>(
+          value: SortingValues.ReleaseDateAscending,
+          child: Text(
+            'Release Date Ascending',
+            style: TextStyle(
+                decoration: _sortValue == SortingValues.ReleaseDateAscending ? TextDecoration.underline : null),
+          ),
+        ),
+        PopupMenuItem<SortingValues>(
+          value: SortingValues.ReleaseDateDescending,
+          child: Text(
+            'Release Date Descending',
+            style: TextStyle(
+                decoration: _sortValue == SortingValues.ReleaseDateDescending ? TextDecoration.underline : null),
+          ),
+        ),
+      ],
+      onSelected: (SortingValues result) {
+        if (_sortValue != result) {
+          _sortValue = result;
+          setState(() {
+            sortDisplayedMedia();
+          });
+        }
+      },
+    );
+  }
+
+  sortDisplayedMedia() {
+    // todo save sort value to shared prefs?
+    switch (_sortValue) {
+      case SortingValues.AlphaDescending:
+        _displayedSavedMedia.sort((a, b) {
+          if (a.title == null || b.title == null) {
+            return 1;
+          } else {
+            return b.title!.toLowerCase().compareTo(a.title!.toLowerCase());
+          }
+        });
+        break;
+      case SortingValues.AlphaAscending:
+        _displayedSavedMedia.sort((a, b) {
+          if (a.title == null || b.title == null) {
+            return 1;
+          } else {
+            return a.title!.toLowerCase().compareTo(b.title!.toLowerCase());
+          }
+        });
+        break;
+      case SortingValues.ReleaseDateDescending:
+        _displayedSavedMedia.sort((a, b) {
+          if (a.releaseDate == null || b.releaseDate == null) {
+            return 1;
+          } else {
+            return b.releaseDate!.compareTo(a.releaseDate!);
+          }
+        });
+        break;
+      case SortingValues.ReleaseDateAscending:
+        _displayedSavedMedia.sort((a, b) {
+          if (a.releaseDate == null || b.releaseDate == null) {
+            return 1;
+          } else {
+            return a.releaseDate!.compareTo(b.releaseDate!);
+          }
+        });
+        break;
+    }
+  }
+
   getSavedMedia() async {
+    _allSavedMedia = await SavedMediaDatabase.instance.getAll();
+    _displayedSavedMedia = List.from(_allSavedMedia);
     setState(() {
-      _isLoading = true;
-    });
-    _savedMedia = await SavedMediaDatabase.instance.getAll();
-    setState(() {
-      _isLoading = false;
+      sortDisplayedMedia();
     });
   }
 
   onMediaSelected(SearchMediaResponse selected) async {
-    if (_savedMedia.any((element) => element.mediaId == selected.id)) {
+    if (_allSavedMedia.any((element) => element.mediaId == selected.id)) {
       showSnackbar('You already have added this media to your list.', context);
     } else {
       var savedMedia = new SavedMedia(selected.id,
           title: selected.title, posterPath: selected.posterPath, releaseDate: selected.releaseDate);
       var created = await SavedMediaDatabase.instance.create(savedMedia);
       setState(() {
-        _savedMedia.add(created);
+        _allSavedMedia.add(created);
       });
     }
   }
@@ -194,7 +289,7 @@ class _MediaListScreenState extends State<MediaListScreen> {
   void deleteSavedMedia(SavedMedia mediaToDelete) async {
     await SavedMediaDatabase.instance.delete(mediaToDelete.id!);
     setState(() {
-      _savedMedia.removeWhere((element) => mediaToDelete.id! == element.id!);
+      _allSavedMedia.removeWhere((element) => mediaToDelete.id! == element.id!);
     });
   }
 
@@ -208,17 +303,20 @@ class _MediaListScreenState extends State<MediaListScreen> {
   setAdding(bool isAdding) {
     setState(() {
       _isEditing = isAdding;
+      _displayedSavedMedia = List.from(_allSavedMedia);
+      sortDisplayedMedia();
     });
   }
 
   searchSavedMedia(String searchText) {
     setState(() {
-      _searchedSavedMedia.addAll(_savedMedia.where((element) {
+      _displayedSavedMedia = List.from(_allSavedMedia.where((element) {
         if (element.title == null) {
           return false;
         }
         return element.title!.toLowerCase().contains(searchText.toLowerCase());
       }));
+      sortDisplayedMedia();
     });
   }
 }

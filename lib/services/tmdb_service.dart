@@ -93,7 +93,7 @@ class TmdbService {
     return contract;
   }
 
-  static Future<List<SearchMediaResponse>> searchMulti(String query) async {
+  static Future<List<SearchMediaResponse>> searchMulti(String query, {List<SavedMedia>? savedMedia}) async {
     if (isStringNullOrEmpty(query)) {
       return <SearchMediaResponse>[];
     }
@@ -112,6 +112,10 @@ class TmdbService {
     var contract = ModelCreator.getSearchMediaResponses(searchResult.results);
     // drop any records with a null title as that makes no sense for user to click
     contract.removeWhere((element) => element.title == null);
+    if (savedMedia != null) {
+      // don't show suggestions for ones the user has already saved
+      contract.removeWhere((element) => savedMedia.any((savedMedia) => savedMedia.mediaId == element.id));
+    }
     return contract;
   }
 

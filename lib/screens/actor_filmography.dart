@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/person_credit_response.dart';
 import 'package:familiar_faces/contracts/person_response.dart';
+import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/screens/actor_movie_row.dart';
 import 'package:familiar_faces/services/saved_media_database.dart';
 import 'package:familiar_faces/sql_contracts/saved_media.dart';
@@ -18,7 +19,6 @@ class ActorFilmography extends StatefulWidget {
 }
 
 enum Filters { ShowOnlySeen, IncludeMovies, IncludeTv }
-enum SortingValues { AlphaDescending, AlphaAscending, ReleaseDateDescending, ReleaseDateAscending }
 
 class _ActorFilmographyState extends State<ActorFilmography> {
   late List<PersonCreditResponse> _displayedCredits;
