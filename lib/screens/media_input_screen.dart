@@ -11,6 +11,7 @@ import 'package:familiar_faces/services/tmdb_service.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:palette_generator/palette_generator.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class MediaInputScreen extends StatefulWidget {
@@ -34,6 +35,8 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
   final TextEditingController _characterSearchController = TextEditingController();
   final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
 
+  PaletteGenerator? _paletteGenerator;
+
   @override
   void initState() {
     super.initState();
@@ -46,155 +49,185 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
     super.dispose();
   }
 
+  List<Color> getGradientColors() {
+    Color topColor = Colors.transparent;
+    if (_paletteGenerator?.darkMutedColor?.color != null) {
+      topColor = _paletteGenerator!.darkMutedColor!.color.withOpacity(0.4);
+    } else if (_paletteGenerator?.darkVibrantColor?.color != null) {
+      topColor = _paletteGenerator!.darkVibrantColor!.color.withOpacity(0.4);
+    } else if (_paletteGenerator?.vibrantColor?.color != null) {
+      topColor = _paletteGenerator!.vibrantColor!.color.withOpacity(0.4);
+    }
+    Color bottomColor = _paletteGenerator?.dominantColor?.color.withOpacity(0.4) ?? Colors.transparent;
+    return [topColor, bottomColor];
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Stack(
-                      alignment: Alignment.centerRight,
-                      children: [
-                        TypeAheadFormField<SearchMediaResponse>(
+    return AnimatedContainer(
+      duration: const Duration(seconds: 1),
+      curve: Curves.fastOutSlowIn,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: getGradientColors(),
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          TypeAheadFormField<SearchMediaResponse>(
+                              textFieldConfiguration: TextFieldConfiguration(
+                                controller: _mediaSearchController,
+                                decoration: InputDecoration(
+                                    prefixIcon: Icon(Icons.search),
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Movie/TV Show',
+                                    hintText: 'Search Movie or TV Show'),
+                              ),
+                              debounceDuration: Duration(milliseconds: 300),
+                              suggestionsCallback: (query) => TmdbService.searchMulti(query),
+                              transitionBuilder: (context, suggestionsBox, controller) {
+                                return suggestionsBox;
+                              },
+                              noItemsFoundBuilder: (context) {
+                                return Text('');
+                              },
+                              itemBuilder: (context, SearchMediaResponse result) {
+                                return ListTile(
+                                  title: Text('${result.title}'),
+                                  leading: Container(
+                                    height: 50,
+                                    width: 50,
+                                    child: CachedNetworkImage(
+                                      imageUrl: getImageUrl(result.posterPath),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                );
+                              },
+                              onSuggestionSelected: onMediaSelected),
+                          IconButton(
+                            icon: Icon(Icons.clear),
+                            tooltip: 'Clear media',
+                            onPressed: onMediaInputCleared,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          TypeAheadFormField<CastResponse>(
                             textFieldConfiguration: TextFieldConfiguration(
-                              controller: _mediaSearchController,
+                              enabled: _selectedSearch != null,
+                              controller: _characterSearchController,
                               decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.search),
+                                  labelText: 'Character',
+                                  prefixIcon: Icon(Icons.person),
                                   border: OutlineInputBorder(),
-                                  labelText: 'Movie/TV Show',
-                                  hintText: 'Search Movie or TV Show'),
+                                  hintText: 'Search Character (optional)'),
                             ),
-                            debounceDuration: Duration(milliseconds: 300),
-                            suggestionsCallback: (query) => TmdbService.searchMulti(query),
-                            transitionBuilder: (context, suggestionsBox, controller) {
-                              return suggestionsBox;
-                            },
-                            noItemsFoundBuilder: (context) {
-                              return Text('');
-                            },
-                            itemBuilder: (context, SearchMediaResponse result) {
+                            suggestionsCallback: (query) => getCharacterResults(query),
+                            itemBuilder: (context, CastResponse result) {
                               return ListTile(
-                                title: Text('${result.title}'),
+                                title: Text('${result.characterName}'),
                                 leading: Container(
                                   height: 50,
                                   width: 50,
                                   child: CachedNetworkImage(
-                                    imageUrl: getImageUrl(result.posterPath),
+                                    imageUrl: getImageUrl(result.profilePath),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
                               );
                             },
-                            onSuggestionSelected: onMediaSelected),
-                        IconButton(
-                          icon: Icon(Icons.clear),
-                          tooltip: 'Clear media',
-                          onPressed: onMediaInputCleared,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Stack(
-                      alignment: Alignment.centerRight,
-                      children: [
-                        TypeAheadFormField<CastResponse>(
-                          textFieldConfiguration: TextFieldConfiguration(
-                            enabled: _selectedSearch != null,
-                            controller: _characterSearchController,
-                            decoration: InputDecoration(
-                                labelText: 'Character',
-                                prefixIcon: Icon(Icons.person),
-                                border: OutlineInputBorder(),
-                                hintText: 'Search Character (optional)'),
+                            hideSuggestionsOnKeyboardHide: false,
+                            onSuggestionSelected: onCharacterSelected,
                           ),
-                          suggestionsCallback: (query) => getCharacterResults(query),
-                          itemBuilder: (context, CastResponse result) {
-                            return ListTile(
-                              title: Text('${result.characterName}'),
-                              leading: Container(
-                                height: 50,
-                                width: 50,
-                                child: CachedNetworkImage(
-                                  imageUrl: getImageUrl(result.profilePath),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            );
-                          },
-                          hideSuggestionsOnKeyboardHide: false,
-                          onSuggestionSelected: onCharacterSelected,
-                        ),
-                        Visibility(
-                          maintainSize: true,
-                          maintainAnimation: true,
-                          maintainInteractivity: true,
-                          maintainState: true,
-                          visible: _selectedSearch != null,
-                          child: IconButton(
-                            icon: Icon(Icons.clear),
-                            tooltip: 'Clear character',
-                            onPressed: onCharacterInputCleared,
+                          Visibility(
+                            maintainSize: true,
+                            maintainAnimation: true,
+                            maintainInteractivity: true,
+                            maintainState: true,
+                            visible: _selectedSearch != null,
+                            child: IconButton(
+                              icon: Icon(Icons.clear),
+                              tooltip: 'Clear character',
+                              onPressed: onCharacterInputCleared,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        if (_selectedSearch != null)
-          Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * .3,
-                width: 250,
-                child: CachedNetworkImage(
-                  imageUrl: getImageUrl(_selectedSearch!.posterPath),
-                  fit: BoxFit.scaleDown,
+                  ],
                 ),
               ),
-              if (_selectedSearch != null)
-                AutoSizeText(
-                  '${_selectedSearch!.title} (${filterDate(_selectedSearch!.releaseDate)})',
-                  minFontSize: 10,
-                  style: TextStyle(
-                    fontSize: 25,
-                  ),
-                ),
             ],
           ),
-        Expanded(
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: RoundedLoadingButton(
-                controller: _btnController,
-                onPressed: onMainButtonPressed,
-                child: Text(_buttonText()),
-                color: Colors.greenAccent,
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (_selectedSearch != null)
+                    Column(
+                      children: [
+                        AutoSizeText(
+                          '${_selectedSearch!.title} (${filterDate(_selectedSearch!.releaseDate)})',
+                          minFontSize: 10,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 30,
+                          ),
+                        ),
+                        if (_selectedCharacter != null)
+                          AutoSizeText(
+                            '${_selectedCharacter!.characterName}',
+                            minFontSize: 10,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 25,
+                            ),
+                          ),
+                      ],
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 16.0),
+                    child: RoundedLoadingButton(
+                      controller: _btnController,
+                      onPressed: onMainButtonPressed,
+                      child: Text(_buttonText()),
+                      color: Colors.blue,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 
@@ -203,6 +236,7 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
       _mediaSearchController.text = "";
       _selectedSearch = null;
       _castForSelectedMedia = [];
+      _paletteGenerator = null;
       _characterSearchController.text = "";
       _selectedCharacter = null;
       hideKeyboard(context);
@@ -231,6 +265,8 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
       _mediaSearchController.text = selected.title!;
     });
 
+    _updatePaletteGenerator(new Image.network(getImageUrl(_selectedSearch!.posterPath)).image);
+
     // new media so clear any character inputs
     _castForSelectedMedia = [];
     _characterSearchController.text = "";
@@ -242,6 +278,14 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
       TvResponse tv = await TmdbService.getTvShowWithCastAsync(_selectedSearch!.id);
       _castForSelectedMedia = List.from(tv.cast);
     }
+  }
+
+  Future<void> _updatePaletteGenerator(ImageProvider image) async {
+    _paletteGenerator = await PaletteGenerator.fromImageProvider(
+      image,
+      maximumColorCount: 20,
+    );
+    setState(() {});
   }
 
   List<CastResponse> getCharacterResults(String query) {

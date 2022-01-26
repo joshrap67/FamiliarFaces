@@ -48,7 +48,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                   children: [
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
                         child: TextField(
                           onChanged: searchSavedMedia,
                           decoration: InputDecoration(
