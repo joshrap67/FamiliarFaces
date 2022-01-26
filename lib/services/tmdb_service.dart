@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:familiar_faces/api_models/movie.dart';
 import 'package:familiar_faces/api_models/movie_search_result.dart';
 import 'package:familiar_faces/api_models/person.dart';
-import 'package:familiar_faces/api_models/tvShow.dart';
+import 'package:familiar_faces/api_models/tv_show.dart';
 import 'package:familiar_faces/contracts/movie_response.dart';
 import 'package:familiar_faces/contracts/person_response.dart';
 import 'package:familiar_faces/contracts/search_media_response.dart';
@@ -21,6 +21,7 @@ class TmdbService {
   static Future<List<PersonResponse>> getGroupedMovieResponse(int movieId, {String? characterName}) async {
     var movieWithCast = await getMovieWithCastAsync(movieId);
     List<SavedMedia> savedMedia = await SavedMediaDatabase.instance.getAll();
+
     if (characterName != null && movieWithCast.cast.any((element) => element.characterName == characterName)) {
       // only get the grouped movies for the character the user specified. the happy path
       var credits = await getPersonCreditsAsync(
@@ -31,6 +32,30 @@ class TmdbService {
       // bad path, loop through every actor in the movie and return their credits grouped together
       List<PersonResponse> allActors = <PersonResponse>[];
       await Future.wait(movieWithCast.cast
+          .map((castMember) => TmdbService.getPersonCreditsAsync(castMember.id).then((value) => allActors.add(value))));
+
+      var list = new List<PersonResponse>.from(allActors);
+      list.forEach((element) {
+        applySeenMedia(element, savedMedia);
+      });
+      return list;
+    }
+  }
+
+  static Future<List<PersonResponse>> getGroupedTvResponse(int tvId, {String? characterName}) async {
+    var tvWithCast = await getTvShowWithCastAsync(tvId);
+    List<SavedMedia> savedMedia = await SavedMediaDatabase.instance.getAll();
+
+    if (characterName != null && tvWithCast.cast.any((element) => element.characterName == characterName)) {
+      // only get the credits for the character the user specified. the happy path
+      var credits = await getPersonCreditsAsync(
+          tvWithCast.cast.firstWhere((element) => element.characterName == characterName).id);
+      applySeenMedia(credits, savedMedia);
+      return ({credits}.toList());
+    } else {
+      // bad path, loop through every actor in the movie and return their credits grouped together
+      List<PersonResponse> allActors = <PersonResponse>[];
+      await Future.wait(tvWithCast.cast
           .map((castMember) => TmdbService.getPersonCreditsAsync(castMember.id).then((value) => allActors.add(value))));
       var list = new List<PersonResponse>.from(allActors);
       list.forEach((element) {
@@ -80,7 +105,7 @@ class TmdbService {
 
   static Future<TvResponse> getTvShowWithCastAsync(int tvId) async {
     var queryParams = getCommonQuery();
-    queryParams.putIfAbsent('append_to_response', () => 'aggregated_credits');
+    queryParams.putIfAbsent('append_to_response', () => 'aggregate_credits');
 
     var apiResult = await makeApiRequest(HttpAction.GET, 'tv/$tvId', queryParams);
     if (!apiResult.success()) {

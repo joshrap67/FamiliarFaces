@@ -8,6 +8,6 @@ class CastResponse {
 
   @override
   String toString() {
-    return 'CastResponse{id: $id, name:$name, characterName:$characterName, profilePath:$profilePath}';
+    return 'CastResponse{id: $id, name:$name, characterName: $characterName, profilePath: $profilePath}';
   }
 }

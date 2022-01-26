@@ -3,7 +3,7 @@ import 'package:familiar_faces/screens/about_screen.dart';
 import 'package:familiar_faces/screens/media_input_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'media_list_screen.dart';
+import 'saved_media_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 1;
 
-  final MediaListScreen _mediaListScreen = new MediaListScreen();
+  final SavedMediaListScreen _mediaListScreen = new SavedMediaListScreen();
   final MediaInputScreen _mediaInputScreen = new MediaInputScreen();
   final AboutScreen _settingsScreen = new AboutScreen();
   final List<Widget> _pageOptions = [];

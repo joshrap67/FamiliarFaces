@@ -2,17 +2,18 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:familiar_faces/contracts/cast_response.dart';
 import 'package:flutter/material.dart';
 
-class MovieCastRow extends StatefulWidget {
-  const MovieCastRow({Key? key, required this.castMember, this.rowClicked}) : super(key: key);
+class MediaCastRow extends StatefulWidget {
+  const MediaCastRow({Key? key, required this.castMember, this.rowClicked}) : super(key: key);
 
   final CastResponse castMember;
   final Function(CastResponse)? rowClicked;
 
   @override
-  _MovieCastRowState createState() => _MovieCastRowState();
+  _MediaCastRowState createState() => _MediaCastRowState();
 }
 
-class _MovieCastRowState extends State<MovieCastRow> {
+class _MediaCastRowState extends State<MediaCastRow> {
+  // todo make this stateless
   late String url;
   late bool showImage;
   static const String placeholderUrl = 'https://picsum.photos/200';

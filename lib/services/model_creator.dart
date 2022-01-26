@@ -2,7 +2,7 @@ import 'package:familiar_faces/api_models/movie.dart';
 import 'package:familiar_faces/api_models/movie_search_result.dart';
 import 'package:familiar_faces/api_models/person.dart';
 import 'package:familiar_faces/api_models/person_credit.dart';
-import 'package:familiar_faces/api_models/tvShow.dart';
+import 'package:familiar_faces/api_models/tv_show.dart';
 import 'package:familiar_faces/contracts/cast_response.dart';
 import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/movie_response.dart';

@@ -3,27 +3,28 @@ import 'package:familiar_faces/contracts/cast_response.dart';
 import 'package:familiar_faces/contracts/movie_response.dart';
 import 'package:familiar_faces/contracts/person_response.dart';
 import 'package:familiar_faces/screens/actor_filmography.dart';
-import 'package:familiar_faces/screens/movie_cast_row.dart';
+import 'package:familiar_faces/screens/media_cast_row.dart';
 import 'package:flutter/material.dart';
 
-class MovieFilterScreen extends StatefulWidget {
-  const MovieFilterScreen({Key? key, required this.movieCast, required this.movieResponse}) : super(key: key);
+class MediaCastScreen extends StatefulWidget {
+  const MediaCastScreen({Key? key, required this.cast, required this.actors, required this.title}) : super(key: key);
 
-  final List<PersonResponse> movieCast;
-  final MovieResponse movieResponse;
+  final List<CastResponse> cast;
+  final List<PersonResponse> actors;
+  final String title;
 
   @override
-  _MovieFilterScreenState createState() => _MovieFilterScreenState();
+  _MediaCastScreenState createState() => _MediaCastScreenState();
 }
 
-class _MovieFilterScreenState extends State<MovieFilterScreen> {
+class _MediaCastScreenState extends State<MediaCastScreen> {
   // todo give warning that tv show shows all seasons and could have a spoiler in terms of who is in the show
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: AutoSizeText(
-          '${widget.movieResponse.title} Cast',
+          '${widget.title} Cast',
           minFontSize: 12,
           style: TextStyle(fontSize: 26),
         ),
@@ -33,10 +34,10 @@ class _MovieFilterScreenState extends State<MovieFilterScreen> {
           child: ListView.separated(
             key: new GlobalKey(),
             separatorBuilder: (BuildContext context, int index) => Divider(height: 15),
-            itemCount: widget.movieResponse.cast.length,
+            itemCount: widget.cast.length,
             itemBuilder: (BuildContext context, int index) {
-              return MovieCastRow(
-                castMember: widget.movieResponse.cast[index],
+              return MediaCastRow(
+                castMember: widget.cast[index],
                 rowClicked: (actor) => {actorClicked(actor)},
               );
             },
@@ -51,7 +52,7 @@ class _MovieFilterScreenState extends State<MovieFilterScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => ActorFilmography(
-          actor: widget.movieCast.firstWhere((element) => element.id == actor.id),
+          actor: widget.actors.firstWhere((element) => element.id == actor.id),
         ),
       ),
     );

@@ -29,6 +29,8 @@ class TvShow {
           var charName = characterNames[i];
           characterName += i == characterNames.length - 1 ? '$charName' : '$charName, ';
         }
+      } else if (characterNames.length == 1) {
+        characterName = characterNames[0];
       }
       cast.add(new Cast(castMember['id'], castMember['name'], characterName, castMember['profile_path']));
     }
