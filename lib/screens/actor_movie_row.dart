@@ -109,7 +109,7 @@ class _ActorMovieRowState extends State<ActorMovieRow> {
                         ),
                       if (!widget.movie.isSeen)
                         Expanded(
-                          child: MaterialButton(
+                          child: TextButton(
                             onPressed: () => widget.addToSeenClicked!(widget.movie),
                             child: Text('ADD TO SEEN'),
                           ),

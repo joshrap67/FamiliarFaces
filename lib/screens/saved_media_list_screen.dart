@@ -22,6 +22,8 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
   final TextEditingController _mediaSearchController = TextEditingController();
   SortingValues _sortValue = SortingValues.ReleaseDateDescending;
   bool _isEditing = false;
+  bool _isLoading = false;
+  List<String> _mediaToDelete = <String>[];
 
   @override
   void initState() {
@@ -69,7 +71,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                 ),
               if (!_isEditing)
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
                   child: Row(
                     children: [
                       Expanded(
@@ -118,34 +120,50 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                   ),
                 ),
               Expanded(
-                child: ListView.separated(
-                  separatorBuilder: (BuildContext context, int index) => Divider(height: 10),
-                  itemCount: _displayedSavedMedia.length,
-                  key: GlobalKey(),
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: AutoSizeText(
-                        '${_displayedSavedMedia[index].title} (${filterDate(_displayedSavedMedia[index].releaseDate)})',
-                        minFontSize: 12,
-                      ),
-                      leading: Container(
-                        height: 50,
-                        width: 50,
-                        child: CachedNetworkImage(
-                          imageUrl: getImageUrl(_displayedSavedMedia[index].posterPath),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      trailing: _isEditing
-                          ? IconButton(
-                              icon: Icon(Icons.delete),
-                              color: Colors.redAccent,
-                              onPressed: () => deleteSavedMedia(_displayedSavedMedia[index]),
-                            )
-                          : null,
-                    );
-                  },
-                ),
+                child: _displayedSavedMedia.length > 0
+                    ? ListView.separated(
+                        separatorBuilder: (BuildContext context, int index) => Divider(height: 10),
+                        itemCount: _displayedSavedMedia.length,
+                        key: GlobalKey(),
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: AutoSizeText(
+                              '${_displayedSavedMedia[index].title} (${filterDate(_displayedSavedMedia[index].releaseDate)})',
+                              minFontSize: 12,
+                            ),
+                            leading: Container(
+                              height: 50,
+                              width: 50,
+                              child: CachedNetworkImage(
+                                imageUrl: getImageUrl(_displayedSavedMedia[index].posterPath),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            trailing: _isEditing
+                                ? PopupMenuButton(
+                                    icon: Icon(Icons.more_vert),
+                                    tooltip: 'Edit Options',
+                                    itemBuilder: (context) => <PopupMenuEntry<int>>[
+                                      PopupMenuItem<int>(
+                                        value: 0,
+                                        child: Text('REMOVE'),
+                                      ),
+                                    ],
+                                    onSelected: (int result) {
+                                      if (result == 0) {
+                                        deleteSavedMedia(_displayedSavedMedia[index]);
+                                      }
+                                    },
+                                  )
+                                : null,
+                          );
+                        },
+                      )
+                    : Center(
+                        child: Text(
+                        'No saved media',
+                        style: TextStyle(fontSize: 20),
+                      )),
               ),
             ],
           ),
@@ -156,7 +174,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                 padding: const EdgeInsets.all(15.0),
                 child: Ink(
                   decoration: const ShapeDecoration(
-                    color: Colors.greenAccent,
+                    color: Color(0xff5a9e6c),
                     shape: CircleBorder(),
                   ),
                   width: 56,
@@ -180,6 +198,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
   Widget sortIcon() {
     return PopupMenuButton(
       icon: Icon(Icons.sort_rounded),
+      tooltip: 'Sort Media',
       itemBuilder: (context) => <PopupMenuEntry<SortingValues>>[
         PopupMenuItem<SortingValues>(
           value: SortingValues.AlphaAscending,

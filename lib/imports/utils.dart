@@ -35,3 +35,29 @@ void showSnackbar(String message, BuildContext context) {
 void hideKeyboard(BuildContext context) {
   FocusScope.of(context).requestFocus(new FocusNode());
 }
+
+void showLoadingDialog(BuildContext context, {String msg = 'Loading...', bool dismissible = false}) {
+  showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () async => dismissible,
+          child: AlertDialog(
+            content: Flex(
+              direction: Axis.horizontal,
+              children: <Widget>[
+                CircularProgressIndicator(),
+                Padding(
+                  padding: EdgeInsets.all(20),
+                ),
+                Flexible(
+                  flex: 8,
+                  child: Text(msg),
+                )
+              ],
+            ),
+          ),
+        );
+      });
+}

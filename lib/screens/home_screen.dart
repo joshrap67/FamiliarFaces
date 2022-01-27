@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Settings',
           ),
         ],
-        onTap: (index) => pageController.jumpToPage(index),
+        onTap: (index) => _onItemTapped(index),
       ),
     );
   }
@@ -68,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      pageController.animateToPage(index, duration: Duration(milliseconds: 400), curve: Curves.easeOut);
     });
   }
 }
