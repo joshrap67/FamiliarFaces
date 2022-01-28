@@ -5,9 +5,9 @@ import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/movie_response.dart';
 import 'package:familiar_faces/contracts/search_media_response.dart';
 import 'package:familiar_faces/contracts/tv_response.dart';
-import 'package:familiar_faces/screens/actor_filmography.dart';
+import 'package:familiar_faces/screens/actor_details.dart';
 import 'package:familiar_faces/screens/media_cast_screen.dart';
-import 'package:familiar_faces/services/tmdb_service.dart';
+import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -48,173 +48,176 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
 
   @override
   Widget build(BuildContext context) {
+  	// todo warning on tv shows that the search might take a while if they didn't specify a character
     super.build(context);
-    return AnimatedContainer(
-      duration: const Duration(seconds: 1),
-      curve: Curves.fastOutSlowIn,
-      decoration: BoxDecoration(
-        image: _selectedSearch?.posterPath != null
-            ? DecorationImage(
-                colorFilter: new ColorFilter.mode(Color(0x48000000), BlendMode.dstATop),
-                image: Image.network(getImageUrl(_selectedSearch?.posterPath)).image,
-                fit: BoxFit.fill,
+    return SafeArea(
+      child: AnimatedContainer(
+        duration: const Duration(seconds: 1),
+        curve: Curves.fastOutSlowIn,
+        decoration: _selectedSearch?.posterPath != null
+            ? BoxDecoration(
+                image: DecorationImage(
+                  colorFilter: new ColorFilter.mode(Color(0x48000000), BlendMode.dstATop),
+                  image: Image.network(getImageUrl(_selectedSearch?.posterPath)).image,
+                  fit: BoxFit.fill,
+                ),
               )
-            : null,
-      ),
-      child: Container(
-        color: _selectedSearch?.posterPath != null ? Color(0x4b000000) : null,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Stack(
-                          alignment: Alignment.centerRight,
-                          children: [
-                            TypeAheadFormField<SearchMediaResponse>(
+            : BoxDecoration(),
+        child: Container(
+          color: _selectedSearch?.posterPath != null ? Color(0x4b000000) : null,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Stack(
+                            alignment: Alignment.centerRight,
+                            children: [
+                              TypeAheadFormField<SearchMediaResponse>(
+                                  textFieldConfiguration: TextFieldConfiguration(
+                                    controller: _mediaSearchController,
+                                    decoration: InputDecoration(
+                                        prefixIcon: Icon(Icons.search),
+                                        border: OutlineInputBorder(),
+                                        labelText: 'Movie/TV Show',
+                                        hintText: 'Search Movie or TV Show'),
+                                  ),
+                                  debounceDuration: Duration(milliseconds: 300),
+                                  suggestionsCallback: (query) => MediaService.searchMulti(query),
+                                  transitionBuilder: (context, suggestionsBox, controller) {
+                                    return suggestionsBox;
+                                  },
+                                  noItemsFoundBuilder: (context) {
+                                    return Text('');
+                                  },
+                                  itemBuilder: (context, SearchMediaResponse result) {
+                                    return ListTile(
+                                      title: Text('${result.title}'),
+                                      leading: Container(
+                                        height: 50,
+                                        width: 50,
+                                        child: CachedNetworkImage(
+                                          imageUrl: getImageUrl(result.posterPath),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  onSuggestionSelected: onMediaSelected),
+                              IconButton(
+                                icon: Icon(Icons.clear),
+                                tooltip: 'Clear media',
+                                onPressed: onMediaInputCleared,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Stack(
+                            alignment: Alignment.centerRight,
+                            children: [
+                              TypeAheadFormField<CastResponse>(
                                 textFieldConfiguration: TextFieldConfiguration(
-                                  controller: _mediaSearchController,
+                                  enabled: _selectedSearch != null,
+                                  controller: _characterSearchController,
                                   decoration: InputDecoration(
-                                      prefixIcon: Icon(Icons.search),
+                                      labelText: 'Character',
+                                      prefixIcon: Icon(Icons.person),
                                       border: OutlineInputBorder(),
-                                      labelText: 'Movie/TV Show',
-                                      hintText: 'Search Movie or TV Show'),
+                                      hintText: 'Search Character (optional)'),
                                 ),
-                                debounceDuration: Duration(milliseconds: 300),
-                                suggestionsCallback: (query) => TmdbService.searchMulti(query),
-                                transitionBuilder: (context, suggestionsBox, controller) {
-                                  return suggestionsBox;
-                                },
-                                noItemsFoundBuilder: (context) {
-                                  return Text('');
-                                },
-                                itemBuilder: (context, SearchMediaResponse result) {
+                                suggestionsCallback: (query) => getCharacterResults(query),
+                                itemBuilder: (context, CastResponse result) {
                                   return ListTile(
-                                    title: Text('${result.title}'),
+                                    title: Text('${result.characterName}'),
                                     leading: Container(
                                       height: 50,
                                       width: 50,
                                       child: CachedNetworkImage(
-                                        imageUrl: getImageUrl(result.posterPath),
+                                        imageUrl: getImageUrl(result.profilePath),
                                         fit: BoxFit.cover,
                                       ),
                                     ),
                                   );
                                 },
-                                onSuggestionSelected: onMediaSelected),
-                            IconButton(
-                              icon: Icon(Icons.clear),
-                              tooltip: 'Clear media',
-                              onPressed: onMediaInputCleared,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Stack(
-                          alignment: Alignment.centerRight,
-                          children: [
-                            TypeAheadFormField<CastResponse>(
-                              textFieldConfiguration: TextFieldConfiguration(
-                                enabled: _selectedSearch != null,
-                                controller: _characterSearchController,
-                                decoration: InputDecoration(
-                                    labelText: 'Character',
-                                    prefixIcon: Icon(Icons.person),
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Search Character (optional)'),
+                                hideSuggestionsOnKeyboardHide: false,
+                                onSuggestionSelected: onCharacterSelected,
                               ),
-                              suggestionsCallback: (query) => getCharacterResults(query),
-                              itemBuilder: (context, CastResponse result) {
-                                return ListTile(
-                                  title: Text('${result.characterName}'),
-                                  leading: Container(
-                                    height: 50,
-                                    width: 50,
-                                    child: CachedNetworkImage(
-                                      imageUrl: getImageUrl(result.profilePath),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                );
-                              },
-                              hideSuggestionsOnKeyboardHide: false,
-                              onSuggestionSelected: onCharacterSelected,
-                            ),
-                            Visibility(
-                              maintainSize: true,
-                              maintainAnimation: true,
-                              maintainInteractivity: true,
-                              maintainState: true,
-                              visible: _selectedSearch != null,
-                              child: IconButton(
-                                icon: Icon(Icons.clear),
-                                tooltip: 'Clear character',
-                                onPressed: onCharacterInputCleared,
+                              Visibility(
+                                maintainSize: true,
+                                maintainAnimation: true,
+                                maintainInteractivity: true,
+                                maintainState: true,
+                                visible: _selectedSearch != null,
+                                child: IconButton(
+                                  icon: Icon(Icons.clear),
+                                  tooltip: 'Clear character',
+                                  onPressed: onCharacterInputCleared,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    if (_selectedSearch != null)
-                      Column(
-                        children: [
-                          AutoSizeText(
-                            '${_selectedSearch!.title} (${filterDate(_selectedSearch!.releaseDate)})',
-                            minFontSize: 10,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 30,
-                            ),
+                            ],
                           ),
-                          if (_selectedCharacter != null)
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (_selectedSearch != null)
+                        Column(
+                          children: [
                             AutoSizeText(
-                              '${_selectedCharacter!.characterName}',
+                              '${_selectedSearch!.title} (${formatDateYearOnly(_selectedSearch!.releaseDate)})',
                               minFontSize: 10,
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 25,
+                                fontSize: 30,
                               ),
                             ),
-                        ],
+                            if (_selectedCharacter != null)
+                              AutoSizeText(
+                                '${_selectedCharacter!.characterName}',
+                                minFontSize: 10,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 25,
+                                ),
+                              ),
+                          ],
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 16.0),
+                        child: RoundedLoadingButton(
+                          controller: _btnController,
+                          onPressed: onMainButtonPressed,
+                          child: Text(_buttonText()),
+                          color: Color(0xff5a9e6c),
+                        ),
                       ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 16.0),
-                      child: RoundedLoadingButton(
-                        controller: _btnController,
-                        onPressed: onMainButtonPressed,
-                        child: Text(_buttonText()),
-                        color: Color(0xff5a9e6c),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -258,10 +261,10 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
     _characterSearchController.text = "";
     _selectedCharacter = null;
     if (_selectedSearch!.mediaType == MediaType.Movie) {
-      MovieResponse movie = await TmdbService.getMovieWithCastAsync(_selectedSearch!.id);
+      MovieResponse movie = await MediaService.getMovieWithCastAsync(_selectedSearch!.id);
       _castForSelectedMedia = List.from(movie.cast);
     } else {
-      TvResponse tv = await TmdbService.getTvShowWithCastAsync(_selectedSearch!.id);
+      TvResponse tv = await MediaService.getTvShowWithCastAsync(_selectedSearch!.id);
       _castForSelectedMedia = List.from(tv.cast);
     }
   }
@@ -292,20 +295,20 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
 
     try {
       if (_selectedCharacter != null) {
-        var actorCredits = await TmdbService.getPersonCreditsAsync(_selectedCharacter!.id);
+        var actorCredits = await MediaService.getSingleActorCredits(_selectedCharacter!.id);
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ActorFilmography(
+            builder: (context) => ActorDetails(
               actor: actorCredits,
             ),
           ),
         );
       } else {
         if (_selectedSearch!.mediaType == MediaType.Movie) {
-          var actorsOfMovie = await TmdbService.getGroupedMovieResponse(_selectedSearch!.id);
+          var actorsOfMovie = await MediaService.getGroupedMovieResponse(_selectedSearch!.id);
 
-          MovieResponse movie = await TmdbService.getMovieWithCastAsync(_selectedSearch!.id);
+          MovieResponse movie = await MediaService.getMovieWithCastAsync(_selectedSearch!.id);
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -317,9 +320,9 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
             ),
           );
         } else if (_selectedSearch!.mediaType == MediaType.TV) {
-          var actorsOfTvShow = await TmdbService.getGroupedTvResponse(_selectedSearch!.id);
+          var actorsOfTvShow = await MediaService.getGroupedTvResponse(_selectedSearch!.id);
 
-          TvResponse tvShow = await TmdbService.getTvShowWithCastAsync(_selectedSearch!.id);
+          TvResponse tvShow = await MediaService.getTvShowWithCastAsync(_selectedSearch!.id);
 
           Navigator.push(
             context,

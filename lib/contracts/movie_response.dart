@@ -8,4 +8,9 @@ class MovieResponse {
   List<CastResponse> cast = <CastResponse>[];
 
   MovieResponse(this.id, this.title, this.releaseDate, this.posterImagePath, this.cast);
+
+  @override
+  String toString() {
+    return 'MovieResponse{id: $id, title: $title, releaseDate: $releaseDate, posterImagePath: $posterImagePath, cast: $cast}';
+  }
 }

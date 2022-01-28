@@ -22,8 +22,30 @@ parseDate(String? date) {
   }
 }
 
-String filterDate(DateTime? date) {
+String formatDateYearOnly(DateTime? date) {
   return DateFormat('yyyy').format(date!);
+}
+
+String formatDateFull(DateTime? date) {
+  return DateFormat.yMd('en_US').format(date!);
+}
+
+extension DurationExtensions on Duration {
+  int inYears() {
+    return this.inDays ~/ 365;
+  }
+}
+
+String getAge(DateTime birthday, DateTime? deathday) {
+  if (deathday == null) {
+    // yay still alive
+    var now = DateTime.now();
+    var age = now.difference(birthday).inYears();
+    return '${formatDateFull(birthday)} (age $age)';
+  } else {
+    var age = deathday.difference(birthday).inYears();
+    return '${formatDateFull(birthday)} - ${formatDateFull(deathday)} (aged $age)';
+  }
 }
 
 void showSnackbar(String message, BuildContext context) {
@@ -36,6 +58,11 @@ void hideKeyboard(BuildContext context) {
   FocusScope.of(context).requestFocus(new FocusNode());
 }
 
+void closePopup(BuildContext context) {
+  Navigator.of(context, rootNavigator: true).pop('dialog');
+}
+
+// todo shit broke
 void showLoadingDialog(BuildContext context, {String msg = 'Loading...', bool dismissible = false}) {
   showDialog(
       barrierDismissible: false,

@@ -35,4 +35,10 @@ class TvShow {
       cast.add(new Cast(castMember['id'], castMember['name'], characterName, castMember['profile_path']));
     }
   }
+
+  @override
+  String toString() {
+    return 'TvShow{id: $id, name:$name, firstAirDate: $firstAirDate, lastAirDate: $lastAirDate, posterPath: $posterPath, '
+        'cast: $cast}';
+  }
 }

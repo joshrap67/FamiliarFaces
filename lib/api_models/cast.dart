@@ -3,7 +3,6 @@ class Cast {
   String? name;
   String? characterName;
   String? profilePath;
-  // todo order?
 
   Cast.fromJson(Map<String, dynamic> json) {
     this.id = json['id'];
@@ -13,4 +12,9 @@ class Cast {
   }
 
   Cast(this.id, this.name, this.characterName, this.profilePath);
+
+  @override
+  String toString() {
+    return 'Cast{id: $id, name: $name, characterName: $characterName, profilePath: $profilePath}';
+  }
 }

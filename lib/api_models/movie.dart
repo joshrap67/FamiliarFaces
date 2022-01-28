@@ -20,4 +20,9 @@ class Movie {
       cast.add(new Cast.fromJson(castMember));
     }
   }
+
+  @override
+  String toString() {
+    return 'Movie{id: $id, title: $title, releaseDate: $releaseDate, posterImagePath: $posterImagePath}';
+  }
 }

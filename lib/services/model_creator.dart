@@ -20,7 +20,9 @@ class ModelCreator {
             getTitle(mediaResult.title, mediaResult.name, mediaResult.mediaType),
             getMediaType(mediaResult.mediaType),
             getReleaseDate(mediaResult.releaseDate, mediaResult.firstAirDate, mediaResult.mediaType),
-            mediaResult.posterPath))
+            mediaResult.posterPath,
+            mediaResult.isVideo,
+            mediaResult.isAdult))
         .toList();
   }
 
@@ -77,8 +79,8 @@ class ModelCreator {
   }
 
   static PersonResponse getPersonResponse(Person person) {
-    return new PersonResponse(
-        person.id, person.name!, person.profileImagePath, getPersonCreditResponse(person.credits));
+    return new PersonResponse(person.id, person.name!, person.profileImagePath, parseDate(person.birthday),
+        parseDate(person.deathDay), getPersonCreditResponse(person.credits));
   }
 
   static List<PersonCreditResponse> getPersonCreditResponse(List<PersonCredit> personCredits) {

@@ -13,6 +13,11 @@ class MovieSearchResult {
       results.add(new MediaResult.fromJson(result));
     }
   }
+
+  @override
+  String toString() {
+    return 'MovieSearchResult{page: $page, totalResults: $totalResults, totalPages: $totalPages, results: $results}';
+  }
 }
 
 class MediaResult {
@@ -23,6 +28,8 @@ class MediaResult {
   String? releaseDate;
   String? firstAirDate;
   String? posterPath;
+  bool isVideo = false; // https://www.themoviedb.org/bible/movie/59f3b16d9251414f20000001#59f73b759251416e71000005
+  bool isAdult = false;
 
   MediaResult.fromJson(Map<String, dynamic> rawJson) {
     id = rawJson['id'];
@@ -32,5 +39,13 @@ class MediaResult {
     releaseDate = rawJson['release_date'];
     firstAirDate = rawJson['first_air_date'];
     posterPath = rawJson['poster_path'];
+    isVideo = rawJson['video'] ?? false;
+    isAdult = rawJson['adult'] ?? false;
+  }
+
+  @override
+  String toString() {
+    return 'MediaResult{id: $id, mediaType: $mediaType, title: $title, name: $name, releaseDate: $releaseDate,'
+        'firstAirDate: $firstAirDate, posterPath: $posterPath, isVideo: $isVideo, isAdult: $isAdult}';
   }
 }

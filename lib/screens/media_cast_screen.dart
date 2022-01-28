@@ -1,9 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:familiar_faces/contracts/cast_response.dart';
-import 'package:familiar_faces/contracts/movie_response.dart';
 import 'package:familiar_faces/contracts/person_response.dart';
-import 'package:familiar_faces/screens/actor_filmography.dart';
+import 'package:familiar_faces/screens/actor_details.dart';
 import 'package:familiar_faces/screens/media_cast_row.dart';
+import 'package:familiar_faces/services/media_service.dart';
+import 'package:familiar_faces/services/saved_media_service.dart';
+import 'package:familiar_faces/sql_contracts/saved_media.dart';
 import 'package:flutter/material.dart';
 
 class MediaCastScreen extends StatefulWidget {
@@ -24,8 +26,9 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
     return Scaffold(
       appBar: AppBar(
         title: AutoSizeText(
-          '${widget.title} Cast',
+          '\'${widget.title}\' Cast',
           minFontSize: 12,
+          maxLines: 1,
           style: TextStyle(fontSize: 26),
         ),
       ),
@@ -47,14 +50,21 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
     );
   }
 
-  actorClicked(CastResponse actor) {
+  void actorClicked(CastResponse actor) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ActorFilmography(
+        builder: (context) => ActorDetails(
           actor: widget.actors.firstWhere((element) => element.id == actor.id),
         ),
       ),
-    );
+    ).then((value) => updateSeenCreditsAsync());
+  }
+
+  Future<void> updateSeenCreditsAsync() async {
+    List<SavedMedia> seenMedia = await SavedMediaService.getAll();
+    widget.actors.forEach((element) {
+      MediaService.applySeenMedia(element.credits, seenMedia);
+    });
   }
 }

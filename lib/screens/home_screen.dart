@@ -1,5 +1,5 @@
 import 'package:familiar_faces/imports/utils.dart';
-import 'package:familiar_faces/screens/about_screen.dart';
+import 'package:familiar_faces/screens/settings_screen.dart';
 import 'package:familiar_faces/screens/media_input_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -13,13 +13,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 1;
-
   final SavedMediaListScreen _mediaListScreen = new SavedMediaListScreen();
   final MediaInputScreen _mediaInputScreen = new MediaInputScreen();
-  final AboutScreen _settingsScreen = new AboutScreen();
+  final SettingsScreen _settingsScreen = new SettingsScreen();
   final List<Widget> _pageOptions = [];
-  final pageController = PageController(initialPage: 1);
+  final _pageController = PageController(initialPage: 1);
+
+  int _selectedIndex = 1;
 
   @override
   void initState() {
@@ -30,15 +30,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Familiar Faces'),
-      ),
+      // appBar: AppBar(
+      //   title: Text('Familiar Faces'),
+      // ),
       resizeToAvoidBottomInset: false,
       body: GestureDetector(
         onTap: () => hideKeyboard(context),
         child: PageView(
           children: _pageOptions,
-          controller: pageController,
+          controller: _pageController,
           onPageChanged: _onItemTapped,
         ),
       ),
@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      pageController.animateToPage(index, duration: Duration(milliseconds: 400), curve: Curves.easeOut);
+      _pageController.animateToPage(index, duration: Duration(milliseconds: 200), curve: Curves.easeOut);
     });
   }
 }
