@@ -2,15 +2,19 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/actor_credit.dart';
+import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:flutter/material.dart';
 
 class ActorMediaRow extends StatefulWidget {
-  const ActorMediaRow({Key? key, required this.movie, this.rowClicked, this.addToSeenClicked}) : super(key: key);
+  const ActorMediaRow(
+      {Key? key, required this.media, this.rowClicked, this.addToSeenClicked, this.removeFromSeenClicked})
+      : super(key: key);
 
-  final ActorCredit movie;
+  final ActorCredit media;
   final Function(ActorCredit)? rowClicked;
   final Function(ActorCredit)? addToSeenClicked;
+  final Function(ActorCredit)? removeFromSeenClicked;
 
   @override
   _ActorMediaRowState createState() => _ActorMediaRowState();
@@ -19,12 +23,12 @@ class ActorMediaRow extends StatefulWidget {
 class _ActorMediaRowState extends State<ActorMediaRow> {
   late String url;
   late bool showImage;
-  static const String placeholderUrl = 'https://picsum.photos/200';
+  static const String placeholderUrl = 'https://picsum.photos/200'; // todo remove and make this stateless
 
   @override
   void initState() {
-    url = 'https://image.tmdb.org/t/p/w500/${widget.movie.posterPath}';
-    showImage = widget.movie.posterPath != null;
+    url = 'https://image.tmdb.org/t/p/w500/${widget.media.posterPath}';
+    showImage = widget.media.posterPath != null;
     super.initState();
   }
 
@@ -33,7 +37,7 @@ class _ActorMediaRowState extends State<ActorMediaRow> {
     return Container(
       height: 150,
       decoration: BoxDecoration(
-        color: widget.movie.isSeen ? Color(0xff009257) : Color(0xff2a2f38),
+        color: widget.media.isSeen ? Color(0xff009257) : Color(0xff2a2f38),
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10),
             topRight: Radius.circular(10),
@@ -76,11 +80,12 @@ class _ActorMediaRowState extends State<ActorMediaRow> {
                             TextSpan(
                               children: [
                                 TextSpan(
-                                  text: '${widget.movie.title} (${formatDateYearOnly(widget.movie.releaseDate)})',
+                                  text: '${widget.media.title} (${formatDateYearOnly(widget.media.releaseDate)})',
                                 ),
-                                TextSpan(
-                                    text: '\n${widget.movie.characterName}',
-                                    style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+                                if (Globals.settings.showCharacters)
+                                  TextSpan(
+                                      text: '\n${widget.media.characterName}',
+                                      style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
                               ],
                             ),
                             minFontSize: 12,
@@ -89,26 +94,28 @@ class _ActorMediaRowState extends State<ActorMediaRow> {
                         ),
                       ),
                     ),
-                    if (widget.movie.isSeen)
+                    if (widget.media.isSeen)
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 8.0),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: AutoSizeText(
-                              "${widget.movie.mediaType == MediaType.Movie ? 'MOVIE' : 'SHOW'} SEEN",
-                              minFontSize: 5,
-                              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                        child: GestureDetector(
+                          onLongPress: () => widget.removeFromSeenClicked!(widget.media),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 8.0),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: AutoSizeText(
+                                "${widget.media.mediaType == MediaType.Movie ? 'MOVIE' : 'SHOW'} SEEN",
+                                minFontSize: 5,
+                                style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    if (!widget.movie.isSeen)
-                      // todo allow undo?
+                    if (!widget.media.isSeen)
                       Expanded(
                         child: TextButton(
-                          onPressed: () => widget.addToSeenClicked!(widget.movie),
-                          child: Text('SET ${widget.movie.mediaType == MediaType.Movie ? 'MOVIE' : 'SHOW'} AS SEEN'),
+                          onPressed: () => widget.addToSeenClicked!(widget.media),
+                          child: Text('SET ${widget.media.mediaType == MediaType.Movie ? 'MOVIE' : 'SHOW'} AS SEEN'),
                         ),
                       )
                   ],
@@ -119,7 +126,7 @@ class _ActorMediaRowState extends State<ActorMediaRow> {
                 iconSize: 36,
                 color: Color(0xe1ffffff),
                 tooltip: 'Full Cast',
-                onPressed: () => widget.rowClicked!(widget.movie),
+                onPressed: () => widget.rowClicked!(widget.media),
               )
             ]),
           )

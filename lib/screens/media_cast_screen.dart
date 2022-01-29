@@ -98,7 +98,7 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
     ).then((value) => updateSeenCreditsAsync());
   }
 
-  isMediaSeen({List<SavedMedia>? seenMedia}) async {
+  Future<void> isMediaSeen({List<SavedMedia>? seenMedia}) async {
     if (seenMedia == null) {
       seenMedia = await SavedMediaService.getAll();
     }

@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/cast.dart';
+import 'package:familiar_faces/imports/globals.dart';
 import 'package:flutter/material.dart';
 
 class MediaCastRow extends StatefulWidget {
@@ -48,19 +49,22 @@ class _MediaCastRowState extends State<MediaCastRow> {
               flex: 3,
               child: Row(
                 children: [
-                  SizedBox(
-                    width: 100,
-                    height: 140,
-                    child: CachedNetworkImage(
-                      imageUrl: _showImage ? _url : placeholderUrl,
-                      placeholder: (context, url) => Center(
-                        child: SizedBox(
-                          child: const CircularProgressIndicator(),
-                          height: 50,
-                          width: 50,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(4.0, 0, 0, 0),
+                    child: SizedBox(
+                      width: 100,
+                      height: 140,
+                      child: CachedNetworkImage(
+                        imageUrl: _showImage ? _url : placeholderUrl,
+                        placeholder: (context, url) => Center(
+                          child: SizedBox(
+                            child: const CircularProgressIndicator(),
+                            height: 50,
+                            width: 50,
+                          ),
                         ),
+                        fit: BoxFit.fitWidth,
                       ),
-                      fit: BoxFit.fitWidth,
                     ),
                   ),
                   Expanded(
@@ -78,9 +82,10 @@ class _MediaCastRowState extends State<MediaCastRow> {
                                       text: '${widget.castMember.name}',
                                       style: TextStyle(fontSize: 26),
                                     ),
-                                    TextSpan(
-                                        text: '\n${widget.castMember.characterName}',
-                                        style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic)),
+                                    if (Globals.settings.showCharacters)
+                                      TextSpan(
+                                          text: '\n${widget.castMember.characterName}',
+                                          style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic)),
                                   ],
                                 ),
                                 minFontSize: 10,

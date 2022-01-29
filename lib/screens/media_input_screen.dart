@@ -20,6 +20,7 @@ class MediaInputScreen extends StatefulWidget {
   _MediaInputScreenState createState() => _MediaInputScreenState();
 }
 
+// todo better class name
 class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepAliveClientMixin<MediaInputScreen> {
   @override
   bool get wantKeepAlive => true; // ensures the tab is not disposed when clicking around
@@ -63,14 +64,13 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
                 width: double.infinity,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    colorFilter: new ColorFilter.mode(Color(0x48000000), BlendMode.dstATop),
+                    colorFilter: new ColorFilter.mode(Color(0x29000000), BlendMode.dstATop),
                     image: Image.network(getImageUrl(_selectedSearch?.posterPath)).image,
                     fit: BoxFit.fill,
                   ),
                 ),
               ),
             Container(
-              color: _selectedSearch?.posterPath != null ? Color(0x4b000000) : null,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
@@ -97,13 +97,13 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
                                             labelText: 'Movie/TV Show',
                                             hintText: 'Search Movie or TV Show'),
                                       ),
+                                      hideOnLoading: true,
+                                      hideOnEmpty: true,
+                                      hideOnError: true,
                                       debounceDuration: Duration(milliseconds: 300),
                                       suggestionsCallback: (query) => MediaService.searchMulti(query),
                                       transitionBuilder: (context, suggestionsBox, controller) {
                                         return suggestionsBox;
-                                      },
-                                      noItemsFoundBuilder: (context) {
-                                        return Text('');
                                       },
                                       itemBuilder: (context, SearchMediaResult result) {
                                         return ListTile(
@@ -154,6 +154,11 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
                                           border: OutlineInputBorder(),
                                           hintText: 'Search Character (optional)'),
                                     ),
+                                    hideOnLoading: true,
+                                    hideOnEmpty: true,
+                                    hideOnError: true,
+                                    hideSuggestionsOnKeyboardHide: false,
+                                    onSuggestionSelected: onCharacterSelected,
                                     suggestionsCallback: (query) => getCharacterResults(query),
                                     itemBuilder: (context, Cast result) {
                                       return ListTile(
@@ -168,8 +173,6 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
                                         ),
                                       );
                                     },
-                                    hideSuggestionsOnKeyboardHide: false,
-                                    onSuggestionSelected: onCharacterSelected,
                                   ),
                                   if (!isStringNullOrEmpty(_characterSearchController.text))
                                     IconButton(
@@ -362,6 +365,7 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
   }
 
   Future<bool> onBackPressed() async {
+    // todo this still is not pressed in the right order if i go to index 0 and hit back space it is called from there
     if (_searchCharacterFocus.hasPrimaryFocus) {
       _searchCharacterFocus.unfocus();
       return false;

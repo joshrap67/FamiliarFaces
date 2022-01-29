@@ -15,6 +15,7 @@ import 'package:familiar_faces/contracts_sql/saved_media.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:collection/collection.dart';
 
 import 'media_cast_screen.dart';
 
@@ -76,166 +77,169 @@ class _ActorDetailsState extends State<ActorDetails> {
         opacity: 0.4,
         child: Column(
           children: [
-            Container(
-              height: 150,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  CachedNetworkImage(
-                    imageUrl: _showImage ? _url : placeholderUrl,
-                    placeholder: (context, url) => Center(
-                      child: SizedBox(
-                        child: const CircularProgressIndicator(),
-                        height: 50,
-                        width: 50,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4.0, 0, 0, 0),
+              child: Container(
+                height: 150,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    CachedNetworkImage(
+                      imageUrl: _showImage ? _url : placeholderUrl,
+                      placeholder: (context, url) => Center(
+                        child: SizedBox(
+                          child: const CircularProgressIndicator(),
+                          height: 50,
+                          width: 50,
+                        ),
                       ),
+                      fit: BoxFit.fitWidth,
                     ),
-                    fit: BoxFit.fitWidth,
-                  ),
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                AutoSizeText(
-                                  '${widget.actor.name}',
-                                  textAlign: TextAlign.start,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  minFontSize: 10,
-                                  style: TextStyle(fontSize: 24),
-                                ),
-                                if (widget.actor.birthday != null) // ffs
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-                                    child: AutoSizeText(
-                                      '${getAge(widget.actor.birthday!, widget.actor.deathDay)}',
-                                      style: TextStyle(fontSize: 14),
-                                      maxLines: 1,
-                                      minFontSize: 10,
-                                      textAlign: TextAlign.start,
-                                    ),
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  AutoSizeText(
+                                    '${widget.actor.name}',
+                                    textAlign: TextAlign.start,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    minFontSize: 10,
+                                    style: TextStyle(fontSize: 24),
                                   ),
-                                // todo show seen count
-                              ],
+                                  if (widget.actor.birthday != null) // ffs
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                                      child: AutoSizeText(
+                                        '${getAge(widget.actor.birthday!, widget.actor.deathDay)}',
+                                        style: TextStyle(fontSize: 14),
+                                        maxLines: 1,
+                                        minFontSize: 10,
+                                        textAlign: TextAlign.start,
+                                      ),
+                                    ),
+                                  // todo show seen count
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              PopupMenuButton(
-                                icon: Icon(Icons.sort_rounded),
-                                itemBuilder: (context) => <PopupMenuEntry<SortingValues>>[
-                                  PopupMenuItem<SortingValues>(
-                                    value: SortingValues.AlphaAscending,
-                                    child: Container(
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                PopupMenuButton(
+                                  icon: Icon(Icons.sort_rounded),
+                                  itemBuilder: (context) => <PopupMenuEntry<SortingValues>>[
+                                    PopupMenuItem<SortingValues>(
+                                      value: SortingValues.AlphaAscending,
+                                      child: Container(
+                                        child: Text(
+                                          'Alpha Ascending',
+                                          style: TextStyle(
+                                              decoration: _sortValue == SortingValues.AlphaAscending
+                                                  ? TextDecoration.underline
+                                                  : null),
+                                        ),
+                                      ),
+                                    ),
+                                    PopupMenuItem<SortingValues>(
+                                      value: SortingValues.AlphaDescending,
                                       child: Text(
-                                        'Alpha Ascending',
+                                        'Alpha Descending',
                                         style: TextStyle(
-                                            decoration: _sortValue == SortingValues.AlphaAscending
+                                            decoration: _sortValue == SortingValues.AlphaDescending
                                                 ? TextDecoration.underline
                                                 : null),
                                       ),
                                     ),
-                                  ),
-                                  PopupMenuItem<SortingValues>(
-                                    value: SortingValues.AlphaDescending,
-                                    child: Text(
-                                      'Alpha Descending',
-                                      style: TextStyle(
-                                          decoration: _sortValue == SortingValues.AlphaDescending
-                                              ? TextDecoration.underline
-                                              : null),
+                                    PopupMenuItem<SortingValues>(
+                                      value: SortingValues.ReleaseDateAscending,
+                                      child: Text(
+                                        'Release Date Ascending',
+                                        style: TextStyle(
+                                            decoration: _sortValue == SortingValues.ReleaseDateAscending
+                                                ? TextDecoration.underline
+                                                : null),
+                                      ),
                                     ),
-                                  ),
-                                  PopupMenuItem<SortingValues>(
-                                    value: SortingValues.ReleaseDateAscending,
-                                    child: Text(
-                                      'Release Date Ascending',
-                                      style: TextStyle(
-                                          decoration: _sortValue == SortingValues.ReleaseDateAscending
-                                              ? TextDecoration.underline
-                                              : null),
+                                    PopupMenuItem<SortingValues>(
+                                      value: SortingValues.ReleaseDateDescending,
+                                      child: Text(
+                                        'Release Date Descending',
+                                        style: TextStyle(
+                                            decoration: _sortValue == SortingValues.ReleaseDateDescending
+                                                ? TextDecoration.underline
+                                                : null),
+                                      ),
                                     ),
-                                  ),
-                                  PopupMenuItem<SortingValues>(
-                                    value: SortingValues.ReleaseDateDescending,
-                                    child: Text(
-                                      'Release Date Descending',
-                                      style: TextStyle(
-                                          decoration: _sortValue == SortingValues.ReleaseDateDescending
-                                              ? TextDecoration.underline
-                                              : null),
-                                    ),
-                                  ),
-                                ],
-                                onSelected: (SortingValues result) {
-                                  if (_sortValue != result) {
-                                    _sortValue = result;
-                                    setState(() {
-                                      updateDisplayedCredits();
-                                    });
-                                  }
-                                },
-                              ),
-                              PopupMenuButton<Filters>(
-                                onSelected: (Filters result) {
-                                  switch (result) {
-                                    case Filters.ShowOnlySeen:
+                                  ],
+                                  onSelected: (SortingValues result) {
+                                    if (_sortValue != result) {
+                                      _sortValue = result;
                                       setState(() {
-                                        _showOnlySeen = !_showOnlySeen;
                                         updateDisplayedCredits();
                                       });
-                                      break;
-                                    case Filters.IncludeMovies:
-                                      setState(() {
-                                        _includeMovies = !_includeMovies;
-                                        updateDisplayedCredits();
-                                      });
-                                      break;
-                                    case Filters.IncludeTv:
-                                      setState(() {
-                                        _includeTv = !_includeTv;
-                                        updateDisplayedCredits();
-                                      });
-                                      break;
-                                  }
-                                },
-                                itemBuilder: (BuildContext context) => <PopupMenuEntry<Filters>>[
-                                  CheckedPopupMenuItem<Filters>(
-                                    checked: _showOnlySeen,
-                                    value: Filters.ShowOnlySeen,
-                                    child: const Text('Include Seen Media Only'),
-                                  ),
-                                  const PopupMenuDivider(),
-                                  CheckedPopupMenuItem<Filters>(
-                                    value: Filters.IncludeMovies,
-                                    checked: _includeMovies,
-                                    child: Text('Include Movies'),
-                                  ),
-                                  const PopupMenuDivider(),
-                                  CheckedPopupMenuItem<Filters>(
-                                    value: Filters.IncludeTv,
-                                    checked: _includeTv,
-                                    child: Text('Include TV Shows'),
-                                  ),
-                                ],
-                              )
-                            ],
+                                    }
+                                  },
+                                ),
+                                PopupMenuButton<Filters>(
+                                  onSelected: (Filters result) {
+                                    switch (result) {
+                                      case Filters.ShowOnlySeen:
+                                        setState(() {
+                                          _showOnlySeen = !_showOnlySeen;
+                                          updateDisplayedCredits();
+                                        });
+                                        break;
+                                      case Filters.IncludeMovies:
+                                        setState(() {
+                                          _includeMovies = !_includeMovies;
+                                          updateDisplayedCredits();
+                                        });
+                                        break;
+                                      case Filters.IncludeTv:
+                                        setState(() {
+                                          _includeTv = !_includeTv;
+                                          updateDisplayedCredits();
+                                        });
+                                        break;
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext context) => <PopupMenuEntry<Filters>>[
+                                    CheckedPopupMenuItem<Filters>(
+                                      checked: _showOnlySeen,
+                                      value: Filters.ShowOnlySeen,
+                                      child: const Text('Include Seen Media Only'),
+                                    ),
+                                    const PopupMenuDivider(),
+                                    CheckedPopupMenuItem<Filters>(
+                                      value: Filters.IncludeMovies,
+                                      checked: _includeMovies,
+                                      child: Text('Include Movies'),
+                                    ),
+                                    const PopupMenuDivider(),
+                                    CheckedPopupMenuItem<Filters>(
+                                      value: Filters.IncludeTv,
+                                      checked: _includeTv,
+                                      child: Text('Include TV Shows'),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Expanded(
@@ -250,9 +254,10 @@ class _ActorDetailsState extends State<ActorDetails> {
                           itemCount: _displayedCredits.length,
                           itemBuilder: (BuildContext context, int index) {
                             return ActorMediaRow(
-                              movie: _displayedCredits[index],
-                              rowClicked: (movie) => mediaClickedAsync(movie),
-                              addToSeenClicked: (movie) => addToSeenSync(movie),
+                              media: _displayedCredits[index],
+                              rowClicked: (credit) => mediaClickedAsync(credit),
+                              addToSeenClicked: (credit) => addToSeenSync(credit),
+                              removeFromSeenClicked: (credit) => removeFromSeen(credit),
                             );
                           },
                         ),
@@ -336,6 +341,22 @@ class _ActorDetailsState extends State<ActorDetails> {
     setState(() {
       var media = _allCredits.firstWhere((element) => element.id == creditResponse.id);
       media.isSeen = true;
+    });
+  }
+
+  Future<void> removeFromSeen(ActorCredit credit) async {
+    List<SavedMedia> seenMedia = await SavedMediaService.getAll();
+    var model = seenMedia.firstWhereOrNull((element) => element.mediaId == credit.id);
+    if (model == null) {
+      return;
+    }
+
+    await SavedMediaDatabase.instance.delete(model.id!);
+    // todo do this in a popup?
+
+    setState(() {
+      var media = _allCredits.firstWhere((element) => element.id == credit.id);
+      media.isSeen = false;
     });
   }
 

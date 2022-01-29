@@ -76,38 +76,39 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                                   alignment: Alignment.centerRight,
                                   children: [
                                     TypeAheadFormField<SearchMediaResult>(
-                                        textFieldConfiguration: TextFieldConfiguration(
-                                          controller: _mediaSearchController,
-                                          onChanged: (_) {
-                                            // need to do this for x button to hide when text is empty on controller
-                                            setState(() {});
-                                          },
-                                          decoration: InputDecoration(
-                                              prefixIcon: Icon(Icons.search),
-                                              border: OutlineInputBorder(),
-                                              labelText: 'Add Movie/TV Show',
-                                              hintText: 'Search Movie or TV Show'),
-                                        ),
-                                        debounceDuration: Duration(milliseconds: 300),
-                                        suggestionsCallback: (query) =>
-                                            MediaService.searchMulti(query, showSavedMedia: false),
-                                        noItemsFoundBuilder: (context) {
-                                          return Text('');
+                                      textFieldConfiguration: TextFieldConfiguration(
+                                        controller: _mediaSearchController,
+                                        onChanged: (_) {
+                                          // need to do this for x button to hide when text is empty on controller
+                                          setState(() {});
                                         },
-                                        itemBuilder: (context, SearchMediaResult result) {
-                                          return ListTile(
-                                            title: Text('${result.title}'),
-                                            leading: Container(
-                                              height: 50,
-                                              width: 50,
-                                              child: CachedNetworkImage(
-                                                imageUrl: getImageUrl(result.posterPath),
-                                                fit: BoxFit.cover,
-                                              ),
+                                        decoration: InputDecoration(
+                                            prefixIcon: Icon(Icons.search),
+                                            border: OutlineInputBorder(),
+                                            labelText: 'Add Movie/TV Show',
+                                            hintText: 'Search Movie or TV Show'),
+                                      ),
+                                      hideOnLoading: true,
+                                      hideOnEmpty: true,
+                                      hideOnError: true,
+                                      debounceDuration: Duration(milliseconds: 300),
+                                      onSuggestionSelected: onMediaSelected,
+                                      suggestionsCallback: (query) =>
+                                          MediaService.searchMulti(query, showSavedMedia: false),
+                                      itemBuilder: (context, SearchMediaResult result) {
+                                        return ListTile(
+                                          title: Text('${result.title}'),
+                                          leading: Container(
+                                            height: 50,
+                                            width: 50,
+                                            child: CachedNetworkImage(
+                                              imageUrl: getImageUrl(result.posterPath),
+                                              fit: BoxFit.cover,
                                             ),
-                                          );
-                                        },
-                                        onSuggestionSelected: onMediaSelected),
+                                          ),
+                                        );
+                                      },
+                                    ),
                                     if (!isStringNullOrEmpty(_mediaSearchController.text))
                                       IconButton(
                                         icon: Icon(Icons.clear),
@@ -133,7 +134,10 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                   child: _displayedSavedMedia.length > 0
                       ? Scrollbar(
                           child: ListView.separated(
-                            separatorBuilder: (BuildContext context, int index) => Divider(height: 10),
+                            separatorBuilder: (BuildContext context, int index) => Divider(
+                              height: 10,
+                              color: Colors.white,
+                            ),
                             itemCount: _displayedSavedMedia.length,
                             key: GlobalKey(),
                             itemBuilder: (context, index) {
@@ -237,7 +241,6 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
   }
 
   void sortDisplayedMedia() {
-    // todo save sort value to shared prefs?
     switch (_sortValue) {
       case SortingValues.AlphaDescending:
         _displayedSavedMedia.sort((a, b) {

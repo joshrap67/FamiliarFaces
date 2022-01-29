@@ -1,7 +1,9 @@
+import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/screens/settings_screen.dart';
 import 'package:familiar_faces/screens/media_input_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'saved_media_list_screen.dart';
 
@@ -24,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    updateGlobalSettings();
     _pageOptions.addAll([_mediaListScreen, _mediaInputScreen, _settingsScreen]);
     _navigationStack.insert(0, _selectedIndex);
     super.initState();
@@ -39,13 +42,14 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () => hideKeyboard(context),
           child: PageView(
             children: _pageOptions,
+            physics: NeverScrollableScrollPhysics(),
             controller: _pageController,
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Color(0xFF000000),
+          backgroundColor: Color(0xFF1D1D1D),
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.movie),
@@ -85,5 +89,13 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       return true;
     }
+  }
+
+  // bit of an anti pattern, but i would rather not have async calls everywhere for these global settings
+  Future<void> updateGlobalSettings() async {
+    var prefs = await SharedPreferences.getInstance();
+    setState(() {
+      Globals.settings.showCharacters = prefs.getBool(Globals.showCharacterKey) ?? true;
+    });
   }
 }
