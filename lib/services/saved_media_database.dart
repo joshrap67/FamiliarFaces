@@ -1,4 +1,4 @@
-import 'package:familiar_faces/sql_contracts/saved_media.dart';
+import 'package:familiar_faces/contracts_sql/saved_media.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 

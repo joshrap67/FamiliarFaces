@@ -1,13 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:familiar_faces/contracts/cast_response.dart';
+import 'package:familiar_faces/contracts/cast.dart';
 import 'package:flutter/material.dart';
 
 class MediaCastRow extends StatefulWidget {
   const MediaCastRow({Key? key, required this.castMember, this.rowClicked}) : super(key: key);
 
-  final CastResponse castMember;
-  final Function(CastResponse)? rowClicked;
+  final Cast castMember;
+  final Function(Cast)? rowClicked;
 
   @override
   _MediaCastRowState createState() => _MediaCastRowState();

@@ -1,6 +1,6 @@
 import 'media_type.dart';
 
-class SearchMediaResponse {
+class SearchMediaResult {
   late int id;
   String? title;
   late MediaType mediaType;
@@ -9,12 +9,12 @@ class SearchMediaResponse {
   late bool isVideo;
   late bool isAdult;
 
-  SearchMediaResponse(
+  SearchMediaResult(
       this.id, this.title, this.mediaType, this.releaseDate, this.posterPath, this.isVideo, this.isAdult);
 
   @override
   String toString() {
-    return 'SearchMediaResponse{id: $id, title: $title, mediaType: $mediaType, releaseDate: $releaseDate, '
+    return 'SearchMediaResult{id: $id, title: $title, mediaType: $mediaType, releaseDate: $releaseDate, '
         'posterPath: $posterPath, isVideo: $isVideo, isAdult: $isAdult}';
   }
 }

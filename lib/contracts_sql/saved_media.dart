@@ -51,4 +51,10 @@ class SavedMedia {
         posterPath: rawJson[SavedMediaFields.posterPath] as String?,
         releaseDate: parseDate(releaseDate));
   }
+
+  @override
+  String toString() {
+    return 'SavedMedia{id: $id, mediaId: $mediaId, mediaType: $mediaType, title: $title, '
+        'releaseDate: $releaseDate, posterPath: $posterPath}';
+  }
 }

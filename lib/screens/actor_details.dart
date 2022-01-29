@@ -1,17 +1,17 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/media_type.dart';
-import 'package:familiar_faces/contracts/movie_response.dart';
-import 'package:familiar_faces/contracts/person_credit_response.dart';
-import 'package:familiar_faces/contracts/person_response.dart';
-import 'package:familiar_faces/contracts/tv_response.dart';
+import 'package:familiar_faces/contracts/movie.dart';
+import 'package:familiar_faces/contracts/actor_credit.dart';
+import 'package:familiar_faces/contracts/actor.dart';
+import 'package:familiar_faces/contracts/tv_show.dart';
 import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/screens/actor_media_row.dart';
 import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/services/saved_media_database.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
-import 'package:familiar_faces/sql_contracts/saved_media.dart';
+import 'package:familiar_faces/contracts_sql/saved_media.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
@@ -21,7 +21,7 @@ import 'media_cast_screen.dart';
 class ActorDetails extends StatefulWidget {
   const ActorDetails({Key? key, required this.actor}) : super(key: key);
 
-  final PersonResponse actor;
+  final Actor actor;
 
   @override
   _ActorDetailsState createState() => _ActorDetailsState();
@@ -30,9 +30,9 @@ class ActorDetails extends StatefulWidget {
 enum Filters { ShowOnlySeen, IncludeMovies, IncludeTv }
 
 class _ActorDetailsState extends State<ActorDetails> {
-  late List<PersonCreditResponse> _displayedCredits;
-  late List<PersonCreditResponse> _allCredits;
-  late List<PersonCreditResponse> _seenCredits = <PersonCreditResponse>[];
+  late List<ActorCredit> _displayedCredits;
+  late List<ActorCredit> _allCredits;
+  late List<ActorCredit> _seenCredits = <ActorCredit>[];
   late String _url;
   late bool _showImage;
   SortingValues _sortValue = SortingValues.ReleaseDateDescending;
@@ -110,16 +110,17 @@ class _ActorDetailsState extends State<ActorDetails> {
                                   minFontSize: 10,
                                   style: TextStyle(fontSize: 24),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-                                  child: AutoSizeText(
-                                    '${getAge(widget.actor.birthday!, widget.actor.deathDay)}',
-                                    style: TextStyle(fontSize: 14),
-                                    maxLines: 1,
-                                    minFontSize: 10,
-                                    textAlign: TextAlign.start,
+                                if (widget.actor.birthday != null) // ffs
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                                    child: AutoSizeText(
+                                      '${getAge(widget.actor.birthday!, widget.actor.deathDay)}',
+                                      style: TextStyle(fontSize: 14),
+                                      maxLines: 1,
+                                      minFontSize: 10,
+                                      textAlign: TextAlign.start,
+                                    ),
                                   ),
-                                ),
                                 // todo show seen count
                               ],
                             ),
@@ -279,20 +280,20 @@ class _ActorDetailsState extends State<ActorDetails> {
   }
 
   void updateSeenCredits() {
-    _seenCredits = <PersonCreditResponse>[];
+    _seenCredits = <ActorCredit>[];
     _seenCredits.addAll(_allCredits.where((element) => element.isSeen));
   }
 
-  Future<void> mediaClickedAsync(PersonCreditResponse creditResponse) async {
+  Future<void> mediaClickedAsync(ActorCredit creditResponse) async {
     // showLoadingDialog(context, dismissible: true); todo this breaks everything
     setState(() {
       _isLoading = true;
     });
     try {
       if (creditResponse.mediaType == MediaType.Movie) {
-        var actorsOfMovie = await MediaService.getGroupedMovieResponse(creditResponse.id);
+        var actorsOfMovie = await MediaService.getActorsFromMovie(creditResponse.id);
 
-        MovieResponse movie = await MediaService.getMovieWithCastAsync(creditResponse.id);
+        Movie movie = await MediaService.getMovieWithCast(creditResponse.id);
 
         Navigator.push(
           context,
@@ -300,22 +301,21 @@ class _ActorDetailsState extends State<ActorDetails> {
             builder: (context) => MediaCastScreen(
               cast: movie.cast,
               actors: actorsOfMovie,
-              title: movie.title!,
+              movie: movie,
             ),
           ),
         ).then((value) => updateSeenAsync());
       } else if (creditResponse.mediaType == MediaType.TV) {
-        var actorsOfTvShow = await MediaService.getGroupedTvResponse(creditResponse.id);
+        var actorsOfTvShow = await MediaService.getActorsFromTv(creditResponse.id);
 
-        TvResponse tvShow = await MediaService.getTvShowWithCastAsync(creditResponse.id);
+        TvShow tvShow = await MediaService.getTvShowWithCast(creditResponse.id);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => MediaCastScreen(
-              key: GlobalKey(),
               cast: tvShow.cast,
               actors: actorsOfTvShow,
-              title: tvShow.name!,
+              tvShow: tvShow,
             ),
           ),
         ).then((value) => updateSeenAsync()).onError((error, stackTrace) => print(error));
@@ -329,7 +329,7 @@ class _ActorDetailsState extends State<ActorDetails> {
     }
   }
 
-  Future<void> addToSeenSync(PersonCreditResponse creditResponse) async {
+  Future<void> addToSeenSync(ActorCredit creditResponse) async {
     await SavedMediaDatabase.instance.create(new SavedMedia(creditResponse.id, creditResponse.mediaType,
         title: creditResponse.title, posterPath: creditResponse.posterPath, releaseDate: creditResponse.releaseDate));
 
@@ -339,7 +339,7 @@ class _ActorDetailsState extends State<ActorDetails> {
     });
   }
 
-  void sortCredits(List<PersonCreditResponse> credits) {
+  void sortCredits(List<ActorCredit> credits) {
     switch (_sortValue) {
       case SortingValues.AlphaDescending:
         credits.sort((a, b) {

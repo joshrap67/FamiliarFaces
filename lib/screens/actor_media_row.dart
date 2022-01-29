@@ -1,16 +1,16 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/media_type.dart';
-import 'package:familiar_faces/contracts/person_credit_response.dart';
+import 'package:familiar_faces/contracts/actor_credit.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:flutter/material.dart';
 
 class ActorMediaRow extends StatefulWidget {
   const ActorMediaRow({Key? key, required this.movie, this.rowClicked, this.addToSeenClicked}) : super(key: key);
 
-  final PersonCreditResponse movie;
-  final Function(PersonCreditResponse)? rowClicked;
-  final Function(PersonCreditResponse)? addToSeenClicked;
+  final ActorCredit movie;
+  final Function(ActorCredit)? rowClicked;
+  final Function(ActorCredit)? addToSeenClicked;
 
   @override
   _ActorMediaRowState createState() => _ActorMediaRowState();

@@ -1,4 +1,4 @@
-class PersonCredit {
+class PersonCreditResponse {
   int id = -1;
   String? title;
   String? name;
@@ -8,7 +8,7 @@ class PersonCredit {
   String? firstAirDate;
   String? posterPath; // of the movie
 
-  PersonCredit.fromJson(Map<String, dynamic> rawJson) {
+  PersonCreditResponse.fromJson(Map<String, dynamic> rawJson) {
     id = rawJson['id'];
     title = rawJson['title'];
     name = rawJson['name'];
@@ -21,7 +21,7 @@ class PersonCredit {
 
   @override
   String toString() {
-    return 'PersonCredit{id: $id, title: $title, name: $name, mediaType: $mediaType, characterName: $characterName, '
+    return 'PersonCreditResponse{id: $id, title: $title, name: $name, mediaType: $mediaType, characterName: $characterName, '
         'releaseDate: $releaseDate, firstAirDate: $firstAirDate, posterPath: $posterPath}';
   }
 }

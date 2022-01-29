@@ -1,23 +1,23 @@
 import 'dart:collection';
 
-import 'package:familiar_faces/api_models/movie.dart';
-import 'package:familiar_faces/api_models/movie_search_result.dart';
-import 'package:familiar_faces/api_models/person.dart';
-import 'package:familiar_faces/api_models/person_credit.dart';
-import 'package:familiar_faces/api_models/tv_show.dart';
-import 'package:familiar_faces/contracts/cast_response.dart';
+import 'package:familiar_faces/api_models/movie_response.dart';
+import 'package:familiar_faces/api_models/movie_search_response.dart';
+import 'package:familiar_faces/api_models/person_response.dart';
+import 'package:familiar_faces/api_models/person_credit_response.dart';
+import 'package:familiar_faces/api_models/tv_show_response.dart';
+import 'package:familiar_faces/contracts/cast.dart';
 import 'package:familiar_faces/contracts/media_type.dart';
-import 'package:familiar_faces/contracts/movie_response.dart';
-import 'package:familiar_faces/contracts/person_credit_response.dart';
-import 'package:familiar_faces/contracts/person_response.dart';
-import 'package:familiar_faces/contracts/search_media_response.dart';
-import 'package:familiar_faces/contracts/tv_response.dart';
+import 'package:familiar_faces/contracts/movie.dart';
+import 'package:familiar_faces/contracts/actor_credit.dart';
+import 'package:familiar_faces/contracts/actor.dart';
+import 'package:familiar_faces/contracts/search_media_result.dart';
+import 'package:familiar_faces/contracts/tv_show.dart';
 import 'package:familiar_faces/imports/utils.dart';
 
 class ModelCreator {
-  static List<SearchMediaResponse> getSearchMediaResponses(List<MediaResult> mediaResults) {
+  static List<SearchMediaResult> getSearchMediaResponses(List<MediaResponse> mediaResults) {
     return mediaResults
-        .map((mediaResult) => new SearchMediaResponse(
+        .map((mediaResult) => new SearchMediaResult(
             mediaResult.id,
             getTitle(mediaResult.title, mediaResult.name, mediaResult.mediaType),
             getMediaType(mediaResult.mediaType),
@@ -28,20 +28,20 @@ class ModelCreator {
         .toList();
   }
 
-  static MovieResponse getMovieWithCastResponse(Movie movie) {
-    var cast = <CastResponse>[];
+  static Movie getMovieWithCastResponse(MovieResponse movie) {
+    var cast = <Cast>[];
     for (var castMember in movie.cast) {
-      cast.add(new CastResponse(castMember.id, castMember.name, castMember.characterName, castMember.profilePath));
+      cast.add(new Cast(castMember.id, castMember.name, castMember.characterName, castMember.profilePath));
     }
-    return new MovieResponse(movie.id, movie.title, parseDate(movie.releaseDate), movie.posterImagePath, cast);
+    return new Movie(movie.id, movie.title, parseDate(movie.releaseDate), movie.posterImagePath, cast);
   }
 
-  static TvResponse getTvShowWithCastResponse(TvShow tvShow) {
-    var cast = <CastResponse>[];
+  static TvShow getTvShowWithCastResponse(TvShowResponse tvShow) {
+    var cast = <Cast>[];
     for (var castMember in tvShow.cast) {
-      cast.add(new CastResponse(castMember.id, castMember.name, castMember.characterName, castMember.profilePath));
+      cast.add(new Cast(castMember.id, castMember.name, castMember.characterName, castMember.profilePath));
     }
-    return new TvResponse(
+    return new TvShow(
         tvShow.id, tvShow.name, parseDate(tvShow.firstAirDate), parseDate(tvShow.lastAirDate), tvShow.posterPath, cast);
   }
 
@@ -80,12 +80,12 @@ class ModelCreator {
     }
   }
 
-  static PersonResponse getPersonResponse(Person person) {
-    return new PersonResponse(person.id, person.name!, person.profileImagePath, parseDate(person.birthday),
+  static Actor getActor(PersonResponse person) {
+    return new Actor(person.id, person.name!, person.profileImagePath, parseDate(person.birthday),
         parseDate(person.deathDay), getPersonCreditResponse(person.credits));
   }
 
-  static List<PersonCreditResponse> getPersonCreditResponse(List<PersonCredit> personCredits) {
+  static List<ActorCredit> getPersonCreditResponse(List<PersonCreditResponse> personCredits) {
     /*
     	Essentially, since this API is pretty trash, some media from the get aggregate credits are duplicated with different
     	character names. What I'm doing here is looping through all of the duplicated ids and combining all the character
@@ -93,7 +93,7 @@ class ModelCreator {
      */
 
     // first ensure all the media are distinct (by id)
-    var mediaIdToDistinctCredit = new HashMap<int, PersonCredit>();
+    var mediaIdToDistinctCredit = new HashMap<int, PersonCreditResponse>();
     var mediaIdToCharacterNames = new HashMap<int, List<String?>>();
     for (var credit in personCredits) {
       if (!mediaIdToCharacterNames.containsKey(credit.id)) {
@@ -114,9 +114,9 @@ class ModelCreator {
       }
     }
 
-    var retVal = <PersonCreditResponse>[];
+    var retVal = <ActorCredit>[];
     for (var credit in mediaIdToDistinctCredit.values) {
-      retVal.add(new PersonCreditResponse(
+      retVal.add(new ActorCredit(
           credit.id,
           getTitle(credit.title, credit.name, credit.mediaType),
           getMediaType(credit.mediaType),

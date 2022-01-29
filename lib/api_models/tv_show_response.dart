@@ -1,14 +1,14 @@
-import 'cast.dart';
+import 'cast_response.dart';
 
-class TvShow {
+class TvShowResponse {
   late int id;
   String? name;
   String? firstAirDate;
   String? lastAirDate;
   String? posterPath;
-  List<Cast> cast = <Cast>[];
+  List<CastResponse> cast = <CastResponse>[];
 
-  TvShow.fromJsonWithCast(Map<String, dynamic> rawJson) {
+  TvShowResponse.fromJsonWithCast(Map<String, dynamic> rawJson) {
     id = rawJson['id'];
     name = rawJson['name'];
     firstAirDate = rawJson['first_air_date'];
@@ -32,13 +32,13 @@ class TvShow {
       } else if (characterNames.length == 1) {
         characterName = characterNames[0];
       }
-      cast.add(new Cast(castMember['id'], castMember['name'], characterName, castMember['profile_path']));
+      cast.add(new CastResponse(castMember['id'], castMember['name'], characterName, castMember['profile_path']));
     }
   }
 
   @override
   String toString() {
-    return 'TvShow{id: $id, name:$name, firstAirDate: $firstAirDate, lastAirDate: $lastAirDate, posterPath: $posterPath, '
+    return 'TvShowResponse{id: $id, name:$name, firstAirDate: $firstAirDate, lastAirDate: $lastAirDate, posterPath: $posterPath, '
         'cast: $cast}';
   }
 }

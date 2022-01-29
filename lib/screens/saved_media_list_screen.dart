@@ -1,11 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:familiar_faces/contracts/search_media_response.dart';
+import 'package:familiar_faces/contracts/search_media_result.dart';
 import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
-import 'package:familiar_faces/sql_contracts/saved_media.dart';
+import 'package:familiar_faces/contracts_sql/saved_media.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
@@ -23,9 +23,11 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
   SortingValues _sortValue = SortingValues.ReleaseDateDescending;
   bool _isEditing = false;
   bool _isLoading = false;
+  late FocusNode _searchFocusNode;
 
   @override
   void initState() {
+    _searchFocusNode = new FocusNode();
     getSavedMedia();
     super.initState();
   }
@@ -33,14 +35,15 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
   @override
   void dispose() {
     _mediaSearchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: WillPopScope(
-        onWillPop: () => onBackPressed(),
+    return WillPopScope(
+      onWillPop: () => onBackPressed(),
+      child: SafeArea(
         child: Stack(
           children: [
             Column(
@@ -53,6 +56,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                           padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
                           child: TextField(
                             onChanged: searchSavedMedia,
+                            focusNode: _searchFocusNode,
                             decoration: InputDecoration(
                                 prefixIcon: Icon(Icons.search),
                                 border: OutlineInputBorder(),
@@ -71,7 +75,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                                 child: Stack(
                                   alignment: Alignment.centerRight,
                                   children: [
-                                    TypeAheadFormField<SearchMediaResponse>(
+                                    TypeAheadFormField<SearchMediaResult>(
                                         textFieldConfiguration: TextFieldConfiguration(
                                           controller: _mediaSearchController,
                                           onChanged: (_) {
@@ -90,7 +94,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                                         noItemsFoundBuilder: (context) {
                                           return Text('');
                                         },
-                                        itemBuilder: (context, SearchMediaResponse result) {
+                                        itemBuilder: (context, SearchMediaResult result) {
                                           return ListTile(
                                             title: Text('${result.title}'),
                                             leading: Container(
@@ -282,7 +286,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
     });
   }
 
-  Future<void> onMediaSelected(SearchMediaResponse selected) async {
+  Future<void> onMediaSelected(SearchMediaResult selected) async {
     if (_allSavedMedia.any((element) => element.mediaId == selected.id)) {
       showSnackbar('You already have added this media to your list.', context);
     } else {
@@ -334,9 +338,8 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
   }
 
   Future<bool> onBackPressed() async {
-    var currentFocus = FocusScope.of(context);
-    if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
-      currentFocus.focusedChild!.unfocus();
+    if (_searchFocusNode.hasPrimaryFocus) {
+      _searchFocusNode.unfocus();
       return false;
     } else {
       return true;

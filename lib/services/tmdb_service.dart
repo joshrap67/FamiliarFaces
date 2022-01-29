@@ -1,20 +1,20 @@
 import 'dart:convert';
 
-import 'package:familiar_faces/api_models/movie.dart';
-import 'package:familiar_faces/api_models/movie_search_result.dart';
-import 'package:familiar_faces/api_models/person.dart';
-import 'package:familiar_faces/api_models/tv_show.dart';
-import 'package:familiar_faces/contracts/movie_response.dart';
-import 'package:familiar_faces/contracts/person_response.dart';
-import 'package:familiar_faces/contracts/search_media_response.dart';
-import 'package:familiar_faces/contracts/tv_response.dart';
+import 'package:familiar_faces/api_models/movie_response.dart';
+import 'package:familiar_faces/api_models/movie_search_response.dart';
+import 'package:familiar_faces/api_models/person_response.dart';
+import 'package:familiar_faces/api_models/tv_show_response.dart';
+import 'package:familiar_faces/contracts/movie.dart';
+import 'package:familiar_faces/contracts/actor.dart';
+import 'package:familiar_faces/contracts/search_media_result.dart';
+import 'package:familiar_faces/contracts/tv_show.dart';
 import 'package:familiar_faces/gateways/http_action.dart';
 import 'package:familiar_faces/gateways/tmdb_gateway.dart';
 
 import 'model_creator.dart';
 
 class TmdbService {
-  static Future<PersonResponse> getPersonCreditsAsync(int personId) async {
+  static Future<Actor> getPersonCreditsAsync(int personId) async {
     var queryParams = getCommonQuery();
     queryParams.putIfAbsent('append_to_response', () => 'combined_credits');
     var apiResult = await makeApiRequest(HttpAction.GET, 'person/$personId', queryParams);
@@ -24,17 +24,13 @@ class TmdbService {
     }
     var jsonMap = jsonDecode(apiResult.data!);
 
-    var personCredit = new Person.fromJsonWithCombinedCredits(jsonMap);
-    var contract = ModelCreator.getPersonResponse(personCredit);
-
-    // if it hasn't been released don't show it todo move this to outer business logic layer?
-    var now = DateTime.now();
-    contract.credits.removeWhere((element) => element.releaseDate != null && element.releaseDate!.isAfter(now));
+    var personCredit = new PersonResponse.fromJsonWithCombinedCredits(jsonMap);
+    var contract = ModelCreator.getActor(personCredit);
 
     return contract;
   }
 
-  static Future<MovieResponse> getMovieWithCastAsync(int movieId) async {
+  static Future<Movie> getMovieWithCastAsync(int movieId) async {
     var queryParams = getCommonQuery();
     queryParams.putIfAbsent('append_to_response', () => 'credits');
 
@@ -44,12 +40,13 @@ class TmdbService {
     }
     var jsonMap = jsonDecode(apiResult.data!);
 
-    var movieWithCast = new Movie.fromJsonWithCast(jsonMap);
+    var movieWithCast = new MovieResponse.fromJsonWithCast(jsonMap);
     var contract = ModelCreator.getMovieWithCastResponse(movieWithCast);
+
     return contract;
   }
 
-  static Future<TvResponse> getTvShowWithCastAsync(int tvId) async {
+  static Future<TvShow> getTvShowWithCastAsync(int tvId) async {
     var queryParams = getCommonQuery();
     queryParams.putIfAbsent('append_to_response', () => 'aggregate_credits');
 
@@ -59,12 +56,13 @@ class TmdbService {
     }
     var jsonMap = jsonDecode(apiResult.data!);
 
-    var tvShowWithCast = new TvShow.fromJsonWithCast(jsonMap);
+    var tvShowWithCast = new TvShowResponse.fromJsonWithCast(jsonMap);
     var contract = ModelCreator.getTvShowWithCastResponse(tvShowWithCast);
+
     return contract;
   }
 
-  static Future<List<SearchMediaResponse>> searchMulti(String query) async {
+  static Future<List<SearchMediaResult>> searchMulti(String query) async {
     var queryParams = getCommonQuery();
     queryParams.putIfAbsent('query', () => query);
 
@@ -74,8 +72,9 @@ class TmdbService {
     }
     var jsonMap = jsonDecode(apiResult.data!);
 
-    var searchResult = new MovieSearchResult.fromJson(jsonMap);
+    var searchResult = new MediaSearchResponse.fromJson(jsonMap);
     var contract = ModelCreator.getSearchMediaResponses(searchResult.results);
+
     return contract;
   }
 

@@ -1,14 +1,14 @@
-import 'person_credit.dart';
+import 'person_credit_response.dart';
 
-class Person {
+class PersonResponse {
   late int id;
   String? name;
   String? profileImagePath;
   String? birthday;
   String? deathDay;
-  List<PersonCredit> credits = <PersonCredit>[];
+  List<PersonCreditResponse> credits = <PersonCreditResponse>[];
 
-  Person.fromJsonWithCombinedCredits(Map<String, dynamic> rawJson) {
+  PersonResponse.fromJsonWithCombinedCredits(Map<String, dynamic> rawJson) {
     id = rawJson['id'];
     name = rawJson['name'];
     profileImagePath = rawJson['profile_path'];
@@ -16,12 +16,12 @@ class Person {
 	deathDay = rawJson['deathday'];
     var rawCredits = rawJson['combined_credits']['cast'] as List<dynamic>;
     for (var rawCredit in rawCredits) {
-      credits.add(new PersonCredit.fromJson(rawCredit));
+      credits.add(new PersonCreditResponse.fromJson(rawCredit));
     }
   }
 
   @override
   String toString() {
-    return 'Person{id: $id, name: $name, profileImagePath: $profileImagePath, credits: $credits}';
+    return 'PersonResponse{id: $id, name: $name, profileImagePath: $profileImagePath, credits: $credits}';
   }
 }

@@ -1,28 +1,25 @@
-import 'cast.dart';
+import 'cast_response.dart';
 
-class Movie {
+class MovieResponse {
   late int id;
   String? title;
   String? releaseDate;
   String? posterImagePath;
+  List<CastResponse> cast = <CastResponse>[];
 
-  // double? revenue; todo can i get this here?
-  // String? status; todo can i get this here?
-  List<Cast> cast = <Cast>[];
-
-  Movie.fromJsonWithCast(Map<String, dynamic> rawJson) {
+  MovieResponse.fromJsonWithCast(Map<String, dynamic> rawJson) {
     id = rawJson['id'];
     title = rawJson['title'];
     releaseDate = rawJson['release_date'];
     posterImagePath = rawJson['poster_path'];
     var rawCast = rawJson['credits']['cast'] as List<dynamic>;
     for (var castMember in rawCast) {
-      cast.add(new Cast.fromJson(castMember));
+      cast.add(new CastResponse.fromJson(castMember));
     }
   }
 
   @override
   String toString() {
-    return 'Movie{id: $id, title: $title, releaseDate: $releaseDate, posterImagePath: $posterImagePath}';
+    return 'MovieResponse{id: $id, title: $title, releaseDate: $releaseDate, posterImagePath: $posterImagePath}';
   }
 }
