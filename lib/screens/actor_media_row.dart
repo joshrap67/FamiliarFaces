@@ -69,7 +69,7 @@ class _ActorMediaRowState extends State<ActorMediaRow> {
                   children: [
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8.0, 16.0, 0.0, 8.0),
+                        padding: const EdgeInsets.fromLTRB(8.0, 2.0, 0.0, 8.0),
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: AutoSizeText.rich(
@@ -104,6 +104,7 @@ class _ActorMediaRowState extends State<ActorMediaRow> {
                         ),
                       ),
                     if (!widget.movie.isSeen)
+                      // todo allow undo?
                       Expanded(
                         child: TextButton(
                           onPressed: () => widget.addToSeenClicked!(widget.movie),

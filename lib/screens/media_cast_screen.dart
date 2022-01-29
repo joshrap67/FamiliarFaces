@@ -21,16 +21,25 @@ class MediaCastScreen extends StatefulWidget {
 
 class _MediaCastScreenState extends State<MediaCastScreen> {
   // todo give warning that tv show shows all seasons and could have a spoiler in terms of who is in the show
+  // todo add a button to mark as seen from here?
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: AutoSizeText(
-          '\'${widget.title}\' Cast',
+          '${widget.title}',
           minFontSize: 12,
           maxLines: 1,
           style: TextStyle(fontSize: 26),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            tooltip: 'Set as seen',
+            color: Colors.greenAccent,
+            icon: Icon(Icons.add),
+          )
+        ],
       ),
       body: Container(
         child: Scrollbar(

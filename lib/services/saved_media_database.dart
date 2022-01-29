@@ -30,6 +30,7 @@ class SavedMediaDatabase {
 		CREATE TABLE $tableSavedMedia(
 			${SavedMediaFields.id} $idType,
 			${SavedMediaFields.mediaId} $intType,
+			${SavedMediaFields.mediaType} $intType,
 			${SavedMediaFields.title} $textType,
 			${SavedMediaFields.posterPath} $textType,
 			${SavedMediaFields.releaseDate} $textType
@@ -57,6 +58,8 @@ class SavedMediaDatabase {
       throw new Exception("Media not found");
     }
   }
+
+  // todo make an enum table?
 
   Future<List<SavedMedia>> getAll() async {
     final db = await instance.database;

@@ -11,8 +11,11 @@ import 'package:familiar_faces/sql_contracts/saved_media.dart';
 class MediaService {
   static Future<PersonResponse> getSingleActorCredits(int id) async {
     PersonResponse contract = await TmdbService.getPersonCreditsAsync(id);
+
+    // if it doesn't have a poster probably not released or some random one, kill it
+    contract.credits.removeWhere((element) => element.posterPath == null);
+
     List<SavedMedia> savedMedia = await SavedMediaService.getAll();
-	// todo if credit after current date don't return it
     applySeenMedia(contract.credits, savedMedia);
     return contract;
   }
@@ -58,9 +61,9 @@ class MediaService {
         element.profilePath == null); // if there is no profile image, probably some random background character
 
     await Future.wait(tvWithCast.cast.map((castMember) async {
-      // todo handle if somehow id is bad (because this api is trash and this has happened to me before)
       return TmdbService.getPersonCreditsAsync(castMember.id).then((value) => allActors.add(value));
     }));
+
     var list = new List<PersonResponse>.from(allActors);
     list.forEach((element) {
       applySeenMedia(element.credits, savedMedia);
@@ -70,12 +73,13 @@ class MediaService {
 
   static void applySeenMedia(List<PersonCreditResponse> credits, List<SavedMedia> savedMedia) {
     for (var credit in credits) {
-      if (savedMedia.any((element) => element.mediaId == credit.id)) {
+      if (savedMedia.any((element) => element.mediaId == credit.id && element.mediaType == credit.mediaType)) {
         credit.isSeen = true;
       }
     }
   }
 
+  // this method is the main source of data cleaning since this is the only way in the app to actually get media ids to query
   static Future<List<SearchMediaResponse>> searchMulti(String query, {bool showSavedMedia = true}) async {
     if (isStringNullOrEmpty(query)) {
       return <SearchMediaResponse>[];
@@ -83,6 +87,8 @@ class MediaService {
     List<SearchMediaResponse> search = await TmdbService.searchMulti(query);
     // drop any records with a null title as that makes no sense for user to click
     search.removeWhere((element) => element.title == null);
+    // obviously if the release date is null just void it
+    search.removeWhere((element) => element.releaseDate == null); // todo do this in other methods
     // if it has a null poster it likely is not very popular and might not be released yet either
     search.removeWhere((element) => element.posterPath == null);
     // lmao don't want porn
@@ -94,7 +100,11 @@ class MediaService {
       // don't show suggestions for ones the user has already saved
       search.removeWhere((element) => savedMedia.any((savedMedia) => savedMedia.mediaId == element.id));
     }
-    // todo if after current date don't return it
+
+    // if it hasn't been released don't show it
+    var now = DateTime.now();
+    search.removeWhere((element) => element.releaseDate!.isAfter(now));
+
     return search;
   }
 }

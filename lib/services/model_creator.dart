@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:familiar_faces/api_models/movie.dart';
 import 'package:familiar_faces/api_models/movie_search_result.dart';
 import 'package:familiar_faces/api_models/person.dart';
@@ -84,14 +86,61 @@ class ModelCreator {
   }
 
   static List<PersonCreditResponse> getPersonCreditResponse(List<PersonCredit> personCredits) {
-    return personCredits
-        .map((personCredit) => PersonCreditResponse(
-            personCredit.id,
-            getTitle(personCredit.title, personCredit.name, personCredit.mediaType),
-            getMediaType(personCredit.mediaType),
-            personCredit.characterName,
-            getReleaseDate(personCredit.releaseDate, personCredit.firstAirDate, personCredit.mediaType),
-            personCredit.posterPath))
-        .toList();
+    /*
+    	Essentially, since this API is pretty trash, some media from the get aggregate credits are duplicated with different
+    	character names. What I'm doing here is looping through all of the duplicated ids and combining all the character
+    	names into one string, and then putting a singular media back into the return list. So damn stupid.
+     */
+
+    // first ensure all the media are distinct (by id)
+    var mediaIdToDistinctCredit = new HashMap<int, PersonCredit>();
+    var mediaIdToCharacterNames = new HashMap<int, List<String?>>();
+    for (var credit in personCredits) {
+      if (!mediaIdToCharacterNames.containsKey(credit.id)) {
+        mediaIdToCharacterNames[credit.id] = <String?>[];
+      }
+
+      mediaIdToCharacterNames[credit.id]!.add(credit.characterName);
+
+      if (!mediaIdToDistinctCredit.containsKey(credit.id)) {
+        mediaIdToDistinctCredit[credit.id] = credit;
+      }
+    }
+
+    for (var uniqueCredit in mediaIdToCharacterNames.keys) {
+      if (mediaIdToCharacterNames[uniqueCredit]!.length > 1) {
+        var cleanedName = getCharacterName(mediaIdToCharacterNames[uniqueCredit]!);
+        mediaIdToDistinctCredit[uniqueCredit]!.characterName = cleanedName;
+      }
+    }
+
+    var retVal = <PersonCreditResponse>[];
+    for (var credit in mediaIdToDistinctCredit.values) {
+      retVal.add(new PersonCreditResponse(
+          credit.id,
+          getTitle(credit.title, credit.name, credit.mediaType),
+          getMediaType(credit.mediaType),
+          getCharacterName(mediaIdToCharacterNames[credit.id]!),
+          getReleaseDate(credit.releaseDate, credit.firstAirDate, credit.mediaType),
+          credit.posterPath));
+    }
+    return retVal;
+  }
+
+  static String getCharacterName(List<String?> characters) {
+    var retVal = '';
+    int maxShown = 4;
+    for (int i = 0; i < characters.length; i++) {
+      var charName = characters[i];
+      if (isStringNullOrEmpty(charName)) continue;
+      if (i == maxShown - 1) {
+        int remaining = characters.length - 1 - i;
+        retVal += '$charName +$remaining more';
+        break;
+      }
+
+      retVal += i == characters.length - 1 ? '$charName' : '$charName, ';
+    }
+    return retVal;
   }
 }

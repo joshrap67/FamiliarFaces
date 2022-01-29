@@ -27,6 +27,10 @@ class TmdbService {
     var personCredit = new Person.fromJsonWithCombinedCredits(jsonMap);
     var contract = ModelCreator.getPersonResponse(personCredit);
 
+    // if it hasn't been released don't show it todo move this to outer business logic layer?
+    var now = DateTime.now();
+    contract.credits.removeWhere((element) => element.releaseDate != null && element.releaseDate!.isAfter(now));
+
     return contract;
   }
 

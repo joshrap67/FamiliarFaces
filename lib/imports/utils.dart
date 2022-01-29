@@ -27,7 +27,7 @@ String formatDateYearOnly(DateTime? date) {
 }
 
 String formatDateFull(DateTime? date) {
-  return DateFormat.yMd('en_US').format(date!);
+  return DateFormat.yMMMd('en_US').format(date!);
 }
 
 extension DurationExtensions on Duration {

@@ -28,6 +28,8 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
   List<CastResponse> _castForSelectedMedia = <CastResponse>[];
   CastResponse? _selectedCharacter;
 
+  static const String placeholderUrl = 'https://picsum.photos/500'; // todo remove
+
   String _buttonText() => _selectedCharacter == null ? 'WHERE HAVE I SEEN THIS CAST?' : 'WHERE HAVE I SEEN THIS ACTOR?';
 
   final TextEditingController _mediaSearchController = TextEditingController();
@@ -48,7 +50,7 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
 
   @override
   Widget build(BuildContext context) {
-  	// todo warning on tv shows that the search might take a while if they didn't specify a character
+    // todo warning on tv shows that the search might take a while if they didn't specify a character
     super.build(context);
     return SafeArea(
       child: AnimatedContainer(
@@ -58,7 +60,10 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
             ? BoxDecoration(
                 image: DecorationImage(
                   colorFilter: new ColorFilter.mode(Color(0x48000000), BlendMode.dstATop),
-                  image: Image.network(getImageUrl(_selectedSearch?.posterPath)).image,
+                  image: FadeInImage.assetNetwork(
+                    image: getImageUrl(_selectedSearch?.posterPath),
+                    placeholder: placeholderUrl,
+                  ).image,
                   fit: BoxFit.fill,
                 ),
               )
@@ -81,6 +86,10 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
                               TypeAheadFormField<SearchMediaResponse>(
                                   textFieldConfiguration: TextFieldConfiguration(
                                     controller: _mediaSearchController,
+                                    onChanged: (_) {
+                                      // so x button can properly be hidden
+                                      setState(() {});
+                                    },
                                     decoration: InputDecoration(
                                         prefixIcon: Icon(Icons.search),
                                         border: OutlineInputBorder(),
@@ -109,11 +118,12 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
                                     );
                                   },
                                   onSuggestionSelected: onMediaSelected),
-                              IconButton(
-                                icon: Icon(Icons.clear),
-                                tooltip: 'Clear media',
-                                onPressed: onMediaInputCleared,
-                              ),
+                              if (!isStringNullOrEmpty(_mediaSearchController.text))
+                                IconButton(
+                                  icon: Icon(Icons.clear),
+                                  tooltip: 'Clear media',
+                                  onPressed: onMediaInputCleared,
+                                ),
                             ],
                           ),
                         ),
@@ -132,6 +142,10 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
                                 textFieldConfiguration: TextFieldConfiguration(
                                   enabled: _selectedSearch != null,
                                   controller: _characterSearchController,
+                                  onChanged: (_) {
+                                    // so x button can properly be hidden
+                                    setState(() {});
+                                  },
                                   decoration: InputDecoration(
                                       labelText: 'Character',
                                       prefixIcon: Icon(Icons.person),
@@ -155,18 +169,12 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
                                 hideSuggestionsOnKeyboardHide: false,
                                 onSuggestionSelected: onCharacterSelected,
                               ),
-                              Visibility(
-                                maintainSize: true,
-                                maintainAnimation: true,
-                                maintainInteractivity: true,
-                                maintainState: true,
-                                visible: _selectedSearch != null,
-                                child: IconButton(
+                              if (!isStringNullOrEmpty(_characterSearchController.text))
+                                IconButton(
                                   icon: Icon(Icons.clear),
                                   tooltip: 'Clear character',
                                   onPressed: onCharacterInputCleared,
                                 ),
-                              ),
                             ],
                           ),
                         ),

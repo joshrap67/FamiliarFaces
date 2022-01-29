@@ -45,9 +45,9 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
           children: [
             Column(
               children: [
-                if (_isEditing)
-                  Row(
-                    children: [
+                Row(
+                  children: [
+                    if (_isEditing)
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
@@ -61,74 +61,70 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                           ),
                         ),
                       ),
-                      sortIcon(),
-                      IconButton(
-                        icon: Icon(Icons.add),
-                        tooltip: 'Add',
-                        onPressed: () => setEditing(false),
-                      ),
-                    ],
-                  ),
-                if (!_isEditing)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Stack(
-                            alignment: Alignment.centerRight,
+                    if (!_isEditing)
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+                          child: Row(
                             children: [
-                              TypeAheadFormField<SearchMediaResponse>(
-                                  textFieldConfiguration: TextFieldConfiguration(
-                                    controller: _mediaSearchController,
-                                    onChanged: (_) {
-                                      // need to do this for x button to hide when text is empty on controller
-                                      setState(() {});
-                                    },
-                                    decoration: InputDecoration(
-                                        prefixIcon: Icon(Icons.search),
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Add Movie/TV Show',
-                                        hintText: 'Search Movie or TV Show'),
-                                  ),
-                                  debounceDuration: Duration(milliseconds: 300),
-                                  suggestionsCallback: (query) =>
-                                      MediaService.searchMulti(query, showSavedMedia: false),
-                                  noItemsFoundBuilder: (context) {
-                                    return Text('');
-                                  },
-                                  itemBuilder: (context, SearchMediaResponse result) {
-                                    return ListTile(
-                                      title: Text('${result.title}'),
-                                      leading: Container(
-                                        height: 50,
-                                        width: 50,
-                                        child: CachedNetworkImage(
-                                          imageUrl: getImageUrl(result.posterPath),
-                                          fit: BoxFit.cover,
+                              Expanded(
+                                child: Stack(
+                                  alignment: Alignment.centerRight,
+                                  children: [
+                                    TypeAheadFormField<SearchMediaResponse>(
+                                        textFieldConfiguration: TextFieldConfiguration(
+                                          controller: _mediaSearchController,
+                                          onChanged: (_) {
+                                            // need to do this for x button to hide when text is empty on controller
+                                            setState(() {});
+                                          },
+                                          decoration: InputDecoration(
+                                              prefixIcon: Icon(Icons.search),
+                                              border: OutlineInputBorder(),
+                                              labelText: 'Add Movie/TV Show',
+                                              hintText: 'Search Movie or TV Show'),
                                         ),
+                                        debounceDuration: Duration(milliseconds: 300),
+                                        suggestionsCallback: (query) =>
+                                            MediaService.searchMulti(query, showSavedMedia: false),
+                                        noItemsFoundBuilder: (context) {
+                                          return Text('');
+                                        },
+                                        itemBuilder: (context, SearchMediaResponse result) {
+                                          return ListTile(
+                                            title: Text('${result.title}'),
+                                            leading: Container(
+                                              height: 50,
+                                              width: 50,
+                                              child: CachedNetworkImage(
+                                                imageUrl: getImageUrl(result.posterPath),
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        onSuggestionSelected: onMediaSelected),
+                                    if (!isStringNullOrEmpty(_mediaSearchController.text))
+                                      IconButton(
+                                        icon: Icon(Icons.clear),
+                                        tooltip: 'Clear media',
+                                        onPressed: onMediaInputCleared,
                                       ),
-                                    );
-                                  },
-                                  onSuggestionSelected: onMediaSelected),
-                              if (!isStringNullOrEmpty(_mediaSearchController.text))
-                                IconButton(
-                                  icon: Icon(Icons.clear),
-                                  tooltip: 'Clear media',
-                                  onPressed: onMediaInputCleared,
+                                  ],
                                 ),
+                              ),
                             ],
                           ),
                         ),
-                        sortIcon(),
-                        IconButton(
-                          icon: Icon(Icons.mode_edit),
-                          tooltip: 'Edit',
-                          onPressed: () => setEditing(true),
-                        ),
-                      ],
+                      ),
+                    sortIcon(),
+                    IconButton(
+                      icon: _isEditing ? Icon(Icons.add) : Icon(Icons.edit),
+                      tooltip: _isEditing ? 'Add' : 'Edit',
+                      onPressed: () => setEditing(!_isEditing),
                     ),
-                  ),
+                  ],
+                ),
                 Expanded(
                   child: _displayedSavedMedia.length > 0
                       ? Scrollbar(
@@ -290,7 +286,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
     if (_allSavedMedia.any((element) => element.mediaId == selected.id)) {
       showSnackbar('You already have added this media to your list.', context);
     } else {
-      var savedMedia = new SavedMedia(selected.id,
+      var savedMedia = new SavedMedia(selected.id, selected.mediaType,
           title: selected.title, posterPath: selected.posterPath, releaseDate: selected.releaseDate);
       var created = await SavedMediaService.add(savedMedia);
       setState(() {
@@ -310,14 +306,14 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
     });
   }
 
-  onMediaInputCleared() {
+  void onMediaInputCleared() {
     setState(() {
       _mediaSearchController.text = "";
       hideKeyboard(context);
     });
   }
 
-  setEditing(bool isEditing) {
+  void setEditing(bool isEditing) {
     setState(() {
       _isEditing = isEditing;
       _displayedSavedMedia = List.from(_allSavedMedia);
@@ -325,7 +321,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
     });
   }
 
-  searchSavedMedia(String searchText) {
+  void searchSavedMedia(String searchText) {
     setState(() {
       _displayedSavedMedia = List.from(_allSavedMedia.where((element) {
         if (element.title == null) {

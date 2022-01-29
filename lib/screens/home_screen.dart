@@ -30,9 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Familiar Faces'),
-      // ),
       resizeToAvoidBottomInset: false,
       body: GestureDetector(
         onTap: () => hideKeyboard(context),
@@ -45,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Color(0xFF323433),
+        backgroundColor: Color(0xFF000000),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.movie),
