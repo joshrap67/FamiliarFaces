@@ -114,7 +114,6 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
-                                      <entry key="previewDensity" value="HIGH" />
                                       <entry key="showSafeZone" value="false" />
                                     </map>
                                   </option>
@@ -283,7 +282,6 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="previewDensity" value="HIGH" />
                                       <entry key="showSafeZone" value="false" />
                                     </map>
                                   </option>

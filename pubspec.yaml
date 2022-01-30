@@ -43,8 +43,6 @@ flutter_icons:
   android: false # this library is kind of a pain for android so just using android studio instead
   ios: true
   image_path: "assets/icon/icon.png"
-  adaptive_icon_background: "#ff00bf6e"
-  adaptive_icon_foreground: "assets/icon/logo_foreground.png"
 
 flutter:
   uses-material-design: true
