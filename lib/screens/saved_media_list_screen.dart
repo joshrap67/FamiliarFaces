@@ -6,6 +6,7 @@ import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:familiar_faces/contracts_sql/saved_media.dart';
+import 'package:familiar_faces/widgets/media_search_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
@@ -69,56 +70,11 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Stack(
-                                  alignment: Alignment.centerRight,
-                                  children: [
-                                    TypeAheadFormField<SearchMediaResult>(
-                                      textFieldConfiguration: TextFieldConfiguration(
-                                        controller: _mediaSearchController,
-                                        onChanged: (_) {
-                                          // need to do this for x button to hide when text is empty on controller
-                                          setState(() {});
-                                        },
-                                        decoration: InputDecoration(
-                                            prefixIcon: Icon(Icons.search),
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Add Movie/TV Show',
-                                            hintText: 'Search Movie or TV Show'),
-                                      ),
-                                      hideOnLoading: true,
-                                      hideOnEmpty: true,
-                                      hideOnError: true,
-                                      debounceDuration: Duration(milliseconds: 300),
-                                      onSuggestionSelected: onMediaSelected,
-                                      suggestionsCallback: (query) =>
-                                          MediaService.searchMulti(query, showSavedMedia: false),
-                                      itemBuilder: (context, SearchMediaResult result) {
-                                        return ListTile(
-                                          title: Text('${result.title}'),
-                                          leading: Container(
-                                            height: 50,
-                                            width: 50,
-                                            child: CachedNetworkImage(
-                                              imageUrl: getImageUrl(result.posterPath),
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    if (!isStringNullOrEmpty(_mediaSearchController.text))
-                                      IconButton(
-                                        icon: Icon(Icons.clear),
-                                        tooltip: 'Clear media',
-                                        onPressed: onMediaInputCleared,
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                          child: MediaSearchRow(
+                            key: UniqueKey(),
+                            onInputCleared: () => onMediaInputCleared(),
+                            showSavedMedia: false,
+                            onMediaSelected: (media) => onMediaSelected(media),
                           ),
                         ),
                       ),

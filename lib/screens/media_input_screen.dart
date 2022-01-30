@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/cast.dart';
 import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/movie.dart';
@@ -9,8 +8,9 @@ import 'package:familiar_faces/screens/actor_details.dart';
 import 'package:familiar_faces/screens/media_cast_screen.dart';
 import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/imports/utils.dart';
+import 'package:familiar_faces/widgets/character_search_row.dart';
+import 'package:familiar_faces/widgets/media_search_row.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class MediaInputScreen extends StatefulWidget {
@@ -31,23 +31,8 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
 
   String _buttonText() => _selectedCharacter == null ? 'WHERE HAVE I SEEN THIS CAST?' : 'WHERE HAVE I SEEN THIS ACTOR?';
 
-  final TextEditingController _mediaSearchController = TextEditingController();
-  final TextEditingController _characterSearchController = TextEditingController();
   final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
-  late FocusNode _searchCharacterFocus;
-
-  @override
-  void initState() {
-    _searchCharacterFocus = new FocusNode();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _mediaSearchController.dispose();
-    _characterSearchController.dispose();
-    super.dispose();
-  }
+  FocusNode _searchCharacterFocus = new FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -62,12 +47,11 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
               Container(
                 height: double.infinity,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    colorFilter: new ColorFilter.mode(Color(0x29000000), BlendMode.dstATop),
-                    image: Image.network(getImageUrl(_selectedSearch?.posterPath)).image,
-                    fit: BoxFit.fill,
-                  ),
+                child: Image.network(
+                  getImageUrl(_selectedSearch?.posterPath),
+                  color: Color.fromRGBO(0, 0, 0, 0.4),
+                  colorBlendMode: BlendMode.dstATop,
+                  fit: BoxFit.fill,
                 ),
               ),
             Container(
@@ -78,112 +62,24 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
                     children: [
                       Padding(
                         padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Stack(
-                                alignment: Alignment.centerRight,
-                                children: [
-                                  TypeAheadFormField<SearchMediaResult>(
-                                      textFieldConfiguration: TextFieldConfiguration(
-                                        controller: _mediaSearchController,
-                                        onChanged: (_) {
-                                          // so x button can properly be hidden
-                                          setState(() {});
-                                        },
-                                        decoration: InputDecoration(
-                                            prefixIcon: Icon(Icons.search),
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Movie/TV Show',
-                                            hintText: 'Search Movie or TV Show'),
-                                      ),
-                                      hideOnLoading: true,
-                                      hideOnEmpty: true,
-                                      hideOnError: true,
-                                      debounceDuration: Duration(milliseconds: 300),
-                                      suggestionsCallback: (query) => MediaService.searchMulti(query),
-                                      transitionBuilder: (context, suggestionsBox, controller) {
-                                        return suggestionsBox;
-                                      },
-                                      itemBuilder: (context, SearchMediaResult result) {
-                                        return ListTile(
-                                          title: Text('${result.title}'),
-                                          leading: Container(
-                                            height: 50,
-                                            width: 50,
-                                            child: CachedNetworkImage(
-                                              imageUrl: getImageUrl(result.posterPath),
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      onSuggestionSelected: onMediaSelected),
-                                  if (!isStringNullOrEmpty(_mediaSearchController.text))
-                                    IconButton(
-                                      icon: Icon(Icons.clear),
-                                      tooltip: 'Clear media',
-                                      onPressed: onMediaInputCleared,
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ],
+                        child: MediaSearchRow(
+                          key: UniqueKey(),
+                          selectedMedia: _selectedSearch,
+                          onInputCleared: () => onMediaInputCleared(),
+                          onMediaSelected: (media) => onMediaSelected(media),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Stack(
-                                alignment: Alignment.centerRight,
-                                children: [
-                                  TypeAheadFormField<Cast>(
-                                    textFieldConfiguration: TextFieldConfiguration(
-                                      enabled: _selectedSearch != null,
-                                      focusNode: _searchCharacterFocus,
-                                      controller: _characterSearchController,
-                                      onChanged: (_) {
-                                        // so x button can properly be hidden
-                                        setState(() {});
-                                      },
-                                      decoration: InputDecoration(
-                                          labelText: 'Character',
-                                          prefixIcon: Icon(Icons.person),
-                                          border: OutlineInputBorder(),
-                                          hintText: 'Search Character (optional)'),
-                                    ),
-                                    hideOnLoading: true,
-                                    hideOnEmpty: true,
-                                    hideOnError: true,
-                                    hideSuggestionsOnKeyboardHide: false,
-                                    onSuggestionSelected: onCharacterSelected,
-                                    suggestionsCallback: (query) => getCharacterResults(query),
-                                    itemBuilder: (context, Cast result) {
-                                      return ListTile(
-                                        title: Text('${result.characterName}'),
-                                        leading: Container(
-                                          height: 50,
-                                          width: 50,
-                                          child: CachedNetworkImage(
-                                            imageUrl: getImageUrl(result.profilePath),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  if (!isStringNullOrEmpty(_characterSearchController.text))
-                                    IconButton(
-                                      icon: Icon(Icons.clear),
-                                      tooltip: 'Clear character',
-                                      onPressed: onCharacterInputCleared,
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ],
+                        child: CharacterSearchRow(
+                          key: UniqueKey(),
+                          // if this key isn't here all hell breaks lose i love flutter
+                          focusNode: _searchCharacterFocus,
+                          selectedCharacter: _selectedCharacter,
+                          castForSelectedMedia: _castForSelectedMedia,
+                          onCharacterCleared: () => onCharacterInputCleared(),
+                          onCharacterSelected: (character) => onCharacterSelected(character),
+                          enabled: _selectedSearch != null,
                         ),
                       ),
                     ],
@@ -218,6 +114,7 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
                             ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 16.0),
+                            // todo get rid of this or make my own
                             child: RoundedLoadingButton(
                               controller: _btnController,
                               onPressed: onMainButtonPressed,
@@ -240,10 +137,8 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
 
   onMediaInputCleared() {
     setState(() {
-      _mediaSearchController.text = "";
       _selectedSearch = null;
       _castForSelectedMedia = [];
-      _characterSearchController.text = "";
       _selectedCharacter = null;
       hideKeyboard(context);
     });
@@ -251,7 +146,6 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
 
   onCharacterInputCleared() {
     setState(() {
-      _characterSearchController.text = "";
       _selectedCharacter = null;
       hideKeyboard(context);
     });
@@ -260,7 +154,6 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
   onCharacterSelected(Cast character) {
     setState(() {
       _selectedCharacter = character;
-      _characterSearchController.text = character.characterName!;
       hideKeyboard(context);
     });
   }
@@ -268,13 +161,11 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
   onMediaSelected(SearchMediaResult selected) async {
     setState(() {
       _selectedSearch = selected;
-      _mediaSearchController.text = selected.title!;
+      // new media so clear any character inputs
+      _castForSelectedMedia = [];
+      _selectedCharacter = null;
     });
 
-    // new media so clear any character inputs
-    _castForSelectedMedia = [];
-    _characterSearchController.text = "";
-    _selectedCharacter = null;
     if (_selectedSearch!.mediaType == MediaType.Movie) {
       Movie movie = await MediaService.getMovieWithCast(_selectedSearch!.id);
       _castForSelectedMedia = List.from(movie.cast);
@@ -282,14 +173,7 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
       TvShow tv = await MediaService.getTvShowWithCast(_selectedSearch!.id);
       _castForSelectedMedia = List.from(tv.cast);
     }
-  }
-
-  List<Cast> getCharacterResults(String query) {
-    return _castForSelectedMedia.where((character) {
-      var characterLower = character.characterName!.toLowerCase();
-      var queryLower = query.toLowerCase();
-      return characterLower.contains(queryLower);
-    }).toList();
+    setState(() {});
   }
 
   onMainButtonPressed() {

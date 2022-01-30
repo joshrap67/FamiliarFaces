@@ -56,6 +56,7 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
       ),
       body: Container(
         child: Scrollbar(
+			// todo save scroll position
           child: ListView.separated(
             key: new GlobalKey(),
             separatorBuilder: (BuildContext context, int index) => Divider(height: 15),

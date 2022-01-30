@@ -8,6 +8,6 @@ class Cast {
 
   @override
   String toString() {
-    return 'Cast{id: $id, name:$name, characterName: $characterName, profilePath: $profilePath}';
+    return 'Cast{id: $id, name: $name, characterName: $characterName, profilePath: $profilePath}';
   }
 }
