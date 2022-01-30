@@ -3,12 +3,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/search_media_result.dart';
 import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/imports/utils.dart';
-import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:familiar_faces/contracts_sql/saved_media.dart';
 import 'package:familiar_faces/widgets/media_search_row.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class SavedMediaListScreen extends StatefulWidget {
   const SavedMediaListScreen({Key? key}) : super(key: key);
@@ -23,7 +21,6 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
   final TextEditingController _mediaSearchController = TextEditingController();
   SortingValues _sortValue = SortingValues.ReleaseDateDescending;
   bool _isEditing = false;
-  bool _isLoading = false;
   late FocusNode _searchFocusNode;
 
   @override
@@ -44,101 +41,100 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () => onBackPressed(),
-      child: SafeArea(
-        child: Stack(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(_isEditing ? 'Edit Seen Media' : 'Add Media'),
+        ),
+        body: Column(
           children: [
-            Column(
+            Row(
               children: [
-                Row(
-                  children: [
-                    if (_isEditing)
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                          child: TextField(
-                            onChanged: searchSavedMedia,
-                            focusNode: _searchFocusNode,
-                            decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.search),
-                                border: OutlineInputBorder(),
-                                labelText: 'Search my media',
-                                hintText: 'Search Movie or TV Show'),
-                          ),
-                        ),
+                if (_isEditing)
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+                      child: TextField(
+                        onChanged: searchSavedMedia,
+                        focusNode: _searchFocusNode,
+                        decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.search),
+                            border: OutlineInputBorder(),
+                            labelText: 'Search my media',
+                            hintText: 'Search Movie or TV Show'),
                       ),
-                    if (!_isEditing)
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                          child: MediaSearchRow(
-                            key: UniqueKey(),
-                            onInputCleared: () => onMediaInputCleared(),
-                            showSavedMedia: false,
-                            onMediaSelected: (media) => onMediaSelected(media),
-                          ),
-                        ),
-                      ),
-                    sortIcon(),
-                    IconButton(
-                      icon: _isEditing ? Icon(Icons.add) : Icon(Icons.edit),
-                      tooltip: _isEditing ? 'Add' : 'Edit',
-                      onPressed: () => setEditing(!_isEditing),
                     ),
-                  ],
-                ),
-                Expanded(
-                  child: _displayedSavedMedia.length > 0
-                      ? Scrollbar(
-                          child: ListView.separated(
-                            separatorBuilder: (BuildContext context, int index) => Divider(
-                              height: 10,
-                              color: Colors.white,
-                            ),
-                            itemCount: _displayedSavedMedia.length,
-                            key: GlobalKey(),
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: AutoSizeText(
-                                  '${_displayedSavedMedia[index].title} (${formatDateYearOnly(_displayedSavedMedia[index].releaseDate)})',
-                                  minFontSize: 12,
-                                ),
-                                leading: Container(
-                                  height: 50,
-                                  width: 50,
-                                  child: CachedNetworkImage(
-                                    imageUrl: getImageUrl(_displayedSavedMedia[index].posterPath),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                trailing: _isEditing
-                                    ? PopupMenuButton(
-                                        icon: Icon(Icons.more_vert),
-                                        tooltip: 'Edit Options',
-                                        itemBuilder: (context) => <PopupMenuEntry<int>>[
-                                          PopupMenuItem<int>(
-                                            value: 0,
-                                            child: Text('REMOVE'),
-                                          ),
-                                        ],
-                                        onSelected: (int result) {
-                                          if (result == 0) {
-                                            deleteSavedMedia(_displayedSavedMedia[index]);
-                                          }
-                                        },
-                                      )
-                                    : null,
-                              );
-                            },
-                          ),
-                        )
-                      : Center(
-                          child: Text(
-                            'No saved media',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
+                  ),
+                if (!_isEditing)
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+                      child: MediaSearchRow(
+                        key: UniqueKey(),
+                        onInputCleared: () => onMediaInputCleared(),
+                        showSavedMedia: false,
+                        onMediaSelected: (media) => onMediaSelected(media),
+                      ),
+                    ),
+                  ),
+                sortIcon(),
+                IconButton(
+                  icon: _isEditing ? Icon(Icons.add) : Icon(Icons.edit),
+                  tooltip: _isEditing ? 'Add' : 'Edit',
+                  onPressed: () => setEditing(!_isEditing),
                 ),
               ],
+            ),
+            Expanded(
+              child: _displayedSavedMedia.length > 0
+                  ? Scrollbar(
+                      child: ListView.separated(
+                        separatorBuilder: (BuildContext context, int index) => Divider(
+                          height: 10,
+                          color: Colors.white,
+                        ),
+                        itemCount: _displayedSavedMedia.length,
+                        key: GlobalKey(),
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: AutoSizeText(
+                              '${_displayedSavedMedia[index].title} (${formatDateYearOnly(_displayedSavedMedia[index].releaseDate)})',
+                              minFontSize: 12,
+                            ),
+                            leading: Container(
+                              height: 50,
+                              width: 50,
+                              child: CachedNetworkImage(
+                                imageUrl: getImageUrl(_displayedSavedMedia[index].posterPath),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            trailing: _isEditing
+                                ? PopupMenuButton(
+                                    icon: Icon(Icons.more_vert),
+                                    tooltip: 'Edit Options',
+                                    itemBuilder: (context) => <PopupMenuEntry<int>>[
+                                      PopupMenuItem<int>(
+                                        value: 0,
+                                        child: Text('REMOVE'),
+                                      ),
+                                    ],
+                                    onSelected: (int result) {
+                                      if (result == 0) {
+                                        deleteSavedMedia(_displayedSavedMedia[index]);
+                                      }
+                                    },
+                                  )
+                                : null,
+                          );
+                        },
+                      ),
+                    )
+                  : Center(
+                      child: Text(
+                        'No saved media',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
             ),
           ],
         ),

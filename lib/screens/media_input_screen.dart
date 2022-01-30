@@ -4,14 +4,18 @@ import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/movie.dart';
 import 'package:familiar_faces/contracts/search_media_result.dart';
 import 'package:familiar_faces/contracts/tv_show.dart';
+import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/screens/actor_details.dart';
 import 'package:familiar_faces/screens/media_cast_screen.dart';
+import 'package:familiar_faces/screens/saved_media_list_screen.dart';
+import 'package:familiar_faces/screens/settings_screen.dart';
 import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/widgets/character_search_row.dart';
 import 'package:familiar_faces/widgets/media_search_row.dart';
 import 'package:flutter/material.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MediaInputScreen extends StatefulWidget {
   const MediaInputScreen({Key? key}) : super(key: key);
@@ -35,13 +39,49 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
   FocusNode _searchCharacterFocus = new FocusNode();
 
   @override
+  void initState() {
+    super.initState();
+    updateGlobalSettings();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // todo warning on tv shows that the search might take a while if they didn't specify a character
     super.build(context);
     return WillPopScope(
       onWillPop: () => onBackPressed(),
-      child: SafeArea(
-        child: Stack(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        drawer: Drawer(
+          child: SafeArea(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.movie),
+                  title: Text('My Seen Media'),
+                  onTap: () {
+                    // close the drawer menu when clicked
+                    Navigator.of(context).pop();
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => SavedMediaListScreen()));
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.settings),
+                  title: Text('Settings & App Info'),
+                  onTap: () {
+                    // close the drawer menu when clicked
+                    Navigator.of(context).pop();
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen()));
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+        appBar: AppBar(
+          title: Text('Familiar Faces'),
+        ),
+        body: Stack(
           children: [
             if (_selectedSearch?.posterPath != null)
               Container(
@@ -256,5 +296,13 @@ class _MediaInputScreenState extends State<MediaInputScreen> with AutomaticKeepA
     } else {
       return true;
     }
+  }
+
+  // bit of an anti pattern, but i would rather not have async calls everywhere for these global settings
+  Future<void> updateGlobalSettings() async {
+	  var prefs = await SharedPreferences.getInstance();
+	  setState(() {
+		  Globals.settings.showCharacters = prefs.getBool(Globals.showCharacterKey) ?? true;
+	  });
   }
 }

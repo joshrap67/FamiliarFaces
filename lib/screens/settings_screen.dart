@@ -26,13 +26,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      // todo move app version to top and make it bigger so this page doesn't look so awkward/barren
-      child: ListView(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Settings & App Info'),
+      ),
+      body: ListView(
         children: [
           Card(
             child: ListTile(
-              leading: Icon(Icons.location_on),
+              leading: Icon(Icons.person),
               title: Text(
                 'Character Names',
                 style: TextStyle(fontSize: 25),

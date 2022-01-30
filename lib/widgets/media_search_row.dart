@@ -6,7 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class MediaSearchRow extends StatefulWidget {
-  const MediaSearchRow({Key? key, this.selectedMedia, this.showSavedMedia = true, required this.onMediaSelected, required this.onInputCleared})
+  const MediaSearchRow(
+      {Key? key,
+      this.selectedMedia,
+      this.showSavedMedia = true,
+      required this.onMediaSelected,
+      required this.onInputCleared})
       : super(key: key);
 
   final Function(SearchMediaResult) onMediaSelected;
@@ -47,6 +52,7 @@ class _MediaSearchRowState extends State<MediaSearchRow> {
                 // so x button can properly be hidden
                 setState(() {});
               },
+				// todo focus node
               decoration: InputDecoration(
                   prefixIcon: Icon(Icons.search),
                   border: OutlineInputBorder(),
@@ -56,6 +62,7 @@ class _MediaSearchRowState extends State<MediaSearchRow> {
             hideOnLoading: true,
             hideOnEmpty: true,
             hideOnError: true,
+            hideSuggestionsOnKeyboardHide: false,
             debounceDuration: Duration(milliseconds: 300),
             suggestionsCallback: (query) => MediaService.searchMulti(query, showSavedMedia: widget.showSavedMedia),
             transitionBuilder: (context, suggestionsBox, controller) {

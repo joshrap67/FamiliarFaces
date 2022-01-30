@@ -1,4 +1,5 @@
 import 'package:familiar_faces/screens/home_screen.dart';
+import 'package:familiar_faces/screens/media_input_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
           cardColor: Color(0xff2a2a2a),
           scaffoldBackgroundColor: Colors.black,
           brightness: Brightness.dark),
-      home: HomeScreen(),
+      home: MediaInputScreen(),
     );
   }
 }
