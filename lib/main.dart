@@ -1,13 +1,12 @@
 import 'package:familiar_faces/screens/home_screen.dart';
-import 'package:familiar_faces/screens/media_input_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'imports/utils.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-	  statusBarColor: Colors.black
-  ));
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.black));
   runApp(MyApp());
 }
 
@@ -20,7 +19,10 @@ class MyApp extends StatelessWidget {
           cardColor: Color(0xff2a2a2a),
           scaffoldBackgroundColor: Colors.black,
           brightness: Brightness.dark),
-      home: MediaInputScreen(),
+      home: GestureDetector(
+        onTap: () => hideKeyboard(context),
+        child: HomeScreen(),
+      ),
     );
   }
 }

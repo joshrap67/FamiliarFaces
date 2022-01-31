@@ -21,11 +21,11 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
   final TextEditingController _mediaSearchController = TextEditingController();
   SortingValues _sortValue = SortingValues.ReleaseDateDescending;
   bool _isEditing = false;
-  late FocusNode _searchFocusNode;
+  FocusNode _searchFocusNode = new FocusNode();
+  FocusNode _addMediaFocusNode = new FocusNode();
 
   @override
   void initState() {
-    _searchFocusNode = new FocusNode();
     getSavedMedia();
     super.initState();
   }
@@ -43,7 +43,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
       onWillPop: () => onBackPressed(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_isEditing ? 'Edit Seen Media' : 'Add Media'),
+          title: Text(_isEditing ? 'Edit Media' : 'Add Media'),
         ),
         body: Column(
           children: [
@@ -70,6 +70,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                       padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
                       child: MediaSearchRow(
                         key: UniqueKey(),
+                        focusNode: _addMediaFocusNode,
                         onInputCleared: () => onMediaInputCleared(),
                         showSavedMedia: false,
                         onMediaSelected: (media) => onMediaSelected(media),
@@ -295,6 +296,9 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
   Future<bool> onBackPressed() async {
     if (_searchFocusNode.hasPrimaryFocus) {
       _searchFocusNode.unfocus();
+      return false;
+    } else if (_addMediaFocusNode.hasPrimaryFocus) {
+      _addMediaFocusNode.unfocus();
       return false;
     } else {
       return true;

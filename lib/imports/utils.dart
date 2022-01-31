@@ -48,9 +48,12 @@ String getAge(DateTime birthday, DateTime? deathday) {
   }
 }
 
-void showSnackbar(String message, BuildContext context) {
+void showSnackbar(String message, BuildContext context, {int milliseconds = 1500}) {
   ScaffoldMessenger.of(context).removeCurrentSnackBar();
-  var snackBar = SnackBar(content: Text(message));
+  var snackBar = SnackBar(
+    content: Text(message),
+    duration: Duration(milliseconds: milliseconds),
+  );
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 

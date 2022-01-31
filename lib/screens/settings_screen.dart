@@ -1,7 +1,6 @@
 import 'package:familiar_faces/imports/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'about_screen.dart';
 
@@ -39,9 +38,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 'Character Names',
                 style: TextStyle(fontSize: 25),
               ),
+              tileColor: Color(0xff2a2f38),
               subtitle: Text('If disabled, character names will never be shown unless searching them.'),
               trailing: Checkbox(
                 onChanged: (value) => setShowCharacters(value!),
+                checkColor: Colors.white,
+                activeColor: Color(0xff009257),
                 value: _showCharacter,
               ),
             ),
@@ -50,6 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Card(
             child: ListTile(
               leading: Icon(Icons.info),
+              tileColor: Color(0xff2a2f38),
               title: Text(
                 'About',
                 style: TextStyle(fontSize: 25),
@@ -69,6 +72,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 'Privacy Policy',
                 style: TextStyle(fontSize: 25),
               ),
+              tileColor: Color(0xff2a2f38),
               onTap: () async {
                 // const String url = '';
                 // if (await canLaunch(url)) {
@@ -87,6 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 'Terms of Service',
                 style: TextStyle(fontSize: 25),
               ),
+              tileColor: Color(0xff2a2f38),
               onTap: () async {
                 // const String url = '';
                 // if (await canLaunch(url)) {
@@ -105,6 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _appVersion ?? '',
                 style: TextStyle(fontSize: 25),
               ),
+              tileColor: Color(0xff2a2f38),
               subtitle: Text('App Version'),
             ),
           ),

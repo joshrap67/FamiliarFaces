@@ -10,6 +10,7 @@ class MediaSearchRow extends StatefulWidget {
       {Key? key,
       this.selectedMedia,
       this.showSavedMedia = true,
+      required this.focusNode,
       required this.onMediaSelected,
       required this.onInputCleared})
       : super(key: key);
@@ -18,6 +19,7 @@ class MediaSearchRow extends StatefulWidget {
   final Function onInputCleared;
   final SearchMediaResult? selectedMedia;
   final bool showSavedMedia;
+  final FocusNode focusNode;
 
   @override
   _MediaSearchRowState createState() => _MediaSearchRowState();
@@ -52,7 +54,7 @@ class _MediaSearchRowState extends State<MediaSearchRow> {
                 // so x button can properly be hidden
                 setState(() {});
               },
-				// todo focus node
+              focusNode: widget.focusNode,
               decoration: InputDecoration(
                   prefixIcon: Icon(Icons.search),
                   border: OutlineInputBorder(),
