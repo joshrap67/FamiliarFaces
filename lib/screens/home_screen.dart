@@ -171,7 +171,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             TypeAheadFormField<Cast>(
                               textFieldConfiguration: TextFieldConfiguration(
-                                enabled: _selectedSearch != null,
                                 focusNode: _searchCharacterFocus,
                                 controller: _characterSearchController,
                                 onChanged: (_) {

@@ -40,6 +40,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               tileColor: Color(0xff2a2f38),
               subtitle: Text('If disabled, character names will never be shown unless searching them.'),
+              onTap: () {
+                setShowCharacters(!_showCharacter);
+              },
               trailing: Checkbox(
                 onChanged: (value) => setShowCharacters(value!),
                 checkColor: Colors.white,

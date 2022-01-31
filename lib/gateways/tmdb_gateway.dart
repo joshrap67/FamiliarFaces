@@ -14,9 +14,8 @@ Future<ApiResult<String>> makeApiRequest(HttpAction action, String route, Map<St
 
   try {
     var url = Uri.https(rootUrl, '3/$route', queryParameters);
-    http.Response response = new http.Response("", 400);
+    http.Response response;
     switch (action) {
-      // todo clean this up without having to new up the response
       // todo use a client since being sent to same server?
       case HttpAction.GET:
         response = await http.get(url);
@@ -30,6 +29,8 @@ Future<ApiResult<String>> makeApiRequest(HttpAction action, String route, Map<St
       case HttpAction.DELETE:
         response = await http.delete(url);
         break;
+      default:
+        response = new http.Response("Error", 400);
     }
 
     if (response.statusCode >= 200 || response.statusCode < 300) {

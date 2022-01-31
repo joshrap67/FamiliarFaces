@@ -41,7 +41,7 @@ class _ActorDetailsState extends State<ActorDetails> {
   bool _includeMovies = true;
   bool _includeTv = true;
   static const String placeholderUrl = 'https://picsum.photos/500'; // todo remove
-  final _scrollController = new ScrollController();
+  final _scrollController = new ScrollController(); // todo remove?
   bool _isLoading = false;
 
   @override
@@ -124,11 +124,25 @@ class _ActorDetailsState extends State<ActorDetails> {
                                         textAlign: TextAlign.start,
                                       ),
                                     ),
-                                  // todo show seen count
                                 ],
                               ),
                             ),
                           ),
+                          if (_seenCredits.length > 0)
+                            Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 14.0),
+                                child: AutoSizeText(
+                                  'Seen ${_seenCredits.length} of their credits',
+                                  // todo wording okay?
+                                  style: TextStyle(fontSize: 14),
+                                  maxLines: 1,
+                                  minFontSize: 10,
+                                  textAlign: TextAlign.start,
+                                ),
+                              ),
+                            ),
                           Align(
                             alignment: Alignment.bottomRight,
                             child: Row(
@@ -340,6 +354,7 @@ class _ActorDetailsState extends State<ActorDetails> {
 
     setState(() {
       var media = _allCredits.firstWhere((element) => element.id == creditResponse.id);
+      _seenCredits.add(media);
       media.isSeen = true;
     });
   }
@@ -352,10 +367,10 @@ class _ActorDetailsState extends State<ActorDetails> {
     }
 
     await SavedMediaDatabase.instance.delete(model.id!);
-    // todo do this in a popup?
 
     setState(() {
       var media = _allCredits.firstWhere((element) => element.id == credit.id);
+      _seenCredits.removeWhere((element) => element.id == credit.id);
       media.isSeen = false;
     });
   }
@@ -404,6 +419,7 @@ class _ActorDetailsState extends State<ActorDetails> {
   void updateDisplayedCredits() {
     _displayedCredits = List.from(_allCredits);
     updateSeenCredits();
+    List<ActorCredit> seenCreditsTemp = List.from(_seenCredits);
 
     if (_showOnlySeen) {
       _displayedCredits.removeWhere((element) => !element.isSeen);
@@ -411,19 +427,19 @@ class _ActorDetailsState extends State<ActorDetails> {
 
     if (!_includeTv) {
       _displayedCredits.removeWhere((element) => element.mediaType == MediaType.TV);
-      _seenCredits.removeWhere((element) => element.mediaType == MediaType.TV);
+      seenCreditsTemp.removeWhere((element) => element.mediaType == MediaType.TV);
     }
 
     if (!_includeMovies) {
       _displayedCredits.removeWhere((element) => element.mediaType == MediaType.Movie);
-      _seenCredits.removeWhere((element) => element.mediaType == MediaType.Movie);
+      seenCreditsTemp.removeWhere((element) => element.mediaType == MediaType.Movie);
     }
 
     _displayedCredits.removeWhere((element) => element.isSeen); // so seen media isn't shown twice in same list
 
-    sortCredits(_seenCredits);
+    sortCredits(seenCreditsTemp);
     sortCredits(_displayedCredits);
 
-    _displayedCredits.insertAll(0, _seenCredits);
+    _displayedCredits.insertAll(0, seenCreditsTemp);
   }
 }
