@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/cast.dart';
 import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/movie.dart';
@@ -11,9 +12,8 @@ import 'package:familiar_faces/screens/saved_media_list_screen.dart';
 import 'package:familiar_faces/screens/settings_screen.dart';
 import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/imports/utils.dart';
-import 'package:familiar_faces/widgets/character_search_row.dart';
-import 'package:familiar_faces/widgets/media_search_row.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,8 +30,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _buttonText() => _selectedCharacter == null ? 'WHERE HAVE I SEEN THIS CAST?' : 'WHERE HAVE I SEEN THIS ACTOR?';
 
-  FocusNode _searchCharacterFocus = new FocusNode();
-  FocusNode _searchMediaFocus = new FocusNode();
+  final FocusNode _searchCharacterFocus = new FocusNode();
+  final FocusNode _searchMediaFocus = new FocusNode();
+  final TextEditingController _mediaSearchController = TextEditingController();
+  final TextEditingController _characterSearchController = TextEditingController();
   bool _isLoading = false;
 
   @override
@@ -51,13 +53,13 @@ class _HomeScreenState extends State<HomeScreen> {
           child: SafeArea(
             child: Column(
               children: [
-                Container(
+              	Container(
                   height: 180,
                   color: Colors.green,
                 ),
                 ListTile(
                   leading: Icon(Icons.movie),
-                  title: Text('My Seen Media'),
+                  title: Text('My Media'),
                   onTap: () {
                     // close the drawer menu when clicked
                     Navigator.of(context).pop();
@@ -114,25 +116,101 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                        child: MediaSearchRow(
-                          key: UniqueKey(),
-                          focusNode: _searchMediaFocus,
-                          selectedMedia: _selectedSearch,
-                          onInputCleared: () => onMediaInputCleared(),
-                          onMediaSelected: (media) => onMediaSelected(media),
+                        child: Stack(
+                          alignment: Alignment.centerRight,
+                          children: [
+                            TypeAheadField<SearchMediaResult>(
+                              textFieldConfiguration: TextFieldConfiguration(
+                                controller: _mediaSearchController,
+                                onChanged: (_) {
+                                  // so x button can properly be hidden
+                                  setState(() {});
+                                },
+                                focusNode: _searchMediaFocus,
+                                decoration: InputDecoration(
+                                    prefixIcon: Icon(Icons.search),
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Movie/TV Show',
+                                    hintText: 'Search Movie or TV Show'),
+                              ),
+                              hideOnLoading: true,
+                              hideOnEmpty: true,
+                              hideOnError: true,
+                              hideSuggestionsOnKeyboardHide: false,
+                              debounceDuration: Duration(milliseconds: 300),
+                              onSuggestionSelected: (media) => onMediaSelected(media),
+                              suggestionsCallback: (query) => MediaService.searchMulti(query),
+                              itemBuilder: (context, SearchMediaResult result) {
+                                return ListTile(
+                                  title: Text('${result.title}'),
+                                  leading: Container(
+                                    height: 50,
+                                    width: 50,
+                                    // todo don't use cached here?
+                                    child: CachedNetworkImage(
+                                      imageUrl: getImageUrl(result.posterPath),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            if (!isStringNullOrEmpty(_mediaSearchController.text))
+                              IconButton(
+                                icon: Icon(Icons.clear),
+                                tooltip: 'Clear media',
+                                onPressed: () => onMediaInputCleared(),
+                              ),
+                          ],
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: CharacterSearchRow(
-                          key: UniqueKey(),
-                          // if this key isn't here all hell breaks lose i love flutter
-                          focusNode: _searchCharacterFocus,
-                          selectedCharacter: _selectedCharacter,
-                          castForSelectedMedia: _castForSelectedMedia,
-                          onCharacterCleared: () => onCharacterInputCleared(),
-                          onCharacterSelected: (character) => onCharacterSelected(character),
-                          enabled: _selectedSearch != null,
+                        child: Stack(
+                          alignment: Alignment.centerRight,
+                          children: [
+                            TypeAheadFormField<Cast>(
+                              textFieldConfiguration: TextFieldConfiguration(
+                                enabled: _selectedSearch != null,
+                                focusNode: _searchCharacterFocus,
+                                controller: _characterSearchController,
+                                onChanged: (_) {
+                                  // so x button can properly be hidden
+                                  setState(() {});
+                                },
+                                decoration: InputDecoration(
+                                    labelText: 'Character',
+                                    prefixIcon: Icon(Icons.person),
+                                    border: OutlineInputBorder(),
+                                    hintText: 'Search Character (optional)'),
+                              ),
+                              hideOnLoading: true,
+                              hideOnEmpty: true,
+                              hideOnError: true,
+                              hideSuggestionsOnKeyboardHide: false,
+                              onSuggestionSelected: onCharacterSelected,
+                              suggestionsCallback: (query) => getCharacterResults(query),
+                              itemBuilder: (context, Cast result) {
+                                return ListTile(
+                                  title: Text('${result.characterName}'),
+                                  leading: Container(
+                                    height: 50,
+                                    width: 50,
+                                    child: CachedNetworkImage(
+                                      imageUrl: getImageUrl(result.profilePath),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            if (!isStringNullOrEmpty(_characterSearchController.text))
+                              IconButton(
+                                icon: Icon(Icons.clear),
+                                tooltip: 'Clear character',
+                                onPressed: onCharacterInputCleared,
+                              ),
+                          ],
                         ),
                       ),
                     ],
@@ -210,6 +288,8 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedSearch = null;
       _castForSelectedMedia = [];
+      _mediaSearchController.text = '';
+      _characterSearchController.text = '';
       _selectedCharacter = null;
       hideKeyboard(context);
     });
@@ -218,6 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
   onCharacterInputCleared() {
     setState(() {
       _selectedCharacter = null;
+      _characterSearchController.text = '';
       hideKeyboard(context);
     });
   }
@@ -225,6 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
   onCharacterSelected(Cast character) {
     setState(() {
       _selectedCharacter = character;
+      _characterSearchController.text = _selectedCharacter!.characterName!;
       hideKeyboard(context);
     });
   }
@@ -232,9 +314,11 @@ class _HomeScreenState extends State<HomeScreen> {
   onMediaSelected(SearchMediaResult selected) async {
     setState(() {
       _selectedSearch = selected;
+      _mediaSearchController.text = _selectedSearch!.title!;
       // new media so clear any character inputs
       _castForSelectedMedia = [];
       _selectedCharacter = null;
+      _characterSearchController.text = '';
     });
 
     if (_selectedSearch!.mediaType == MediaType.Movie) {
@@ -244,7 +328,6 @@ class _HomeScreenState extends State<HomeScreen> {
       TvShow tv = await MediaService.getTvShowWithCast(_selectedSearch!.id);
       _castForSelectedMedia = List.from(tv.cast);
     }
-    setState(() {});
   }
 
   Future<void> onMainButtonPressed() async {
@@ -253,7 +336,6 @@ class _HomeScreenState extends State<HomeScreen> {
       await navigate();
     } else {
       showSnackbar('Movie/show must not be empty', context);
-      // throw new Exception('test');
     }
   }
 
@@ -310,6 +392,14 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _isLoading = false;
     });
+  }
+
+  List<Cast> getCharacterResults(String query) {
+    return _castForSelectedMedia.where((character) {
+      var characterLower = character.characterName!.toLowerCase();
+      var queryLower = query.toLowerCase();
+      return characterLower.contains(queryLower);
+    }).toList();
   }
 
   Future<bool> onBackPressed() async {

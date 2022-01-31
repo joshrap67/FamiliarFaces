@@ -3,10 +3,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/search_media_result.dart';
 import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/imports/utils.dart';
+import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:familiar_faces/contracts_sql/saved_media.dart';
-import 'package:familiar_faces/widgets/media_search_row.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class SavedMediaListScreen extends StatefulWidget {
   const SavedMediaListScreen({Key? key}) : super(key: key);
@@ -68,12 +69,52 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                      child: MediaSearchRow(
-                        key: UniqueKey(),
-                        focusNode: _addMediaFocusNode,
-                        onInputCleared: () => onMediaInputCleared(),
-                        showSavedMedia: false,
-                        onMediaSelected: (media) => onMediaSelected(media),
+                      child: Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          TypeAheadField<SearchMediaResult>(
+                            textFieldConfiguration: TextFieldConfiguration(
+                              controller: _mediaSearchController,
+                              onChanged: (_) {
+                                // so x button can properly be hidden
+                                setState(() {});
+                              },
+                              focusNode: _addMediaFocusNode,
+                              decoration: InputDecoration(
+                                  prefixIcon: Icon(Icons.search),
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Movie/TV Show',
+                                  hintText: 'Search Movie or TV Show'),
+                            ),
+                            hideOnLoading: true,
+                            hideOnEmpty: true,
+                            hideOnError: true,
+                            hideSuggestionsOnKeyboardHide: false,
+                            debounceDuration: Duration(milliseconds: 300),
+                            onSuggestionSelected: (media) => onMediaSelected(media),
+                            suggestionsCallback: (query) => MediaService.searchMulti(query, showSavedMedia: false),
+                            itemBuilder: (context, SearchMediaResult result) {
+                              return ListTile(
+                                title: Text('${result.title}'),
+                                leading: Container(
+                                  height: 50,
+                                  width: 50,
+                                  // todo don't use cached here?
+                                  child: CachedNetworkImage(
+                                    imageUrl: getImageUrl(result.posterPath),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          if (!isStringNullOrEmpty(_mediaSearchController.text))
+                            IconButton(
+                              icon: Icon(Icons.clear),
+                              tooltip: 'Clear media',
+                              onPressed: () => onMediaInputCleared(),
+                            ),
+                        ],
                       ),
                     ),
                   ),
@@ -94,7 +135,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                           color: Colors.white,
                         ),
                         itemCount: _displayedSavedMedia.length,
-                        key: GlobalKey(),
+                        // key: GlobalKey(),
                         itemBuilder: (context, index) {
                           return ListTile(
                             title: AutoSizeText(
