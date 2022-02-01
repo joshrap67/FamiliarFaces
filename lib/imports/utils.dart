@@ -65,7 +65,6 @@ void closePopup(BuildContext context) {
   Navigator.of(context, rootNavigator: true).pop('dialog');
 }
 
-// todo shit broke
 void showLoadingDialog(BuildContext context, {String msg = 'Loading...', bool dismissible = false}) {
   showDialog(
     barrierDismissible: false,

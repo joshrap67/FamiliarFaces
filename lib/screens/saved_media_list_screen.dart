@@ -99,7 +99,6 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                                 leading: Container(
                                   height: 50,
                                   width: 50,
-                                  // todo don't use cached here?
                                   child: Image.network(
                                     getImageUrl(result.posterPath),
                                     fit: BoxFit.cover,

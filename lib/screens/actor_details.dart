@@ -14,7 +14,6 @@ import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:familiar_faces/contracts_sql/saved_media.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:loading_overlay/loading_overlay.dart';
 import 'package:collection/collection.dart';
 
 import 'media_cast_screen.dart';
@@ -38,7 +37,6 @@ class _ActorDetailsState extends State<ActorDetails> {
   bool _showOnlySeen = false;
   bool _includeMovies = true;
   bool _includeTv = true;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -59,218 +57,214 @@ class _ActorDetailsState extends State<ActorDetails> {
           minFontSize: 10,
         ),
       ),
-      body: LoadingOverlay(
-        isLoading: _isLoading,
-        opacity: 0.4,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(4.0, 0, 0, 0),
-              child: Container(
-                height: 150,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: getImageUrl(widget.actor.profileImagePath),
-                      placeholder: (context, url) => Center(
-                        child: SizedBox(
-                          child: const CircularProgressIndicator(),
-                          height: 50,
-                          width: 50,
-                        ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4.0, 0, 0, 0),
+            child: Container(
+              height: 150,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: getImageUrl(widget.actor.profileImagePath),
+                    placeholder: (context, url) => Center(
+                      child: SizedBox(
+                        child: const CircularProgressIndicator(),
+                        height: 50,
+                        width: 50,
                       ),
-                      fit: BoxFit.fitWidth,
                     ),
-                    Expanded(
-                      child: Stack(
-                        children: [
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  AutoSizeText(
-                                    '${widget.actor.name}',
-                                    textAlign: TextAlign.start,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    minFontSize: 10,
-                                    style: TextStyle(fontSize: 24),
-                                  ),
-                                  if (widget.actor.birthday != null) // ffs
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-                                      child: AutoSizeText(
-                                        '${getAge(widget.actor.birthday!, widget.actor.deathDay)}',
-                                        style: TextStyle(fontSize: 14),
-                                        maxLines: 1,
-                                        minFontSize: 10,
-                                        textAlign: TextAlign.start,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          if (_seenCredits.length > 0)
-                            Align(
-                              alignment: Alignment.bottomLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 14.0),
-                                child: AutoSizeText(
-                                  'Seen ${_seenCredits.length} of their credits',
-                                  style: TextStyle(fontSize: 14),
+                    fit: BoxFit.fitWidth,
+                  ),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AutoSizeText(
+                                  '${widget.actor.name}',
+                                  textAlign: TextAlign.start,
+                                  overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   minFontSize: 10,
-                                  textAlign: TextAlign.start,
+                                  style: TextStyle(fontSize: 24),
                                 ),
-                              ),
-                            ),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                PopupMenuButton(
-                                  icon: Icon(Icons.sort_rounded),
-                                  itemBuilder: (context) => <PopupMenuEntry<SortingValues>>[
-                                    PopupMenuItem<SortingValues>(
-                                      value: SortingValues.AlphaAscending,
-                                      child: Container(
-                                        child: Text(
-                                          'Alpha Ascending',
-                                          style: TextStyle(
-                                              decoration: _sortValue == SortingValues.AlphaAscending
-                                                  ? TextDecoration.underline
-                                                  : null),
-                                        ),
-                                      ),
+                                if (widget.actor.birthday != null) // ffs
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                                    child: AutoSizeText(
+                                      '${getAge(widget.actor.birthday!, widget.actor.deathDay)}',
+                                      style: TextStyle(fontSize: 14),
+                                      maxLines: 1,
+                                      minFontSize: 10,
+                                      textAlign: TextAlign.start,
                                     ),
-                                    PopupMenuItem<SortingValues>(
-                                      value: SortingValues.AlphaDescending,
-                                      child: Text(
-                                        'Alpha Descending',
-                                        style: TextStyle(
-                                            decoration: _sortValue == SortingValues.AlphaDescending
-                                                ? TextDecoration.underline
-                                                : null),
-                                      ),
-                                    ),
-                                    PopupMenuItem<SortingValues>(
-                                      value: SortingValues.ReleaseDateAscending,
-                                      child: Text(
-                                        'Release Date Ascending',
-                                        style: TextStyle(
-                                            decoration: _sortValue == SortingValues.ReleaseDateAscending
-                                                ? TextDecoration.underline
-                                                : null),
-                                      ),
-                                    ),
-                                    PopupMenuItem<SortingValues>(
-                                      value: SortingValues.ReleaseDateDescending,
-                                      child: Text(
-                                        'Release Date Descending',
-                                        style: TextStyle(
-                                            decoration: _sortValue == SortingValues.ReleaseDateDescending
-                                                ? TextDecoration.underline
-                                                : null),
-                                      ),
-                                    ),
-                                  ],
-                                  onSelected: (SortingValues result) {
-                                    if (_sortValue != result) {
-                                      _sortValue = result;
-                                      setState(() {
-                                        updateDisplayedCredits();
-                                      });
-                                    }
-                                  },
-                                ),
-                                PopupMenuButton<Filters>(
-                                  onSelected: (Filters result) {
-                                    switch (result) {
-                                      case Filters.ShowOnlySeen:
-                                        setState(() {
-                                          _showOnlySeen = !_showOnlySeen;
-                                          updateDisplayedCredits();
-                                        });
-                                        break;
-                                      case Filters.IncludeMovies:
-                                        setState(() {
-                                          _includeMovies = !_includeMovies;
-                                          updateDisplayedCredits();
-                                        });
-                                        break;
-                                      case Filters.IncludeTv:
-                                        setState(() {
-                                          _includeTv = !_includeTv;
-                                          updateDisplayedCredits();
-                                        });
-                                        break;
-                                    }
-                                  },
-                                  itemBuilder: (BuildContext context) => <PopupMenuEntry<Filters>>[
-                                    CheckedPopupMenuItem<Filters>(
-                                      checked: _showOnlySeen,
-                                      value: Filters.ShowOnlySeen,
-                                      child: const Text('Include Seen Media Only'),
-                                    ),
-                                    const PopupMenuDivider(),
-                                    CheckedPopupMenuItem<Filters>(
-                                      value: Filters.IncludeMovies,
-                                      checked: _includeMovies,
-                                      child: Text('Include Movies'),
-                                    ),
-                                    const PopupMenuDivider(),
-                                    CheckedPopupMenuItem<Filters>(
-                                      value: Filters.IncludeTv,
-                                      checked: _includeTv,
-                                      child: Text('Include TV Shows'),
-                                    ),
-                                  ],
-                                )
+                                  ),
                               ],
                             ),
                           ),
-                        ],
+                        ),
+                        if (_seenCredits.length > 0)
+                          Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 14.0),
+                              child: AutoSizeText(
+                                'Seen ${_seenCredits.length} of their credits',
+                                style: TextStyle(fontSize: 14),
+                                maxLines: 1,
+                                minFontSize: 10,
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                          ),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              PopupMenuButton(
+                                icon: Icon(Icons.sort_rounded),
+                                itemBuilder: (context) => <PopupMenuEntry<SortingValues>>[
+                                  PopupMenuItem<SortingValues>(
+                                    value: SortingValues.AlphaAscending,
+                                    child: Container(
+                                      child: Text(
+                                        'Alpha Ascending',
+                                        style: TextStyle(
+                                            decoration: _sortValue == SortingValues.AlphaAscending
+                                                ? TextDecoration.underline
+                                                : null),
+                                      ),
+                                    ),
+                                  ),
+                                  PopupMenuItem<SortingValues>(
+                                    value: SortingValues.AlphaDescending,
+                                    child: Text(
+                                      'Alpha Descending',
+                                      style: TextStyle(
+                                          decoration: _sortValue == SortingValues.AlphaDescending
+                                              ? TextDecoration.underline
+                                              : null),
+                                    ),
+                                  ),
+                                  PopupMenuItem<SortingValues>(
+                                    value: SortingValues.ReleaseDateAscending,
+                                    child: Text(
+                                      'Release Date Ascending',
+                                      style: TextStyle(
+                                          decoration: _sortValue == SortingValues.ReleaseDateAscending
+                                              ? TextDecoration.underline
+                                              : null),
+                                    ),
+                                  ),
+                                  PopupMenuItem<SortingValues>(
+                                    value: SortingValues.ReleaseDateDescending,
+                                    child: Text(
+                                      'Release Date Descending',
+                                      style: TextStyle(
+                                          decoration: _sortValue == SortingValues.ReleaseDateDescending
+                                              ? TextDecoration.underline
+                                              : null),
+                                    ),
+                                  ),
+                                ],
+                                onSelected: (SortingValues result) {
+                                  if (_sortValue != result) {
+                                    _sortValue = result;
+                                    setState(() {
+                                      updateDisplayedCredits();
+                                    });
+                                  }
+                                },
+                              ),
+                              PopupMenuButton<Filters>(
+                                onSelected: (Filters result) {
+                                  switch (result) {
+                                    case Filters.ShowOnlySeen:
+                                      setState(() {
+                                        _showOnlySeen = !_showOnlySeen;
+                                        updateDisplayedCredits();
+                                      });
+                                      break;
+                                    case Filters.IncludeMovies:
+                                      setState(() {
+                                        _includeMovies = !_includeMovies;
+                                        updateDisplayedCredits();
+                                      });
+                                      break;
+                                    case Filters.IncludeTv:
+                                      setState(() {
+                                        _includeTv = !_includeTv;
+                                        updateDisplayedCredits();
+                                      });
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) => <PopupMenuEntry<Filters>>[
+                                  CheckedPopupMenuItem<Filters>(
+                                    checked: _showOnlySeen,
+                                    value: Filters.ShowOnlySeen,
+                                    child: const Text('Include Seen Media Only'),
+                                  ),
+                                  const PopupMenuDivider(),
+                                  CheckedPopupMenuItem<Filters>(
+                                    value: Filters.IncludeMovies,
+                                    checked: _includeMovies,
+                                    child: Text('Include Movies'),
+                                  ),
+                                  const PopupMenuDivider(),
+                                  CheckedPopupMenuItem<Filters>(
+                                    value: Filters.IncludeTv,
+                                    checked: _includeTv,
+                                    child: Text('Include TV Shows'),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(2.0, 10.0, 2.0, 2.0),
+              child: _displayedCredits.length > 0
+                  ? Scrollbar(
+                      child: ListView.separated(
+                        key: new PageStorageKey<String>('actor_details:list'),
+                        separatorBuilder: (BuildContext context, int index) => Divider(height: 15),
+                        itemCount: _displayedCredits.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return ActorMediaRow(
+                            media: _displayedCredits[index],
+                            rowClicked: (credit) => mediaClickedAsync(credit),
+                            addToSeenClicked: (credit) => addToSeenSync(credit),
+                            removeFromSeenClicked: (credit) => removeFromSeen(credit),
+                          );
+                        },
+                      ),
+                    )
+                  : Center(
+                      child: Text(
+                        'No credits',
+                        style: TextStyle(fontSize: 20),
                       ),
                     ),
-                  ],
-                ),
-              ),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(2.0, 10.0, 2.0, 2.0),
-                child: _displayedCredits.length > 0
-                    ? Scrollbar(
-                        child: ListView.separated(
-                          key: new PageStorageKey<String>('actor_details:list'),
-                          separatorBuilder: (BuildContext context, int index) => Divider(height: 15),
-                          itemCount: _displayedCredits.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return ActorMediaRow(
-                              media: _displayedCredits[index],
-                              rowClicked: (credit) => mediaClickedAsync(credit),
-                              addToSeenClicked: (credit) => addToSeenSync(credit),
-                              removeFromSeenClicked: (credit) => removeFromSeen(credit),
-                            );
-                          },
-                        ),
-                      )
-                    : Center(
-                        child: Text(
-                          'No credits',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -289,16 +283,15 @@ class _ActorDetailsState extends State<ActorDetails> {
   }
 
   Future<void> mediaClickedAsync(ActorCredit creditResponse) async {
-    // showLoadingDialog(context, dismissible: true); todo this breaks everything
-    setState(() {
-      _isLoading = true;
-    });
+    showLoadingDialog(context);
+
     try {
       if (creditResponse.mediaType == MediaType.Movie) {
         var actorsOfMovie = await MediaService.getActorsFromMovie(creditResponse.id);
 
         Movie movie = await MediaService.getMovieWithCast(creditResponse.id);
 
+        closePopup(context);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -313,6 +306,8 @@ class _ActorDetailsState extends State<ActorDetails> {
         var actorsOfTvShow = await MediaService.getActorsFromTv(creditResponse.id);
 
         TvShow tvShow = await MediaService.getTvShowWithCast(creditResponse.id);
+
+        closePopup(context);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -325,11 +320,7 @@ class _ActorDetailsState extends State<ActorDetails> {
         ).then((value) => updateSeenAsync()).onError((error, stackTrace) => print(error));
       }
     } catch (e) {
-      print(e);
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      closePopup(context);
     }
   }
 
