@@ -2,35 +2,19 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/cast.dart';
 import 'package:familiar_faces/imports/globals.dart';
+import 'package:familiar_faces/imports/utils.dart';
 import 'package:flutter/material.dart';
 
-class MediaCastRow extends StatefulWidget {
+class MediaCastRow extends StatelessWidget {
   const MediaCastRow({Key? key, required this.castMember, this.rowClicked}) : super(key: key);
 
   final Cast castMember;
   final Function(Cast)? rowClicked;
 
   @override
-  _MediaCastRowState createState() => _MediaCastRowState();
-}
-
-class _MediaCastRowState extends State<MediaCastRow> {
-  // todo make this stateless?
-  late String _url;
-  late bool _showImage;
-  static const String placeholderUrl = 'https://picsum.photos/200';
-
-  @override
-  void initState() {
-    _url = 'https://image.tmdb.org/t/p/w500/${widget.castMember.profilePath}';
-    _showImage = widget.castMember.profilePath != null;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => widget.rowClicked!(widget.castMember),
+      onTap: () => rowClicked!(castMember),
       child: Container(
         height: 150,
         decoration: BoxDecoration(
@@ -55,7 +39,7 @@ class _MediaCastRowState extends State<MediaCastRow> {
                       width: 100,
                       height: 140,
                       child: CachedNetworkImage(
-                        imageUrl: _showImage ? _url : placeholderUrl,
+                        imageUrl: getImageUrl(castMember.profilePath),
                         placeholder: (context, url) => Center(
                           child: SizedBox(
                             child: const CircularProgressIndicator(),
@@ -79,12 +63,12 @@ class _MediaCastRowState extends State<MediaCastRow> {
                                 TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: '${widget.castMember.name}',
+                                      text: '${castMember.name}',
                                       style: TextStyle(fontSize: 26),
                                     ),
                                     if (Globals.settings.showCharacters)
                                       TextSpan(
-                                          text: '\n${widget.castMember.characterName}',
+                                          text: '\n${castMember.characterName}',
                                           style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic)),
                                   ],
                                 ),
@@ -105,7 +89,7 @@ class _MediaCastRowState extends State<MediaCastRow> {
               iconSize: 36,
               color: Colors.white,
               tooltip: 'Full filmography',
-              onPressed: () => widget.rowClicked!(widget.castMember),
+              onPressed: () => rowClicked!(castMember),
             )
           ],
         ),

@@ -8,13 +8,13 @@ bool isStringNullOrEmpty(String? value) {
 
 String getImageUrl(String? path) {
   if (path == null) {
-    return 'https://picsum.photos/200';
+    return 'https://picsum.photos/200'; // todo put placeholder in s3
   } else {
     return 'https://image.tmdb.org/t/p/w500/$path';
   }
 }
 
-parseDate(String? date) {
+DateTime? parseDate(String? date) {
   if (isStringNullOrEmpty(date)) {
     return null;
   } else {
@@ -68,26 +68,27 @@ void closePopup(BuildContext context) {
 // todo shit broke
 void showLoadingDialog(BuildContext context, {String msg = 'Loading...', bool dismissible = false}) {
   showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return WillPopScope(
-          onWillPop: () async => dismissible,
-          child: AlertDialog(
-            content: Flex(
-              direction: Axis.horizontal,
-              children: <Widget>[
-                CircularProgressIndicator(),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                ),
-                Flexible(
-                  flex: 8,
-                  child: Text(msg),
-                )
-              ],
-            ),
+    barrierDismissible: false,
+    context: context,
+    builder: (context) {
+      return WillPopScope(
+        onWillPop: () async => dismissible,
+        child: AlertDialog(
+          content: Flex(
+            direction: Axis.horizontal,
+            children: <Widget>[
+              CircularProgressIndicator(),
+              Padding(
+                padding: EdgeInsets.all(20),
+              ),
+              Flexible(
+                flex: 8,
+                child: Text(msg),
+              )
+            ],
           ),
-        );
-      });
+        ),
+      );
+    },
+  );
 }

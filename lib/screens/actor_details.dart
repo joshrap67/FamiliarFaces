@@ -34,32 +34,19 @@ class _ActorDetailsState extends State<ActorDetails> {
   late List<ActorCredit> _displayedCredits;
   late List<ActorCredit> _allCredits;
   late List<ActorCredit> _seenCredits = <ActorCredit>[];
-  late String _url;
-  late bool _showImage;
   SortingValues _sortValue = SortingValues.ReleaseDateDescending;
   bool _showOnlySeen = false;
   bool _includeMovies = true;
   bool _includeTv = true;
-  static const String placeholderUrl = 'https://picsum.photos/500'; // todo remove
-  final _scrollController = new ScrollController(); // todo remove?
   bool _isLoading = false;
 
   @override
   void initState() {
-    _url = 'https://image.tmdb.org/t/p/w500/${widget.actor.profileImagePath}';
+    super.initState();
     _allCredits = List.from(widget.actor.credits);
     _allCredits.removeWhere((element) => element.releaseDate == null);
-    _showImage = widget.actor.profileImagePath != null;
 
     updateDisplayedCredits();
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 
   @override
@@ -85,7 +72,7 @@ class _ActorDetailsState extends State<ActorDetails> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     CachedNetworkImage(
-                      imageUrl: _showImage ? _url : placeholderUrl,
+                      imageUrl: getImageUrl(widget.actor.profileImagePath),
                       placeholder: (context, url) => Center(
                         child: SizedBox(
                           child: const CircularProgressIndicator(),
@@ -135,7 +122,6 @@ class _ActorDetailsState extends State<ActorDetails> {
                                 padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 14.0),
                                 child: AutoSizeText(
                                   'Seen ${_seenCredits.length} of their credits',
-                                  // todo wording okay?
                                   style: TextStyle(fontSize: 14),
                                   maxLines: 1,
                                   minFontSize: 10,
@@ -263,7 +249,6 @@ class _ActorDetailsState extends State<ActorDetails> {
                     ? Scrollbar(
                         child: ListView.separated(
                           key: new PageStorageKey<String>('actor_details:list'),
-                          controller: _scrollController,
                           separatorBuilder: (BuildContext context, int index) => Divider(height: 15),
                           itemCount: _displayedCredits.length,
                           itemBuilder: (BuildContext context, int index) {

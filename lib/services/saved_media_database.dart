@@ -59,8 +59,6 @@ class SavedMediaDatabase {
     }
   }
 
-  // todo make an enum table?
-
   Future<List<SavedMedia>> getAll() async {
     final db = await instance.database;
 

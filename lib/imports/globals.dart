@@ -2,7 +2,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 enum SortingValues { AlphaDescending, AlphaAscending, ReleaseDateDescending, ReleaseDateAscending }
 
-//todo global seen media list?
 class Globals {
   static String showCharacterKey = 'showCharacterKey';
   static final Settings settings = new Settings(true);

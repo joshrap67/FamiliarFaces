@@ -31,11 +31,10 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
 
   @override
   void initState() {
-    isMediaSeen();
     super.initState();
+    isMediaSeen();
   }
 
-  // todo give warning that tv show shows all seasons and could have a spoiler in terms of who is in the show
   @override
   Widget build(BuildContext context) {
     return Scaffold(

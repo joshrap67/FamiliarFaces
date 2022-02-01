@@ -51,7 +51,14 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Container(
                   height: 180,
-                  color: Colors.green,
+                  width: double.infinity,
+                  child: Tooltip(
+                    message: 'Photo by Alex Litvin on Unsplash',
+                    child: Image.asset(
+                      'assets/images/drawer_background.jpg',
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
                 ),
                 ListTile(
                   leading: Icon(Icons.movie),

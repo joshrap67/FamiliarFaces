@@ -16,7 +16,6 @@ Future<ApiResult<String>> makeApiRequest(HttpAction action, String route, Map<St
     var url = Uri.https(rootUrl, '3/$route', queryParameters);
     http.Response response;
     switch (action) {
-      // todo use a client since being sent to same server?
       case HttpAction.GET:
         response = await http.get(url);
         break;
