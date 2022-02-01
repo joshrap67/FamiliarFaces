@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/cast.dart';
 import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/movie.dart';
@@ -30,8 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _buttonText() => _selectedCharacter == null ? 'WHERE HAVE I SEEN THIS CAST?' : 'WHERE HAVE I SEEN THIS ACTOR?';
 
-  final FocusNode _searchCharacterFocus = new FocusNode();
-  final FocusNode _searchMediaFocus = new FocusNode();
   final TextEditingController _mediaSearchController = TextEditingController();
   final TextEditingController _characterSearchController = TextEditingController();
   bool _isLoading = false;
@@ -44,7 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // todo warning on tv shows that the search might take a while if they didn't specify a character
     return WillPopScope(
       onWillPop: () => onBackPressed(),
       child: Scaffold(
@@ -53,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: SafeArea(
             child: Column(
               children: [
-              	Container(
+                Container(
                   height: 180,
                   color: Colors.green,
                 ),
@@ -61,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   leading: Icon(Icons.movie),
                   title: Text('My Media'),
                   onTap: () {
+                    hideKeyboard(context);
                     // close the drawer menu when clicked
                     Navigator.of(context).pop();
                     Navigator.push(context, MaterialPageRoute(builder: (context) => SavedMediaListScreen()));
@@ -70,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   leading: Icon(Icons.settings),
                   title: Text('Settings & App Info'),
                   onTap: () {
+                    hideKeyboard(context);
                     // close the drawer menu when clicked
                     Navigator.of(context).pop();
                     Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen()));
@@ -126,7 +124,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   // so x button can properly be hidden
                                   setState(() {});
                                 },
-                                focusNode: _searchMediaFocus,
                                 decoration: InputDecoration(
                                     prefixIcon: Icon(Icons.search),
                                     border: OutlineInputBorder(),
@@ -136,6 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               hideOnLoading: true,
                               hideOnEmpty: true,
                               hideOnError: true,
+                              key: UniqueKey(),
                               hideSuggestionsOnKeyboardHide: false,
                               debounceDuration: Duration(milliseconds: 300),
                               onSuggestionSelected: (media) => onMediaSelected(media),
@@ -146,9 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   leading: Container(
                                     height: 50,
                                     width: 50,
-                                    // todo don't use cached here?
-                                    child: CachedNetworkImage(
-                                      imageUrl: getImageUrl(result.posterPath),
+                                    child: Image.network(
+                                      getImageUrl(result.posterPath),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -171,7 +168,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             TypeAheadFormField<Cast>(
                               textFieldConfiguration: TextFieldConfiguration(
-                                focusNode: _searchCharacterFocus,
                                 controller: _characterSearchController,
                                 onChanged: (_) {
                                   // so x button can properly be hidden
@@ -195,8 +191,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   leading: Container(
                                     height: 50,
                                     width: 50,
-                                    child: CachedNetworkImage(
-                                      imageUrl: getImageUrl(result.profilePath),
+                                    child: Image.network(
+                                      getImageUrl(result.profilePath),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -402,11 +398,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<bool> onBackPressed() async {
-    if (_searchCharacterFocus.hasPrimaryFocus) {
-      _searchCharacterFocus.unfocus();
-      return false;
-    } else if (_searchMediaFocus.hasPrimaryFocus) {
-      _searchMediaFocus.unfocus();
+    if (FocusScope.of(context).hasFocus) {
+      hideKeyboard(context);
       return false;
     } else {
       return true;

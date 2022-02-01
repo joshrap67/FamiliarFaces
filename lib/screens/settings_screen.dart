@@ -2,8 +2,6 @@ import 'package:familiar_faces/imports/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'about_screen.dart';
-
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
@@ -11,7 +9,6 @@ class SettingsScreen extends StatefulWidget {
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 
-// todo say how there may be discrepancies in the data since this api is dogshit
 class _SettingsScreenState extends State<SettingsScreen> {
   late bool _showCharacter;
   String? _appVersion;
@@ -29,94 +26,100 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         title: Text('Settings & App Info'),
       ),
-      body: ListView(
+      body: Column(
         children: [
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.person),
-              title: Text(
-                'Character Names',
-                style: TextStyle(fontSize: 25),
-              ),
-              tileColor: Color(0xff2a2f38),
-              subtitle: Text('If disabled, character names will never be shown unless searching them.'),
-              onTap: () {
-                setShowCharacters(!_showCharacter);
-              },
-              trailing: Checkbox(
-                onChanged: (value) => setShowCharacters(value!),
-                checkColor: Colors.white,
-                activeColor: Color(0xff009257),
-                value: _showCharacter,
-              ),
+          Expanded(
+            child: ListView(
+              children: [
+                Card(
+                  child: ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text(
+                      'Character Names',
+                      style: TextStyle(fontSize: 25),
+                    ),
+                    tileColor: Color(0xff2a2f38),
+                    subtitle: Text('If disabled, character names will never be shown unless searching them.'),
+                    onTap: () {
+                      setShowCharacters(!_showCharacter);
+                    },
+                    trailing: Checkbox(
+                      onChanged: (value) => setShowCharacters(value!),
+                      checkColor: Colors.white,
+                      activeColor: Color(0xff009257),
+                      value: _showCharacter,
+                    ),
+                  ),
+                ),
+                Padding(padding: const EdgeInsets.all(5.0)),
+                Card(
+                  child: ListTile(
+                    leading: Icon(Icons.privacy_tip),
+                    title: Text(
+                      'Privacy Policy',
+                      style: TextStyle(fontSize: 25),
+                    ),
+                    tileColor: Color(0xff2a2f38),
+                    onTap: () async {
+                      // const String url = '';
+                      // if (await canLaunch(url)) {
+                      //   await launch(url);
+                      // } else {
+                      //   throw 'Could not launch $url';
+                      // }
+                    },
+                  ),
+                ),
+                Padding(padding: const EdgeInsets.all(5.0)),
+                Card(
+                  child: ListTile(
+                    leading: Icon(Icons.article),
+                    title: Text(
+                      'Terms of Service',
+                      style: TextStyle(fontSize: 25),
+                    ),
+                    tileColor: Color(0xff2a2f38),
+                    onTap: () async {
+                      // const String url = '';
+                      // if (await canLaunch(url)) {
+                      //   await launch(url);
+                      // } else {
+                      //   throw 'Could not launch $url';
+                      // }
+                    },
+                  ),
+                ),
+                Padding(padding: const EdgeInsets.all(5.0)),
+                Card(
+                  child: ListTile(
+                    leading: Icon(Icons.phone_android),
+                    title: Text(
+                      _appVersion ?? '',
+                      style: TextStyle(fontSize: 25),
+                    ),
+                    tileColor: Color(0xff2a2f38),
+                    subtitle: Text('App Version'),
+                  ),
+                ),
+              ],
             ),
           ),
-          Padding(padding: const EdgeInsets.all(5.0)),
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.info),
-              tileColor: Color(0xff2a2f38),
-              title: Text(
-                'About',
-                style: TextStyle(fontSize: 25),
-              ),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) {
-                  return AboutScreen();
-                }));
-              },
+          Container(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'This product uses the TMDB API but is not endorsed or certified by TMDB.',
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+                Image.asset('assets/images/tmdb_logo.png')
+              ],
             ),
-          ),
-          Padding(padding: const EdgeInsets.all(5.0)),
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.privacy_tip),
-              title: Text(
-                'Privacy Policy',
-                style: TextStyle(fontSize: 25),
-              ),
-              tileColor: Color(0xff2a2f38),
-              onTap: () async {
-                // const String url = '';
-                // if (await canLaunch(url)) {
-                //   await launch(url);
-                // } else {
-                //   throw 'Could not launch $url';
-                // }
-              },
-            ),
-          ),
-          Padding(padding: const EdgeInsets.all(5.0)),
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.article),
-              title: Text(
-                'Terms of Service',
-                style: TextStyle(fontSize: 25),
-              ),
-              tileColor: Color(0xff2a2f38),
-              onTap: () async {
-                // const String url = '';
-                // if (await canLaunch(url)) {
-                //   await launch(url);
-                // } else {
-                //   throw 'Could not launch $url';
-                // }
-              },
-            ),
-          ),
-          Padding(padding: const EdgeInsets.all(5.0)),
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.phone_android),
-              title: Text(
-                _appVersion ?? '',
-                style: TextStyle(fontSize: 25),
-              ),
-              tileColor: Color(0xff2a2f38),
-              subtitle: Text('App Version'),
-            ),
-          ),
+          )
         ],
       ),
     );
