@@ -133,7 +133,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               hideOnLoading: true,
                               hideOnEmpty: true,
                               hideOnError: true,
-                              key: UniqueKey(),
                               hideSuggestionsOnKeyboardHide: false,
                               debounceDuration: Duration(milliseconds: 300),
                               onSuggestionSelected: (media) => onMediaSelected(media),
