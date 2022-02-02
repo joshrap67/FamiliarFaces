@@ -20,6 +20,6 @@ class MovieResponse {
 
   @override
   String toString() {
-    return 'MovieResponse{id: $id, title: $title, releaseDate: $releaseDate, posterImagePath: $posterImagePath}';
+    return 'MovieResponse{id: $id, title: $title, releaseDate: $releaseDate, posterImagePath: $posterImagePath, cast: $cast}';
   }
 }

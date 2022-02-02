@@ -14,7 +14,6 @@ import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:familiar_faces/contracts_sql/saved_media.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:collection/collection.dart';
 
 import 'media_cast_screen.dart';
 
@@ -133,23 +132,11 @@ class _ActorDetailsState extends State<ActorDetails> {
                                 icon: Icon(Icons.sort_rounded),
                                 itemBuilder: (context) => <PopupMenuEntry<SortingValues>>[
                                   PopupMenuItem<SortingValues>(
-                                    value: SortingValues.AlphaAscending,
-                                    child: Container(
-                                      child: Text(
-                                        'Alpha Ascending',
-                                        style: TextStyle(
-                                            decoration: _sortValue == SortingValues.AlphaAscending
-                                                ? TextDecoration.underline
-                                                : null),
-                                      ),
-                                    ),
-                                  ),
-                                  PopupMenuItem<SortingValues>(
-                                    value: SortingValues.AlphaDescending,
+                                    value: SortingValues.ReleaseDateDescending,
                                     child: Text(
-                                      'Alpha Descending',
+                                      'Release Date Descending',
                                       style: TextStyle(
-                                          decoration: _sortValue == SortingValues.AlphaDescending
+                                          decoration: _sortValue == SortingValues.ReleaseDateDescending
                                               ? TextDecoration.underline
                                               : null),
                                     ),
@@ -165,13 +152,25 @@ class _ActorDetailsState extends State<ActorDetails> {
                                     ),
                                   ),
                                   PopupMenuItem<SortingValues>(
-                                    value: SortingValues.ReleaseDateDescending,
+                                    value: SortingValues.AlphaDescending,
                                     child: Text(
-                                      'Release Date Descending',
+                                      'Alpha Descending',
                                       style: TextStyle(
-                                          decoration: _sortValue == SortingValues.ReleaseDateDescending
+                                          decoration: _sortValue == SortingValues.AlphaDescending
                                               ? TextDecoration.underline
                                               : null),
+                                    ),
+                                  ),
+                                  PopupMenuItem<SortingValues>(
+                                    value: SortingValues.AlphaAscending,
+                                    child: Container(
+                                      child: Text(
+                                        'Alpha Ascending',
+                                        style: TextStyle(
+                                            decoration: _sortValue == SortingValues.AlphaAscending
+                                                ? TextDecoration.underline
+                                                : null),
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -269,19 +268,6 @@ class _ActorDetailsState extends State<ActorDetails> {
     );
   }
 
-  Future<void> updateSeenAsync() async {
-    List<SavedMedia> seenMedia = await SavedMediaService.getAll();
-    MediaService.applySeenMedia(_allCredits, seenMedia);
-    setState(() {
-      updateDisplayedCredits();
-    });
-  }
-
-  void updateSeenCredits() {
-    _seenCredits = <ActorCredit>[];
-    _seenCredits.addAll(_allCredits.where((element) => element.isSeen));
-  }
-
   Future<void> mediaClickedAsync(ActorCredit creditResponse) async {
     showLoadingDialog(context);
 
@@ -291,7 +277,7 @@ class _ActorDetailsState extends State<ActorDetails> {
 
         Movie movie = await MediaService.getMovieWithCast(creditResponse.id);
 
-        closePopup(context);
+        closePopup(context); // important this is done first b/c otherwise it pops the newly pushed route
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -317,11 +303,19 @@ class _ActorDetailsState extends State<ActorDetails> {
               tvShow: tvShow,
             ),
           ),
-        ).then((value) => updateSeenAsync()).onError((error, stackTrace) => print(error));
+        ).then((value) => updateSeenAsync());
       }
     } catch (e) {
       closePopup(context);
     }
+  }
+
+  Future<void> updateSeenAsync() async {
+    List<SavedMedia> seenMedia = await SavedMediaService.getAll();
+    MediaService.applySeenMedia(_allCredits, seenMedia);
+    setState(() {
+      updateDisplayedCredits();
+    });
   }
 
   Future<void> addToSeenSync(ActorCredit creditResponse) async {
@@ -336,13 +330,12 @@ class _ActorDetailsState extends State<ActorDetails> {
   }
 
   Future<void> removeFromSeen(ActorCredit credit) async {
-    List<SavedMedia> seenMedia = await SavedMediaService.getAll();
-    var model = seenMedia.firstWhereOrNull((element) => element.mediaId == credit.id);
-    if (model == null) {
+    SavedMedia? seenMedia = await SavedMediaService.getByMediaId(credit.id);
+    if (seenMedia == null) {
       return;
     }
 
-    await SavedMediaDatabase.instance.delete(model.id!);
+    await SavedMediaDatabase.instance.delete(seenMedia.id!);
 
     setState(() {
       var media = _allCredits.firstWhere((element) => element.id == credit.id);
@@ -394,9 +387,11 @@ class _ActorDetailsState extends State<ActorDetails> {
 
   void updateDisplayedCredits() {
     _displayedCredits = List.from(_allCredits);
-    updateSeenCredits();
+    _seenCredits = <ActorCredit>[];
+    _seenCredits.addAll(_allCredits.where((element) => element.isSeen));
     List<ActorCredit> seenCreditsTemp = List.from(_seenCredits);
 
+    _displayedCredits.removeWhere((element) => element.isSeen); // so seen media isn't shown twice in same list
     if (_showOnlySeen) {
       _displayedCredits.removeWhere((element) => !element.isSeen);
     }
@@ -410,8 +405,6 @@ class _ActorDetailsState extends State<ActorDetails> {
       _displayedCredits.removeWhere((element) => element.mediaType == MediaType.Movie);
       seenCreditsTemp.removeWhere((element) => element.mediaType == MediaType.Movie);
     }
-
-    _displayedCredits.removeWhere((element) => element.isSeen); // so seen media isn't shown twice in same list
 
     sortCredits(seenCreditsTemp);
     sortCredits(_displayedCredits);

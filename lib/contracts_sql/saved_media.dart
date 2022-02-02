@@ -11,7 +11,7 @@ class SavedMediaFields {
   static final String posterPath = 'posterPath';
   static final String releaseDate = 'releaseDate';
 
-  static final List<String> values = [id, mediaId, mediaType, title, posterPath, releaseDate];
+  static final List<String> columnNames = [id, mediaId, mediaType, title, posterPath, releaseDate];
 }
 
 class SavedMedia {
@@ -45,11 +45,14 @@ class SavedMedia {
   static SavedMedia fromJson(Map<String, Object?> rawJson) {
     var releaseDate = rawJson[SavedMediaFields.releaseDate] as String?;
     var rawMediaType = rawJson[SavedMediaFields.mediaType] as int;
-    return new SavedMedia(rawJson[SavedMediaFields.mediaId] as int, MediaType.values[rawMediaType],
-        id: rawJson[SavedMediaFields.id] as int,
-        title: rawJson[SavedMediaFields.title] as String?,
-        posterPath: rawJson[SavedMediaFields.posterPath] as String?,
-        releaseDate: parseDate(releaseDate));
+    return new SavedMedia(
+      rawJson[SavedMediaFields.mediaId] as int,
+      MediaType.values[rawMediaType],
+      id: rawJson[SavedMediaFields.id] as int,
+      title: rawJson[SavedMediaFields.title] as String?,
+      posterPath: rawJson[SavedMediaFields.posterPath] as String?,
+      releaseDate: parseDate(releaseDate),
+    );
   }
 
   @override

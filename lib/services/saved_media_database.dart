@@ -10,7 +10,9 @@ class SavedMediaDatabase {
   SavedMediaDatabase._init();
 
   Future<Database> get database async {
-    if (_database != null) return _database!;
+    if (_database != null) {
+      return _database!;
+    }
     _database = await _initDB('saved_media_database.db');
     return _database!;
   }
@@ -48,7 +50,7 @@ class SavedMediaDatabase {
     final db = await instance.database;
     final maps = await db.query(
       tableSavedMedia,
-      columns: SavedMediaFields.values,
+      columns: SavedMediaFields.columnNames,
       where: '${SavedMediaFields.id} = ?',
       whereArgs: [id],
     );
@@ -57,6 +59,21 @@ class SavedMediaDatabase {
     } else {
       throw new Exception("Media not found");
     }
+  }
+
+  Future<SavedMedia?> getByMediaId(int mediaId) async {
+	  final db = await instance.database;
+	  final maps = await db.query(
+		  tableSavedMedia,
+		  columns: SavedMediaFields.columnNames,
+		  where: '${SavedMediaFields.mediaId} = ?',
+		  whereArgs: [mediaId],
+	  );
+	  if (maps.isNotEmpty) {
+		  return SavedMedia.fromJson(maps.first);
+	  } else {
+		  return null;
+	  }
   }
 
   Future<List<SavedMedia>> getAll() async {

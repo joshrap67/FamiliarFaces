@@ -14,17 +14,21 @@ import 'package:familiar_faces/contracts/search_media_result.dart';
 import 'package:familiar_faces/contracts/tv_show.dart';
 import 'package:familiar_faces/imports/utils.dart';
 
+// converts raw data from api to consumable contracts for app
 class ModelCreator {
   static List<SearchMediaResult> getSearchMediaResponses(List<MediaResponse> mediaResults) {
     return mediaResults
-        .map((mediaResult) => new SearchMediaResult(
+        .map(
+          (mediaResult) => new SearchMediaResult(
             mediaResult.id,
             getTitle(mediaResult.title, mediaResult.name, mediaResult.mediaType),
             getMediaType(mediaResult.mediaType),
             getReleaseDate(mediaResult.releaseDate, mediaResult.firstAirDate, mediaResult.mediaType),
             mediaResult.posterPath,
             mediaResult.isVideo,
-            mediaResult.isAdult))
+            mediaResult.isAdult,
+          ),
+        )
         .toList();
   }
 
@@ -82,12 +86,12 @@ class ModelCreator {
 
   static Actor getActor(PersonResponse person) {
     return new Actor(person.id, person.name!, person.profileImagePath, parseDate(person.birthday),
-        parseDate(person.deathDay), getPersonCreditResponse(person.credits));
+        parseDate(person.deathDay), getPersonCreditsResponse(person.credits));
   }
 
-  static List<ActorCredit> getPersonCreditResponse(List<PersonCreditResponse> personCredits) {
+  static List<ActorCredit> getPersonCreditsResponse(List<PersonCreditResponse> personCredits) {
     /*
-    	Essentially, since this API is pretty trash, some media from the get aggregate credits are duplicated with different
+    	Essentially, since this API is a mess for tv shows, some rows from the get aggregate credits call are duplicated with different
     	character names. What I'm doing here is looping through all of the duplicated ids and combining all the character
     	names into one string, and then putting a singular media back into the return list. So damn stupid.
      */
@@ -103,26 +107,23 @@ class ModelCreator {
       mediaIdToCharacterNames[credit.id]!.add(credit.characterName);
 
       if (!mediaIdToDistinctCredit.containsKey(credit.id)) {
+        // just take the first match we find for the credit, we just need one reference for the duplicate ones
         mediaIdToDistinctCredit[credit.id] = credit;
-      }
-    }
-
-    for (var uniqueCredit in mediaIdToCharacterNames.keys) {
-      if (mediaIdToCharacterNames[uniqueCredit]!.length > 1) {
-        var cleanedName = getCharacterName(mediaIdToCharacterNames[uniqueCredit]!);
-        mediaIdToDistinctCredit[uniqueCredit]!.characterName = cleanedName;
       }
     }
 
     var retVal = <ActorCredit>[];
     for (var credit in mediaIdToDistinctCredit.values) {
-      retVal.add(new ActorCredit(
+      retVal.add(
+        new ActorCredit(
           credit.id,
           getTitle(credit.title, credit.name, credit.mediaType),
           getMediaType(credit.mediaType),
           getCharacterName(mediaIdToCharacterNames[credit.id]!),
           getReleaseDate(credit.releaseDate, credit.firstAirDate, credit.mediaType),
-          credit.posterPath));
+          credit.posterPath,
+        ),
+      );
     }
     return retVal;
   }

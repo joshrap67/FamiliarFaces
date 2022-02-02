@@ -12,6 +12,7 @@ class Actor {
 
   @override
   String toString() {
-    return 'Actor{id: $id, name: $name, profileImagePath: $profileImagePath, credits: $credits}';
+    return 'Actor{id: $id, name: $name, profileImagePath: $profileImagePath, '
+        'birthday: $birthday, deathDay: $deathDay, credits: $credits}';
   }
 }

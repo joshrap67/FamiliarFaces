@@ -32,7 +32,7 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
   @override
   void initState() {
     super.initState();
-    isMediaSeen();
+    updateMediaSeen();
   }
 
   @override
@@ -72,18 +72,18 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
   }
 
   String? getTitle() {
-    return widget.movie != null ? widget.movie!.title : widget.tvShow!.name;
+    return widget.movie != null ? widget.movie!.title : widget.tvShow!.title;
   }
 
   void setMediaSeen() async {
     var mediaType = widget.mediaType();
     var id = widget.movie != null ? widget.movie!.id : widget.tvShow!.id;
-    var title = widget.movie != null ? widget.movie!.title : widget.tvShow!.name;
+    var title = widget.movie != null ? widget.movie!.title : widget.tvShow!.title;
     var releaseDate = widget.movie != null ? widget.movie!.releaseDate : widget.tvShow!.firstAirDate;
     var posterPath = widget.movie != null ? widget.movie!.posterImagePath : widget.tvShow!.posterPath;
     await SavedMediaService.add(
         new SavedMedia(id, mediaType, title: title, releaseDate: releaseDate, posterPath: posterPath));
-    updateSeenCreditsAsync();
+    updateSeenCredits();
   }
 
   void actorClicked(Cast actor) {
@@ -94,10 +94,10 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
           actor: widget.actors.firstWhere((element) => element.id == actor.id),
         ),
       ),
-    ).then((value) => updateSeenCreditsAsync());
+    ).then((value) => updateSeenCredits());
   }
 
-  Future<void> isMediaSeen({List<SavedMedia>? seenMedia}) async {
+  Future<void> updateMediaSeen({List<SavedMedia>? seenMedia}) async {
     if (seenMedia == null) {
       seenMedia = await SavedMediaService.getAll();
     }
@@ -108,9 +108,9 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
     });
   }
 
-  Future<void> updateSeenCreditsAsync() async {
+  Future<void> updateSeenCredits() async {
     List<SavedMedia> seenMedia = await SavedMediaService.getAll();
-    await isMediaSeen(seenMedia: seenMedia);
+    await updateMediaSeen(seenMedia: seenMedia);
 
     widget.actors.forEach((element) {
       MediaService.applySeenMedia(element.credits, seenMedia);

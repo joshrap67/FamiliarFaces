@@ -22,6 +22,7 @@ class PersonResponse {
 
   @override
   String toString() {
-    return 'PersonResponse{id: $id, name: $name, profileImagePath: $profileImagePath, credits: $credits}';
+    return 'PersonResponse{id: $id, name: $name, profileImagePath: $profileImagePath, '
+		'birthday: $birthday, deathDay: $deathDay, credits: $credits}';
   }
 }

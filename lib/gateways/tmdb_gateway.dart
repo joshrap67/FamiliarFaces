@@ -7,13 +7,14 @@ import 'api_result.dart';
 import 'http_action.dart';
 
 const String rootUrl = 'api.themoviedb.org';
+const int version = 3;
 
 Future<ApiResult<String>> makeApiRequest(HttpAction action, String route, Map<String, String> queryParameters,
     {Map<String, dynamic>? requestContent}) async {
-  ApiResult<String> retVal = new ApiResult();
+  ApiResult<String> retVal;
 
   try {
-    var url = Uri.https(rootUrl, '3/$route', queryParameters);
+    var url = Uri.https(rootUrl, '$version/$route', queryParameters);
     http.Response response;
     switch (action) {
       case HttpAction.GET:
@@ -33,14 +34,14 @@ Future<ApiResult<String>> makeApiRequest(HttpAction action, String route, Map<St
     }
 
     if (response.statusCode >= 200 || response.statusCode < 300) {
-      retVal.data = response.body;
+      retVal = new ApiResult.success(response.body);
     } else {
-      retVal.errorMessage = response.body;
+      retVal = new ApiResult.failure(response.body);
     }
   } on SocketException catch (_) {
-    retVal.errorMessage = 'Error connecting to server.';
+    retVal = new ApiResult.failure('Error connecting to server.');
   } on Exception catch (e) {
-    retVal.errorMessage = e.toString();
+    retVal = new ApiResult.failure(e.toString());
   }
   return retVal;
 }

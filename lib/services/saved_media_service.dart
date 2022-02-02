@@ -10,6 +10,10 @@ class SavedMediaService {
     return await SavedMediaDatabase.instance.get(id);
   }
 
+  static Future<SavedMedia?> getByMediaId(int mediaId) async {
+	  return await SavedMediaDatabase.instance.getByMediaId(mediaId);
+  }
+
   static Future<SavedMedia> add(SavedMedia media) async {
     return await SavedMediaDatabase.instance.create(media);
   }

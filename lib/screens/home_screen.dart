@@ -103,11 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
             if (_selectedSearch?.posterPath == null)
               Center(
                 child: Container(
-                  // height: double.infinity,
-                  // width: double.infinity,
                   child: Image.asset(
                     'assets/icon/foreground.png',
-                    // color: Color.fromRGBO(0, 0, 0, 0.4),
                     colorBlendMode: BlendMode.dstATop,
                     fit: BoxFit.fitWidth,
                   ),
@@ -412,7 +409,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // bit of an anti pattern, but i would rather not have async calls everywhere for these global settings
   Future<void> updateGlobalSettings() async {
     var prefs = await SharedPreferences.getInstance();
     setState(() {

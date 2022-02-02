@@ -8,7 +8,7 @@ bool isStringNullOrEmpty(String? value) {
 
 String getImageUrl(String? path) {
   if (path == null) {
-    return 'https://picsum.photos/200'; // todo put placeholder in s3
+    return 'https://familiar-faces-images.s3.amazonaws.com/not_found.png';
   } else {
     return 'https://image.tmdb.org/t/p/w500/$path';
   }

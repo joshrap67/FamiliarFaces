@@ -27,7 +27,7 @@ class MediaService {
     return movie;
   }
 
-  // bad path, loop through every actor in the movie and return their credits grouped together
+  // bad path, loop through every actor in the movie and return their credits
   static Future<List<Actor>> getActorsFromMovie(int movieId, {String? characterName}) async {
     List<Actor> movieActors = <Actor>[];
     List<SavedMedia> savedMedia = await SavedMediaService.getAll();
@@ -54,7 +54,7 @@ class MediaService {
     return tvShow;
   }
 
-  // bad path, loop through every actor in the movie and return their credits grouped together
+  // bad path, loop through every actor in the movie and return their credits
   static Future<List<Actor>> getActorsFromTv(int tvId, {String? characterName}) async {
     List<Actor> tvShowActors = <Actor>[];
     List<SavedMedia> savedMedia = await SavedMediaService.getAll();
@@ -104,18 +104,18 @@ class MediaService {
     List<SearchMediaResult> search = await TmdbService.searchMulti(query);
     // drop any records with a null title as that makes no sense for user to click
     search.removeWhere((element) => element.title == null);
-    // obviously if the release date is null just void it
     search.removeWhere((element) => element.releaseDate == null);
     // if it has a null poster it likely is not very popular and might not be released yet either
     search.removeWhere((element) => element.posterPath == null);
-    // lmao don't want porn
+    // lmao don't want porn though this worries me since the data is user entered and someone might not flag it properly...
     search.removeWhere((element) => element.isAdult);
     // according to TMDB docs, this field is set on things like BTS or short films but doesn't actually seem to matter
     search.removeWhere((element) => element.isVideo);
     if (!showSavedMedia) {
       List<SavedMedia> savedMedia = await SavedMediaService.getAll();
       // don't show suggestions for ones the user has already saved
-      search.removeWhere((element) => savedMedia.any((savedMedia) => savedMedia.mediaId == element.id));
+      search.removeWhere((element) => savedMedia
+          .any((savedMedia) => savedMedia.mediaId == element.id && savedMedia.mediaType == element.mediaType));
     }
 
     // if it hasn't been released don't show it

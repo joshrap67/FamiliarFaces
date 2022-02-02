@@ -1,3 +1,5 @@
+import 'package:familiar_faces/imports/utils.dart';
+
 import 'cast_response.dart';
 
 class TvShowResponse {
@@ -25,8 +27,12 @@ class TvShowResponse {
       }
       if (characterNames.length > 2) {
         for (int i = 0; i < characterNames.length; i++) {
-          // if actor has multiple characters, comma separate them
           var charName = characterNames[i];
+          if (isStringNullOrEmpty(charName)) {
+            continue;
+          }
+
+          // if actor has multiple characters, comma separate them
           characterName += i == characterNames.length - 1 ? '$charName' : '$charName, ';
         }
       } else if (characterNames.length == 1) {

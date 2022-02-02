@@ -7,12 +7,13 @@ class Globals {
   static final Settings settings = new Settings(true);
 }
 
+// bit of an anti pattern, but i would rather not have async calls everywhere for these global settings
 class Settings {
   bool showCharacters;
 
   Settings(this.showCharacters);
 
-  setShowCharacters(bool value) async {
+  Future<void> setShowCharacters(bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool(Globals.showCharacterKey, value);
     showCharacters = value;
