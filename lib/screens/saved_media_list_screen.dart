@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/search_media_result.dart';
 import 'package:familiar_faces/imports/globals.dart';

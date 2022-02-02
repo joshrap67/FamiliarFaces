@@ -274,8 +274,7 @@ class _ActorDetailsState extends State<ActorDetails> {
     try {
       if (creditResponse.mediaType == MediaType.Movie) {
         var actorsOfMovie = await MediaService.getActorsFromMovie(creditResponse.id);
-
-        Movie movie = await MediaService.getMovieWithCast(creditResponse.id);
+        var movie = await MediaService.getMovieWithCast(creditResponse.id);
 
         closePopup(context); // important this is done first b/c otherwise it pops the newly pushed route
         Navigator.push(
@@ -290,8 +289,7 @@ class _ActorDetailsState extends State<ActorDetails> {
         ).then((value) => updateSeenAsync());
       } else if (creditResponse.mediaType == MediaType.TV) {
         var actorsOfTvShow = await MediaService.getActorsFromTv(creditResponse.id);
-
-        TvShow tvShow = await MediaService.getTvShowWithCast(creditResponse.id);
+        var tvShow = await MediaService.getTvShowWithCast(creditResponse.id);
 
         closePopup(context);
         Navigator.push(
@@ -311,7 +309,7 @@ class _ActorDetailsState extends State<ActorDetails> {
   }
 
   Future<void> updateSeenAsync() async {
-    List<SavedMedia> seenMedia = await SavedMediaService.getAll();
+    var seenMedia = await SavedMediaService.getAll();
     MediaService.applySeenMedia(_allCredits, seenMedia);
     setState(() {
       updateDisplayedCredits();
@@ -330,7 +328,7 @@ class _ActorDetailsState extends State<ActorDetails> {
   }
 
   Future<void> removeFromSeen(ActorCredit credit) async {
-    SavedMedia? seenMedia = await SavedMediaService.getByMediaId(credit.id);
+    var seenMedia = await SavedMediaService.getByMediaId(credit.id);
     if (seenMedia == null) {
       return;
     }
@@ -389,7 +387,7 @@ class _ActorDetailsState extends State<ActorDetails> {
     _displayedCredits = List.from(_allCredits);
     _seenCredits = <ActorCredit>[];
     _seenCredits.addAll(_allCredits.where((element) => element.isSeen));
-    List<ActorCredit> seenCreditsTemp = List.from(_seenCredits);
+    var seenCreditsTemp = List<ActorCredit>.from(_seenCredits);
 
     _displayedCredits.removeWhere((element) => element.isSeen); // so seen media isn't shown twice in same list
     if (_showOnlySeen) {

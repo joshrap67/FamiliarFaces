@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: double.infinity,
                 child: Image.network(
                   getImageUrl(_selectedSearch?.posterPath),
-                  color: Color.fromRGBO(0, 0, 0, 0.4),
+                  color: const Color.fromRGBO(0, 0, 0, 0.4),
                   colorBlendMode: BlendMode.dstATop,
                   fit: BoxFit.fill,
                 ),
@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Center(
                 child: Container(
                   child: Image.asset(
-                    'assets/icon/foreground.png',
+                    'assets/icon/foreground.png', // todo get less blurry
                     colorBlendMode: BlendMode.dstATop,
                     fit: BoxFit.fitWidth,
                   ),
@@ -355,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
       } else if (_selectedSearch!.mediaType == MediaType.Movie) {
         var actorsOfMovie = await MediaService.getActorsFromMovie(_selectedSearch!.id);
 
-        Movie movie = await MediaService.getMovieWithCast(_selectedSearch!.id);
+        var movie = await MediaService.getMovieWithCast(_selectedSearch!.id);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -369,8 +369,7 @@ class _HomeScreenState extends State<HomeScreen> {
       } else if (_selectedSearch!.mediaType == MediaType.TV) {
         var actorsOfTvShow = await MediaService.getActorsFromTv(_selectedSearch!.id);
 
-        TvShow tvShow = await MediaService.getTvShowWithCast(_selectedSearch!.id);
-
+        var tvShow = await MediaService.getTvShowWithCast(_selectedSearch!.id);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -383,7 +382,6 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
     } catch (e) {
-      print(e);
       showSnackbar('Error loading data', context);
     }
 

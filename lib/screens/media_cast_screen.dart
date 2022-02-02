@@ -109,7 +109,7 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
   }
 
   Future<void> updateSeenCredits() async {
-    List<SavedMedia> seenMedia = await SavedMediaService.getAll();
+    var seenMedia = await SavedMediaService.getAll();
     await updateMediaSeen(seenMedia: seenMedia);
 
     widget.actors.forEach((element) {

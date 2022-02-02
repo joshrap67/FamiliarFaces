@@ -14,7 +14,7 @@ class Settings {
   Settings(this.showCharacters);
 
   Future<void> setShowCharacters(bool value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var prefs = await SharedPreferences.getInstance();
     prefs.setBool(Globals.showCharacterKey, value);
     showCharacters = value;
   }

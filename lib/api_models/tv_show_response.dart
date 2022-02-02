@@ -26,7 +26,7 @@ class TvShowResponse {
         characterNames.add(role['character'] as String);
       }
       if (characterNames.length > 2) {
-        for (int i = 0; i < characterNames.length; i++) {
+        for (var i = 0; i < characterNames.length; i++) {
           var charName = characterNames[i];
           if (isStringNullOrEmpty(charName)) {
             continue;

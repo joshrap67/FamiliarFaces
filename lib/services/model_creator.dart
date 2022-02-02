@@ -130,12 +130,12 @@ class ModelCreator {
 
   static String getCharacterName(List<String?> characters) {
     var retVal = '';
-    int maxShown = 4;
-    for (int i = 0; i < characters.length; i++) {
+    var maxShown = 4;
+    for (var i = 0; i < characters.length; i++) {
       var charName = characters[i];
       if (isStringNullOrEmpty(charName)) continue;
       if (i == maxShown - 1) {
-        int remaining = characters.length - 1 - i;
+        var remaining = characters.length - 1 - i;
         retVal += '$charName +$remaining more';
         break;
       }

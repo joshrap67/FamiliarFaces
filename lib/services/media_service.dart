@@ -11,8 +11,8 @@ import 'package:familiar_faces/contracts_sql/saved_media.dart';
 
 class MediaService {
   static Future<Actor> getActor(int id) async {
-    Actor actor = await TmdbService.getPersonCreditsAsync(id);
-    List<SavedMedia> savedMedia = await SavedMediaService.getAll();
+    var actor = await TmdbService.getPersonCreditsAsync(id);
+    var savedMedia = await SavedMediaService.getAll();
 
     applySeenMedia(actor.credits, savedMedia);
     cleanActorCredits(actor.credits);
@@ -29,8 +29,8 @@ class MediaService {
 
   // bad path, loop through every actor in the movie and return their credits
   static Future<List<Actor>> getActorsFromMovie(int movieId, {String? characterName}) async {
-    List<Actor> movieActors = <Actor>[];
-    List<SavedMedia> savedMedia = await SavedMediaService.getAll();
+    var movieActors = <Actor>[];
+    var savedMedia = await SavedMediaService.getAll();
 
     var movieWithCast = await TmdbService.getMovieWithCastAsync(movieId);
     cleanCast(movieWithCast.cast);
@@ -56,8 +56,8 @@ class MediaService {
 
   // bad path, loop through every actor in the movie and return their credits
   static Future<List<Actor>> getActorsFromTv(int tvId, {String? characterName}) async {
-    List<Actor> tvShowActors = <Actor>[];
-    List<SavedMedia> savedMedia = await SavedMediaService.getAll();
+    var tvShowActors = <Actor>[];
+    var savedMedia = await SavedMediaService.getAll();
 
     var tvWithCast = await TmdbService.getTvShowWithCastAsync(tvId);
     cleanCast(tvWithCast.cast);
@@ -101,7 +101,7 @@ class MediaService {
     if (isStringNullOrEmpty(query)) {
       return <SearchMediaResult>[];
     }
-    List<SearchMediaResult> search = await TmdbService.searchMulti(query);
+    var search = await TmdbService.searchMulti(query);
     // drop any records with a null title as that makes no sense for user to click
     search.removeWhere((element) => element.title == null);
     search.removeWhere((element) => element.releaseDate == null);
@@ -112,7 +112,7 @@ class MediaService {
     // according to TMDB docs, this field is set on things like BTS or short films but doesn't actually seem to matter
     search.removeWhere((element) => element.isVideo);
     if (!showSavedMedia) {
-      List<SavedMedia> savedMedia = await SavedMediaService.getAll();
+      var savedMedia = await SavedMediaService.getAll();
       // don't show suggestions for ones the user has already saved
       search.removeWhere((element) => savedMedia
           .any((savedMedia) => savedMedia.mediaId == element.id && savedMedia.mediaType == element.mediaType));

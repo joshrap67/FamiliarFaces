@@ -15,9 +15,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void initState() {
+    super.initState();
     _showCharacter = Globals.settings.showCharacters;
     getAppVersion();
-    super.initState();
   }
 
   @override
@@ -133,7 +133,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> getAppVersion() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    var packageInfo = await PackageInfo.fromPlatform();
     setState(() {
       _appVersion = packageInfo.version;
     });
