@@ -11,29 +11,15 @@
   <component name="ChangeListManager">
     <list default="true" id="4803bb09-8ac0-4067-a636-b07a6047a7e9" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/../.flutter-plugins-dependencies" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/assetWizardSettings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/-110095672/android.package_info_plus.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/-110095672/android.package_info_plus.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/-1513112640/android.flutter_keyboard_visibility.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/-1513112640/android.flutter_keyboard_visibility.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/-1894129053/android.shared_preferences.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/-1894129053/android.shared_preferences.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/1672033900/android.sqflite.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/1672033900/android.sqflite.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/258957763/android.path_provider.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/258957763/android.path_provider.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/android.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/android.app.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/joshrap/familiarfaces/familiar_faces/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/joshrap/familiarfaces/familiar_faces/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-v21/launch_background.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-v21/launch_background.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/launch_background.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/launch_background.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../assets/icon/foreground.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lib/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/screens/home_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/screens/actor_details.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/screens/actor_details.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\Josh\.android\avd\Phone.avd]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\Josh\.android\avd\Medium.avd]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
