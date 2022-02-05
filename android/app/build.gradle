@@ -30,7 +30,7 @@ android {
     defaultConfig {
         applicationId "com.joshrap.familiarfaces.familiar_faces"
         minSdkVersion 16
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
