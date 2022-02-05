@@ -22,8 +22,6 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-// todo force portrait mode
-
 class _HomeScreenState extends State<HomeScreen> {
   SearchMediaResult? _selectedSearch;
   List<Cast> _castForSelectedMedia = <Cast>[];
@@ -55,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 180,
                   width: double.infinity,
                   child: Tooltip(
-                    message: 'Photo by Alex Litvin on Unsplash',
+                    message: 'Photo by Luca Bravo on Unsplash',
                     child: Image.asset(
                       'assets/images/drawer_background.jpg',
                       fit: BoxFit.fitWidth,
