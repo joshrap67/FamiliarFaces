@@ -22,6 +22,8 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
+// todo force portrait mode
+
 class _HomeScreenState extends State<HomeScreen> {
   SearchMediaResult? _selectedSearch;
   List<Cast> _castForSelectedMedia = <Cast>[];
@@ -103,8 +105,10 @@ class _HomeScreenState extends State<HomeScreen> {
             if (_selectedSearch?.posterPath == null)
               Center(
                 child: Container(
+                  height: 250,
+                  width: 250,
                   child: Image.asset(
-                    'assets/icon/foreground.png', // todo get less blurry
+                    'assets/icon/foreground.png',
                     colorBlendMode: BlendMode.dstATop,
                     fit: BoxFit.fitWidth,
                   ),

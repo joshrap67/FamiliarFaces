@@ -9,12 +9,24 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5d8fc70e-8334-4367-9381-e41abfaeb351" name="Default Changelist" comment="">
+    <list default="true" id="4803bb09-8ac0-4067-a636-b07a6047a7e9" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/../.flutter-plugins-dependencies" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/assetWizardSettings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/-110095672/android.package_info_plus.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/-110095672/android.package_info_plus.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/-1513112640/android.flutter_keyboard_visibility.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/-1513112640/android.flutter_keyboard_visibility.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/-1894129053/android.shared_preferences.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/-1894129053/android.shared_preferences.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/1672033900/android.sqflite.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/1672033900/android.sqflite.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/258957763/android.path_provider.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/258957763/android.path_provider.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/android.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/android.app.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/joshrap/familiarfaces/familiar_faces/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/joshrap/familiarfaces/familiar_faces/MainActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-v21/launch_background.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-v21/launch_background.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/launch_background.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/launch_background.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assets/icon/foreground.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../lib/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/screens/home_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lib/screens/media_input_screen.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lib/widgets/media_search_row.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/widgets/media_search_row.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +42,7 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectId" id="24QphF9yuPJPHWYkA4SbvKkNsM8" />
+  <component name="ProjectId" id="24cyjiy0k4bXd3RMmYWq8AsFB40" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -39,8 +51,18 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="dart.analysis.tool.window.visible" value="false" />
+    <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/main/res/drawable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/src/main/res/drawable" />
+    <property name="settings.editor.selected.configurable" value="flutter.settings" />
     <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Josh\github\FamiliarFaces\android\app\src\main\res\drawable" />
+      <recent name="C:\Users\Josh\github\FamiliarFaces\android\app\src\main\res\drawable-hdpi" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App">
@@ -105,11 +127,11 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="5d8fc70e-8334-4367-9381-e41abfaeb351" name="Default Changelist" comment="" />
-      <created>1643572782179</created>
+      <changelist id="4803bb09-8ac0-4067-a636-b07a6047a7e9" name="Default Changelist" comment="" />
+      <created>1643944306955</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1643572782179</updated>
+      <updated>1643944306955</updated>
     </task>
     <servers />
   </component>
