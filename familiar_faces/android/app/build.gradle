@@ -35,11 +35,16 @@ android {
 
     defaultConfig {
         applicationId "com.joshrap.familiarfaces.familiar_faces"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
+
+    dependencies {
+        implementation 'androidx.core:core-splashscreen:1.0.0-beta01'
+    }
+
 
     signingConfigs {
         release {
