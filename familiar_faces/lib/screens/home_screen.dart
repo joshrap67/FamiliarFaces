@@ -108,18 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   fit: BoxFit.fill,
                 ),
               ),
-            if (_selectedSearch?.posterPath == null)
-              Center(
-                child: Container(
-                  height: 250,
-                  width: 250,
-                  child: Image.asset(
-                    'assets/icon/foreground.png',
-                    colorBlendMode: BlendMode.dstATop,
-                    fit: BoxFit.fitWidth,
-                  ),
-                ),
-              ),
             Container(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,

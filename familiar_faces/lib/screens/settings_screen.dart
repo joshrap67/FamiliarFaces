@@ -12,6 +12,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   late bool _showCharacter;
   String? _appVersion;
+  String? _appName;
 
   @override
   void initState() {
@@ -28,6 +29,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 150,
+              width: 150,
+              child: Image.asset(
+                'assets/icon/foreground.png',
+                colorBlendMode: BlendMode.dstATop,
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('$_appName Version $_appVersion'),
+          ),
           Expanded(
             child: ListView(
               children: [
@@ -51,18 +68,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ),
-                Padding(padding: const EdgeInsets.all(5.0)),
-                Card(
-                  child: ListTile(
-                    leading: Icon(Icons.phone_android),
-                    title: Text(
-                      _appVersion ?? '',
-                      style: TextStyle(fontSize: 25),
-                    ),
-                    tileColor: Color(0xff2a2f38),
-                    subtitle: Text('App Version'),
-                  ),
-                ),
               ],
             ),
           ),
@@ -70,7 +75,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.fromLTRB(8.0, 30.0, 8.0, 8.0),
                   child: Text(
                     'This product uses the TMDB API but is not endorsed or certified by TMDB.',
                     style: TextStyle(
@@ -98,6 +103,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     var packageInfo = await PackageInfo.fromPlatform();
     setState(() {
       _appVersion = packageInfo.version;
+	  _appName = packageInfo.appName;
     });
   }
 }

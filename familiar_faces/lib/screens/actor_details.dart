@@ -1,10 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/media_type.dart';
-import 'package:familiar_faces/contracts/movie.dart';
 import 'package:familiar_faces/contracts/actor_credit.dart';
 import 'package:familiar_faces/contracts/actor.dart';
-import 'package:familiar_faces/contracts/tv_show.dart';
 import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/screens/actor_media_row.dart';
@@ -12,7 +10,6 @@ import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/services/saved_media_database.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:familiar_faces/contracts_sql/saved_media.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'media_cast_screen.dart';
@@ -251,7 +248,7 @@ class _ActorDetailsState extends State<ActorDetails> {
                         itemBuilder: (BuildContext context, int index) {
                           return ActorMediaRow(
                             media: _displayedCredits[index],
-                            rowClicked: (credit) => mediaClickedAsync(credit),
+                            rowClicked: (credit) => mediaClicked(credit),
                             addToSeenClicked: (credit) => addToSeenSync(credit),
                             removeFromSeenClicked: (credit) => removeFromSeen(credit),
                           );
@@ -271,7 +268,7 @@ class _ActorDetailsState extends State<ActorDetails> {
     );
   }
 
-  Future<void> mediaClickedAsync(ActorCredit creditResponse) async {
+  Future<void> mediaClicked(ActorCredit creditResponse) async {
     showLoadingDialog(context);
 
     try {

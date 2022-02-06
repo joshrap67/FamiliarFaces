@@ -9,6 +9,8 @@ import 'package:familiar_faces/contracts_sql/saved_media.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
+import 'media_cast_screen.dart';
+
 class SavedMediaListScreen extends StatefulWidget {
   const SavedMediaListScreen({Key? key}) : super(key: key);
 
@@ -166,7 +168,11 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                                         }
                                       },
                                     )
-                                  : null,
+                                  : IconButton(
+                                      onPressed: () => mediaClicked(_displayedSavedMedia[index]),
+                                      tooltip: 'Full Cast',
+                                      icon: Icon(Icons.arrow_forward_ios),
+                                    ),
                             );
                           },
                         ),
@@ -233,6 +239,46 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
         }
       },
     );
+  }
+
+  Future<void> mediaClicked(SavedMedia media) async {
+    showLoadingDialog(context);
+
+    try {
+      if (media.mediaType == MediaType.Movie) {
+        var actorsOfMovie = await MediaService.getActorsFromMovie(media.mediaId);
+        var movie = await MediaService.getMovieWithCast(media.mediaId);
+
+        closePopup(context); // important this is done first b/c otherwise it pops the newly pushed route
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MediaCastScreen(
+              cast: movie.cast,
+              actors: actorsOfMovie,
+              movie: movie,
+            ),
+          ),
+        ).then((value) => updateSavedMedia());
+      } else if (media.mediaType == MediaType.TV) {
+        var actorsOfTvShow = await MediaService.getActorsFromTv(media.mediaId);
+        var tvShow = await MediaService.getTvShowWithCast(media.mediaId);
+
+        closePopup(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MediaCastScreen(
+              cast: tvShow.cast,
+              actors: actorsOfTvShow,
+              tvShow: tvShow,
+            ),
+          ),
+        ).then((value) => updateSavedMedia());
+      }
+    } catch (e) {
+      closePopup(context);
+    }
   }
 
   void sortDisplayedMedia() {
