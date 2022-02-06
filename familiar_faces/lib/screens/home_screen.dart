@@ -32,11 +32,22 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _mediaSearchController = TextEditingController();
   final TextEditingController _characterSearchController = TextEditingController();
   bool _isLoading = false;
+  late Image _drawerImage;
 
   @override
   void initState() {
     super.initState();
+    _drawerImage = Image.asset(
+      'assets/images/drawer_background.jpg',
+      fit: BoxFit.fitWidth,
+    );
     updateGlobalSettings();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(_drawerImage.image, context);
   }
 
   @override
@@ -54,10 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: double.infinity,
                   child: Tooltip(
                     message: 'Photo by Luca Bravo on Unsplash',
-                    child: Image.asset(
-                      'assets/images/drawer_background.jpg',
-                      fit: BoxFit.fitWidth,
-                    ),
+                    child: _drawerImage,
                   ),
                 ),
                 ListTile(

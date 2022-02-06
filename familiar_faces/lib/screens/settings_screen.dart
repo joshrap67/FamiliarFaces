@@ -54,44 +54,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Padding(padding: const EdgeInsets.all(5.0)),
                 Card(
                   child: ListTile(
-                    leading: Icon(Icons.privacy_tip),
-                    title: Text(
-                      'Privacy Policy',
-                      style: TextStyle(fontSize: 25),
-                    ),
-                    tileColor: Color(0xff2a2f38),
-                    onTap: () async {
-                      // const String url = '';
-                      // if (await canLaunch(url)) {
-                      //   await launch(url);
-                      // } else {
-                      //   throw 'Could not launch $url';
-                      // }
-                    },
-                  ),
-                ),
-                Padding(padding: const EdgeInsets.all(5.0)),
-                Card(
-                  child: ListTile(
-                    leading: Icon(Icons.article),
-                    title: Text(
-                      'Terms of Service',
-                      style: TextStyle(fontSize: 25),
-                    ),
-                    tileColor: Color(0xff2a2f38),
-                    onTap: () async {
-                      // const String url = '';
-                      // if (await canLaunch(url)) {
-                      //   await launch(url);
-                      // } else {
-                      //   throw 'Could not launch $url';
-                      // }
-                    },
-                  ),
-                ),
-                Padding(padding: const EdgeInsets.all(5.0)),
-                Card(
-                  child: ListTile(
                     leading: Icon(Icons.phone_android),
                     title: Text(
                       _appVersion ?? '',
