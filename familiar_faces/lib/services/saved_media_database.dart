@@ -57,7 +57,7 @@ class SavedMediaDatabase {
     if (maps.isNotEmpty) {
       return SavedMedia.fromJson(maps.first);
     } else {
-      throw new Exception("Media not found");
+      throw new Exception('Media not found');
     }
   }
 

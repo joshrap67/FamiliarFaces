@@ -340,6 +340,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
       showSnackbar('${selected.mediaType == MediaType.Movie ? 'Movie' : 'TV Show'} Added', context);
       setState(() {
         _allSavedMedia.add(created);
+        _mediaSearchController.text = '';
         _displayedSavedMedia.add(created);
         sortDisplayedMedia();
       });
@@ -361,7 +362,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
 
   void onMediaInputCleared() {
     setState(() {
-      _mediaSearchController.text = "";
+      _mediaSearchController.text = '';
       hideKeyboard(context);
     });
   }

@@ -86,7 +86,7 @@ class ActorMediaRow extends StatelessWidget {
                             child: Align(
                               alignment: Alignment.centerLeft,
                               child: AutoSizeText(
-                                "${media.mediaType == MediaType.Movie ? 'MOVIE' : 'SHOW'} SEEN",
+                                '${media.mediaType == MediaType.Movie ? 'MOVIE' : 'SHOW'} SEEN',
                                 minFontSize: 5,
                                 style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
                               ),

@@ -30,7 +30,7 @@ Future<ApiResult<String>> makeApiRequest(HttpAction action, String route, Map<St
         response = await http.delete(url);
         break;
       default:
-        response = new http.Response("Error", 400);
+        response = new http.Response('Error', 400);
     }
 
     if (response.statusCode >= 200 || response.statusCode < 300) {

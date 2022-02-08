@@ -51,9 +51,9 @@ class ModelCreator {
 
   static MediaType getMediaType(String? mediaType) {
     switch (mediaType) {
-      case "movie":
+      case 'movie':
         return MediaType.Movie;
-      case "tv":
+      case 'tv':
         return MediaType.TV;
       default:
         return MediaType.Movie;
