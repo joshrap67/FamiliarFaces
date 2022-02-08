@@ -48,7 +48,7 @@ class _ActorDetailsState extends State<ActorDetails> {
     return Scaffold(
       key: GlobalKey(),
       appBar: AppBar(
-        title: AutoSizeText(
+        title: const AutoSizeText(
           'Actor Details',
           minFontSize: 10,
         ),
@@ -89,14 +89,14 @@ class _ActorDetailsState extends State<ActorDetails> {
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   minFontSize: 10,
-                                  style: TextStyle(fontSize: 24),
+                                  style: const TextStyle(fontSize: 24),
                                 ),
                                 if (widget.actor.birthday != null) // ffs
                                   Padding(
                                     padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
                                     child: AutoSizeText(
                                       '${getAge(widget.actor.birthday!, widget.actor.deathDay)}',
-                                      style: TextStyle(fontSize: 14),
+                                      style: const TextStyle(fontSize: 14),
                                       maxLines: 1,
                                       minFontSize: 10,
                                       textAlign: TextAlign.start,
@@ -110,19 +110,25 @@ class _ActorDetailsState extends State<ActorDetails> {
                           alignment: Alignment.bottomRight,
                           child: Row(
                             children: [
-                              if (_seenCredits.length > 0)
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
+                                  child: Visibility(
+                                    visible: _seenCredits.length > 0,
+                                    maintainSize: true,
+                                    maintainAnimation: true,
+                                    maintainSemantics: true,
+                                    maintainState: true,
                                     child: AutoSizeText(
                                       'Seen ${_seenCredits.length} of their credits',
-                                      style: TextStyle(fontSize: 14),
+                                      style: const TextStyle(fontSize: 14),
                                       maxLines: 1,
                                       minFontSize: 10,
                                       textAlign: TextAlign.start,
                                     ),
                                   ),
                                 ),
+                              ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
@@ -256,9 +262,9 @@ class _ActorDetailsState extends State<ActorDetails> {
                       ),
                     )
                   : Center(
-                      child: Text(
+                      child: const Text(
                         'No credits',
-                        style: TextStyle(fontSize: 20),
+                        style: const TextStyle(fontSize: 20),
                       ),
                     ),
             ),

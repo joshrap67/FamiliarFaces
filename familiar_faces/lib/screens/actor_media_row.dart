@@ -72,7 +72,7 @@ class ActorMediaRow extends StatelessWidget {
                               ],
                             ),
                             minFontSize: 12,
-                            style: TextStyle(fontSize: 24),
+                            style: const TextStyle(fontSize: 24),
                           ),
                         ),
                       ),
@@ -88,7 +88,7 @@ class ActorMediaRow extends StatelessWidget {
                               child: AutoSizeText(
                                 '${media.mediaType == MediaType.Movie ? 'MOVIE' : 'SHOW'} SEEN',
                                 minFontSize: 5,
-                                style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                                style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
                               ),
                             ),
                           ),
@@ -107,7 +107,7 @@ class ActorMediaRow extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.arrow_forward_ios),
                 iconSize: 36,
-                color: Color(0xe1ffffff),
+                color: const Color(0xe1ffffff),
                 tooltip: 'Full Cast',
                 onPressed: () => rowClicked!(media),
               )

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:familiar_faces/imports/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -25,7 +26,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings & App Info'),
+        title: const Text('Settings & App Info'),
       ),
       body: Column(
         children: [
@@ -50,12 +51,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 Card(
                   child: ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text(
+                    leading: const Icon(Icons.person),
+                    title: const Text(
                       'Character Names',
-                      style: TextStyle(fontSize: 25),
+                      style: const TextStyle(fontSize: 25),
                     ),
-                    tileColor: Color(0xff2a2f38),
+                    tileColor: const Color(0xff2a2f38),
                     subtitle: Text('If disabled, character names will never be shown unless searching them.'),
                     onTap: () {
                       setShowCharacters(!_showCharacter);
@@ -63,7 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     trailing: Checkbox(
                       onChanged: (value) => setShowCharacters(value!),
                       checkColor: Colors.white,
-                      activeColor: Color(0xff009257),
+                      activeColor: const Color(0xff009257),
                       value: _showCharacter,
                     ),
                   ),
@@ -76,11 +77,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8.0, 30.0, 8.0, 8.0),
-                  child: Text(
+                  child: AutoSizeText(
                     'This product uses the TMDB API but is not endorsed or certified by TMDB.',
-                    style: TextStyle(
-                      fontStyle: FontStyle.italic,
-                    ),
+                    style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 11),
+                    maxLines: 1,
+                    minFontSize: 8,
                   ),
                 ),
                 Image.asset('assets/images/tmdb_logo.png')
@@ -103,7 +104,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     var packageInfo = await PackageInfo.fromPlatform();
     setState(() {
       _appVersion = packageInfo.version;
-	  _appName = packageInfo.appName;
+      _appName = packageInfo.appName;
     });
   }
 }

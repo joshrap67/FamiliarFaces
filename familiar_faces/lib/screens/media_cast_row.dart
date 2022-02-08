@@ -64,7 +64,7 @@ class MediaCastRow extends StatelessWidget {
                                   children: [
                                     TextSpan(
                                       text: '${castMember.name}',
-                                      style: TextStyle(fontSize: 26),
+                                      style: const TextStyle(fontSize: 26),
                                     ),
                                     if (Globals.settings.showCharacters)
                                       TextSpan(

@@ -62,7 +62,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                           onChanged: searchSavedMedia,
                           focusNode: _searchFocusNode,
                           decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.search),
+                              prefixIcon: const Icon(Icons.search),
                               border: OutlineInputBorder(),
                               labelText: 'Search my media',
                               hintText: 'Search Movie or TV Show'),
@@ -85,7 +85,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                                 },
                                 focusNode: _addMediaFocusNode,
                                 decoration: InputDecoration(
-                                    prefixIcon: Icon(Icons.search),
+                                    prefixIcon: const Icon(Icons.search),
                                     border: OutlineInputBorder(),
                                     labelText: 'Movie/TV Show',
                                     hintText: 'Search Movie or TV Show'),
@@ -113,7 +113,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                             ),
                             if (!isStringNullOrEmpty(_mediaSearchController.text))
                               IconButton(
-                                icon: Icon(Icons.clear),
+                                icon: const Icon(Icons.clear),
                                 tooltip: 'Clear media',
                                 onPressed: () => onMediaInputCleared(),
                               ),
@@ -123,7 +123,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                     ),
                   sortIcon(),
                   IconButton(
-                    icon: _isEditing ? Icon(Icons.add) : Icon(Icons.edit),
+                    icon: _isEditing ? const Icon(Icons.add) : const Icon(Icons.edit),
                     tooltip: _isEditing ? 'Add' : 'Edit',
                     onPressed: () => setEditing(!_isEditing),
                   ),
@@ -154,12 +154,12 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                               ),
                               trailing: _isEditing
                                   ? PopupMenuButton(
-                                      icon: Icon(Icons.more_vert),
+                                      icon: const Icon(Icons.more_vert),
                                       tooltip: 'Options',
                                       itemBuilder: (context) => <PopupMenuEntry<int>>[
                                         PopupMenuItem<int>(
                                           value: 0,
-                                          child: Text('REMOVE'),
+                                          child: const Text('REMOVE'),
                                         ),
                                       ],
                                       onSelected: (int result) {
@@ -171,16 +171,16 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                                   : IconButton(
                                       onPressed: () => mediaClicked(_displayedSavedMedia[index]),
                                       tooltip: 'Full Cast',
-                                      icon: Icon(Icons.arrow_forward_ios),
+                                      icon: const Icon(Icons.arrow_forward_ios),
                                     ),
                             );
                           },
                         ),
                       )
                     : Center(
-                        child: Text(
+                        child: const Text(
                           'No saved media',
-                          style: TextStyle(fontSize: 20),
+                          style: const TextStyle(fontSize: 20),
                         ),
                       ),
               ),

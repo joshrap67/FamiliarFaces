@@ -43,13 +43,13 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
           '${getTitle()}',
           minFontSize: 10,
           maxLines: 1,
-          style: TextStyle(fontSize: 26),
+          style: const TextStyle(fontSize: 26),
         ),
         actions: [
           if (!_isSeen)
             TextButton(
               onPressed: () => setMediaSeen(),
-              child: Text('SET SEEN'),
+              child: const Text('SET SEEN'),
             )
         ],
       ),

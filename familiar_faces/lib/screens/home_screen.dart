@@ -69,8 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 ListTile(
-                  leading: Icon(Icons.movie),
-                  title: Text('My Media'),
+                  leading: const Icon(Icons.movie),
+                  title: const Text('My Media'),
                   onTap: () {
                     hideKeyboard(context);
                     // close the drawer menu when clicked
@@ -79,8 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.settings),
-                  title: Text('Settings & App Info'),
+                  leading: const Icon(Icons.settings),
+                  title: const Text('Settings & App Info'),
                   onTap: () {
                     hideKeyboard(context);
                     // close the drawer menu when clicked
@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         appBar: AppBar(
-          title: Text('Familiar Faces'),
+          title: const Text('Familiar Faces'),
         ),
         body: Stack(
           children: [
@@ -126,9 +126,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   // so x button can properly be hidden
                                   setState(() {});
                                 },
-                                decoration: InputDecoration(
-                                    prefixIcon: Icon(Icons.search),
-                                    border: OutlineInputBorder(),
+                                decoration: const InputDecoration(
+                                    prefixIcon: const Icon(Icons.search),
+                                    border: const OutlineInputBorder(),
                                     labelText: 'Movie/TV Show',
                                     hintText: 'Search Movie or TV Show'),
                               ),
@@ -155,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             if (!isStringNullOrEmpty(_mediaSearchController.text))
                               IconButton(
-                                icon: Icon(Icons.clear),
+                                icon: const Icon(Icons.clear),
                                 tooltip: 'Clear media',
                                 onPressed: () => onMediaInputCleared(),
                               ),
@@ -174,10 +174,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   // so x button can properly be hidden
                                   setState(() {});
                                 },
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                     labelText: 'Character',
-                                    prefixIcon: Icon(Icons.person),
-                                    border: OutlineInputBorder(),
+                                    prefixIcon: const Icon(Icons.person),
+                                    border: const OutlineInputBorder(),
                                     hintText: 'Search Character (optional)'),
                               ),
                               hideOnLoading: true,
@@ -202,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             if (!isStringNullOrEmpty(_characterSearchController.text))
                               IconButton(
-                                icon: Icon(Icons.clear),
+                                icon: const Icon(Icons.clear),
                                 tooltip: 'Clear character',
                                 onPressed: onCharacterInputCleared,
                               ),
@@ -224,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   '${_selectedSearch!.title} (${formatDateYearOnly(_selectedSearch!.releaseDate)})',
                                   minFontSize: 10,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 30,
                                   ),
                                 ),
@@ -233,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     '${_selectedCharacter!.characterName}',
                                     minFontSize: 10,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 25,
                                     ),
                                   ),
@@ -248,18 +248,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ? OutlinedButton(
                                       onPressed: onMainButtonPressed,
                                       style: OutlinedButton.styleFrom(
-                                          shape: StadiumBorder(),
-                                          backgroundColor: Color(0xff5a9e6c),
+                                          shape: const StadiumBorder(),
+                                          backgroundColor: const Color(0xff5a9e6c),
                                           primary: Colors.black),
                                       child: Text(
                                         _buttonText(),
-                                        style: TextStyle(color: Colors.white),
+                                        style: const TextStyle(color: Colors.white),
                                       ),
                                     )
                                   : Container(
                                       decoration: BoxDecoration(shape: BoxShape.circle, color: Color(0xff5a9e6c)),
-                                      child: Center(
-                                        child: CircularProgressIndicator(
+                                      child: const Center(
+                                        child: const CircularProgressIndicator(
                                           color: Colors.white,
                                           strokeWidth: 2,
                                         ),
