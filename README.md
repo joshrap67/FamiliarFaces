@@ -3,13 +3,13 @@
 Mobile application that assists in recognizing actors that you have seen in previous movies or tv shows.
 The application interacts with a free REST API, [TMDB](https://developers.themoviedb.org/3/getting-started/introduction)
 
-All data is currently only stored on the phone's hard drive.
+All data is currently only stored on the phone's hard drive. Since this is not published, it is doubtful I will go through the trouble of setting up user accounts/remote storage.
 
-[Demo of Familiar Faces version 1.0.0](https://youtu.be/CAQskxgYjRo)
+[Demo of Familiar Faces version 1.0.0](https://www.youtube.com/watch?v=p2q9HhY6jUY)
 
 ## Prerequisites
 
-This application is currently only published for Android devices. The minimum SDK version that this application can run on is: 16. The targeted SDK for this application is: 31.
+This application is currently only published for Android devices. The minimum SDK version that this application can run on is: 21. The targeted SDK for this application is: 31.
 
 An internet connection is required to run this application.
 
