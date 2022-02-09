@@ -99,7 +99,7 @@ class _SavedMediaListScreenState extends State<SavedMediaListScreen> {
                               suggestionsCallback: (query) => MediaService.searchMulti(query, showSavedMedia: false),
                               itemBuilder: (context, SearchMediaResult result) {
                                 return ListTile(
-                                  title: Text('${result.title}'),
+                                  title: Text('${result.title} (${formatDateYearOnly(result.releaseDate)})'),
                                   leading: Container(
                                     height: 50,
                                     width: 50,

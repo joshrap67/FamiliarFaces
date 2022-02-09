@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               suggestionsCallback: (query) => MediaService.searchMulti(query),
                               itemBuilder: (context, SearchMediaResult result) {
                                 return ListTile(
-                                  title: Text('${result.title}'),
+                                  title: Text('${result.title} (${formatDateYearOnly(result.releaseDate)})'),
                                   leading: Container(
                                     height: 50,
                                     width: 50,
