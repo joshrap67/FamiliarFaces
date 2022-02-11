@@ -33,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _characterSearchController = TextEditingController();
   bool _isLoading = false;
   late Image _drawerImage;
+  final FocusNode _searchMediaFocusNode = new FocusNode();
+  final FocusNode _searchCharacterFocusNode = new FocusNode();
 
   @override
   void initState() {
@@ -122,6 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             TypeAheadField<SearchMediaResult>(
                               textFieldConfiguration: TextFieldConfiguration(
                                 controller: _mediaSearchController,
+                                focusNode: _searchMediaFocusNode,
                                 onChanged: (_) {
                                   // so x button can properly be hidden
                                   setState(() {});
@@ -170,6 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             TypeAheadFormField<Cast>(
                               textFieldConfiguration: TextFieldConfiguration(
                                 controller: _characterSearchController,
+                                focusNode: _searchCharacterFocusNode,
                                 onChanged: (_) {
                                   // so x button can properly be hidden
                                   setState(() {});
@@ -397,8 +401,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<bool> onBackPressed() async {
-    if (FocusScope.of(context).hasFocus) {
-      hideKeyboard(context);
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (_searchMediaFocusNode.hasPrimaryFocus) {
+      _searchMediaFocusNode.unfocus();
+      return false;
+    } else if (_searchCharacterFocusNode.hasPrimaryFocus) {
+      _searchCharacterFocusNode.unfocus();
       return false;
     } else {
       return true;
