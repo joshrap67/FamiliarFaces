@@ -35,6 +35,7 @@ class MediaService {
     var movieWithCast = await TmdbService.getMovieWithCastAsync(movieId);
     cleanCast(movieWithCast.cast);
 
+	// todo don't do this. its basically instant to load right now anyway. just cache the credit once you get them on that actor object
     await Future.wait(movieWithCast.cast
         .map((castMember) => TmdbService.getPersonCreditsAsync(castMember.id).then((value) => movieActors.add(value))));
 

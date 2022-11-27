@@ -4,16 +4,14 @@ import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/movie.dart';
 import 'package:familiar_faces/contracts/search_media_result.dart';
 import 'package:familiar_faces/contracts/tv_show.dart';
-import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/screens/actor_details.dart';
 import 'package:familiar_faces/screens/media_cast_screen.dart';
-import 'package:familiar_faces/screens/saved_media_list_screen.dart';
-import 'package:familiar_faces/screens/settings_screen.dart';
 import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../imports/globals.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -22,7 +20,7 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
   SearchMediaResult? _selectedSearch;
   List<Cast> _castForSelectedMedia = <Cast>[];
   Cast? _selectedCharacter;
@@ -32,252 +30,199 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _mediaSearchController = TextEditingController();
   final TextEditingController _characterSearchController = TextEditingController();
   bool _isLoading = false;
-  late Image _drawerImage;
   final FocusNode _searchMediaFocusNode = new FocusNode();
   final FocusNode _searchCharacterFocusNode = new FocusNode();
 
   @override
-  void initState() {
-    super.initState();
-    _drawerImage = Image.asset(
-      'assets/images/drawer_background.jpg',
-      fit: BoxFit.fitWidth,
-    );
-    updateGlobalSettings();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    precacheImage(_drawerImage.image, context);
-  }
-
-  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return WillPopScope(
       onWillPop: () => onBackPressed(),
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        drawer: Drawer(
-          child: SafeArea(
-            child: Column(
-              children: [
-                Container(
-                  height: 180,
-                  width: double.infinity,
-                  child: Tooltip(
-                    message: 'Photo by Luca Bravo on Unsplash',
-                    child: _drawerImage,
-                  ),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.movie),
-                  title: const Text('My Media'),
-                  onTap: () {
-                    hideKeyboard(context);
-                    // close the drawer menu when clicked
-                    Navigator.of(context).pop();
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => SavedMediaListScreen()));
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: const Text('Settings & App Info'),
-                  onTap: () {
-                    hideKeyboard(context);
-                    // close the drawer menu when clicked
-                    Navigator.of(context).pop();
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen()));
-                  },
-                ),
-              ],
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              'Familiar Faces',
+              style: TextStyle(fontSize: 40),
             ),
-          ),
-        ),
-        appBar: AppBar(
-          title: const Text('Familiar Faces'),
-        ),
-        body: Stack(
-          children: [
-            if (_selectedSearch?.posterPath != null)
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                child: Image.network(
-                  getImageUrl(_selectedSearch?.posterPath),
-                  color: const Color.fromRGBO(0, 0, 0, 0.4),
-                  colorBlendMode: BlendMode.dstATop,
-                  fit: BoxFit.fill,
-                ),
-              ),
-            Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                        child: Stack(
-                          alignment: Alignment.centerRight,
-                          children: [
-                            TypeAheadField<SearchMediaResult>(
-                              textFieldConfiguration: TextFieldConfiguration(
-                                controller: _mediaSearchController,
-                                focusNode: _searchMediaFocusNode,
-                                onChanged: (_) {
-                                  // so x button can properly be hidden
-                                  setState(() {});
-                                },
-                                decoration: const InputDecoration(
-                                    prefixIcon: const Icon(Icons.search),
-                                    border: const OutlineInputBorder(),
-                                    labelText: 'Movie/TV Show',
-                                    hintText: 'Search Movie or TV Show'),
-                              ),
-                              hideOnLoading: true,
-                              hideOnEmpty: true,
-                              hideOnError: true,
-                              hideSuggestionsOnKeyboardHide: false,
-                              debounceDuration: Duration(milliseconds: 300),
-                              onSuggestionSelected: (media) => onMediaSelected(media),
-                              suggestionsCallback: (query) => MediaService.searchMulti(query),
-                              itemBuilder: (context, SearchMediaResult result) {
-                                return ListTile(
-                                  title: Text('${result.title} (${formatDateYearOnly(result.releaseDate)})'),
-                                  leading: Container(
-                                    height: 50,
-                                    width: 50,
-                                    child: Image.network(
-                                      getImageUrl(result.posterPath),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            if (!isStringNullOrEmpty(_mediaSearchController.text))
-                              IconButton(
-                                icon: const Icon(Icons.clear),
-                                tooltip: 'Clear media',
-                                onPressed: () => onMediaInputCleared(),
-                              ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Stack(
-                          alignment: Alignment.centerRight,
-                          children: [
-                            TypeAheadFormField<Cast>(
-                              textFieldConfiguration: TextFieldConfiguration(
-                                controller: _characterSearchController,
-                                focusNode: _searchCharacterFocusNode,
-                                onChanged: (_) {
-                                  // so x button can properly be hidden
-                                  setState(() {});
-                                },
-                                decoration: const InputDecoration(
-                                    labelText: 'Character',
-                                    prefixIcon: const Icon(Icons.person),
-                                    border: const OutlineInputBorder(),
-                                    hintText: 'Search Character (optional)'),
-                              ),
-                              hideOnLoading: true,
-                              hideOnEmpty: true,
-                              hideOnError: true,
-                              hideSuggestionsOnKeyboardHide: false,
-                              onSuggestionSelected: onCharacterSelected,
-                              suggestionsCallback: (query) => getCharacterResults(query),
-                              itemBuilder: (context, Cast result) {
-                                return ListTile(
-                                  title: Text('${result.characterName}'),
-                                  leading: Container(
-                                    height: 50,
-                                    width: 50,
-                                    child: Image.network(
-                                      getImageUrl(result.profilePath),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            if (!isStringNullOrEmpty(_characterSearchController.text))
-                              IconButton(
-                                icon: const Icon(Icons.clear),
-                                tooltip: 'Clear character',
-                                onPressed: onCharacterInputCleared,
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8.0, 32.0, 8.0, 8.0),
+                      child: Stack(
+                        alignment: Alignment.centerRight,
                         children: [
-                          if (_selectedSearch != null)
-                            Column(
-                              children: [
-                                AutoSizeText(
-                                  '${_selectedSearch!.title} (${formatDateYearOnly(_selectedSearch!.releaseDate)})',
-                                  minFontSize: 10,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 30,
+                          TypeAheadField<SearchMediaResult>(
+                            textFieldConfiguration: TextFieldConfiguration(
+                              controller: _mediaSearchController,
+                              focusNode: _searchMediaFocusNode,
+                              onChanged: (_) {
+                                // so x button can properly be hidden
+                                setState(() {});
+                              },
+                              decoration: const InputDecoration(
+                                  prefixIcon: const Icon(Icons.search),
+                                  border: const OutlineInputBorder(),
+                                  labelText: 'Media Title',
+                                  hintText: 'Search Movie or TV Show'),
+                            ),
+                            hideOnLoading: true,
+                            hideOnEmpty: true,
+                            hideOnError: true,
+                            hideSuggestionsOnKeyboardHide: false,
+                            debounceDuration: Duration(milliseconds: 300),
+                            onSuggestionSelected: (media) => onMediaSelected(media),
+                            suggestionsCallback: (query) => MediaService.searchMulti(query),
+                            itemBuilder: (context, SearchMediaResult result) {
+                              return ListTile(
+                                title: Text('${result.title} (${formatDateYearOnly(result.releaseDate)})'),
+                                leading: Container(
+                                  height: 50,
+                                  width: 50,
+                                  child: Image.network(
+                                    getProfilePictureUrl(result.posterPath),
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
-                                if (_selectedCharacter != null)
-                                  AutoSizeText(
-                                    '${_selectedCharacter!.characterName}',
-                                    minFontSize: 10,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontSize: 25,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 16.0),
-                            child: Container(
-                              height: 50,
-                              width: 300,
-                              child: !_isLoading
-                                  ? OutlinedButton(
-                                      onPressed: onMainButtonPressed,
-                                      style: OutlinedButton.styleFrom(
-                                          shape: const StadiumBorder(),
-                                          backgroundColor: const Color(0xff5a9e6c),
-                                          primary: Colors.black),
-                                      child: Text(
-                                        _buttonText(),
-                                        style: const TextStyle(color: Colors.white),
-                                      ),
-                                    )
-                                  : Container(
-                                      decoration: BoxDecoration(shape: BoxShape.circle, color: Color(0xff5a9e6c)),
-                                      child: const Center(
-                                        child: const CircularProgressIndicator(
-                                          color: Colors.white,
-                                          strokeWidth: 2,
-                                        ),
-                                      ),
-                                    ),
-                            ),
+                              );
+                            },
                           ),
+                          if (!isStringNullOrEmpty(_mediaSearchController.text))
+                            IconButton(
+                              icon: const Icon(Icons.clear),
+                              tooltip: 'Clear media',
+                              onPressed: () => onMediaInputCleared(),
+                            ),
                         ],
                       ),
                     ),
-                  )
-                ],
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 32.0),
+                      child: Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          TypeAheadFormField<Cast>(
+                            textFieldConfiguration: TextFieldConfiguration(
+                              controller: _characterSearchController,
+                              focusNode: _searchCharacterFocusNode,
+                              onChanged: (_) {
+                                // so x button can properly be hidden
+                                setState(() {});
+                              },
+                              decoration: const InputDecoration(
+                                  labelText: 'Character',
+                                  prefixIcon: const Icon(Icons.person),
+                                  border: const OutlineInputBorder(),
+                                  hintText: 'Search Character (optional)'),
+                            ),
+                            hideOnLoading: true,
+                            hideOnEmpty: true,
+                            hideOnError: true,
+                            hideSuggestionsOnKeyboardHide: false,
+                            onSuggestionSelected: onCharacterSelected,
+                            suggestionsCallback: (query) => getCharacterResults(query),
+                            itemBuilder: (context, Cast result) {
+                              return ListTile(
+                                title: Text('${result.characterName}'),
+                                leading: Container(
+                                  height: 50,
+                                  width: 50,
+                                  child: Image.network(
+                                    getProfilePictureUrl(result.profilePath),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          if (!isStringNullOrEmpty(_characterSearchController.text))
+                            IconButton(
+                              icon: const Icon(Icons.clear),
+                              tooltip: 'Clear character',
+                              onPressed: onCharacterInputCleared,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  color: Globals.TILE_COLOR,
+                  borderRadius: BorderRadius.all(Radius.circular(40)),
+                ),
               ),
             ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (_selectedSearch != null)
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AutoSizeText(
+                            '${_selectedSearch!.title} (${formatDateYearOnly(_selectedSearch!.releaseDate)})',
+                            minFontSize: 10,
+                            style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w300),
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 1000,
+                              width: 220,
+                              child: Image.network(
+                                getProfilePictureUrl(_selectedSearch!.posterPath),
+                                fit: BoxFit.fitWidth,
+                              ),
+                            ),
+                          ),
+                          if (_selectedCharacter != null)
+                            Container(
+                              child: AutoSizeText(
+                                '${_selectedCharacter!.characterName}',
+                                minFontSize: 10,
+                                style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w300),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 16.0),
+                    child: Container(
+                      height: 50,
+                      width: 300,
+                      child: !_isLoading
+                          ? OutlinedButton(
+                              onPressed: onMainButtonPressed,
+                              style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.black,
+                                  shape: const StadiumBorder(),
+                                  backgroundColor: const Color(0xFFBB4F4F)),
+                              child: Text(
+                                _buttonText(),
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            )
+                          : Container(
+                              decoration: BoxDecoration(shape: BoxShape.circle, color: const Color(0xFFBB4F4F)),
+                              child: const Center(
+                                child: const CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),
@@ -413,10 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> updateGlobalSettings() async {
-    var prefs = await SharedPreferences.getInstance();
-    setState(() {
-      Globals.settings.showCharacters = prefs.getBool(Globals.showCharacterKey) ?? true;
-    });
-  }
+  // to keep state when page view scrolls to another page
+  @override
+  bool get wantKeepAlive => true;
 }

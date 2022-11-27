@@ -10,6 +10,7 @@ import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/services/saved_media_database.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:familiar_faces/contracts_sql/saved_media.dart';
+import 'package:familiar_faces/widgets/sort_dropdown.dart';
 import 'package:flutter/material.dart';
 
 import 'media_cast_screen.dart';
@@ -63,7 +64,7 @@ class _ActorDetailsState extends State<ActorDetails> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   CachedNetworkImage(
-                    imageUrl: getImageUrl(widget.actor.profileImagePath),
+                    imageUrl: getProfilePictureUrl(widget.actor.profileImagePath),
                     placeholder: (context, url) => Center(
                       child: SizedBox(
                         child: const CircularProgressIndicator(),
@@ -132,61 +133,7 @@ class _ActorDetailsState extends State<ActorDetails> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  PopupMenuButton(
-                                    icon: Icon(Icons.sort_rounded),
-                                    itemBuilder: (context) => <PopupMenuEntry<SortingValues>>[
-                                      PopupMenuItem<SortingValues>(
-                                        value: SortingValues.ReleaseDateDescending,
-                                        child: Text(
-                                          'Release Date Descending',
-                                          style: TextStyle(
-                                              decoration: _sortValue == SortingValues.ReleaseDateDescending
-                                                  ? TextDecoration.underline
-                                                  : null),
-                                        ),
-                                      ),
-                                      PopupMenuItem<SortingValues>(
-                                        value: SortingValues.ReleaseDateAscending,
-                                        child: Text(
-                                          'Release Date Ascending',
-                                          style: TextStyle(
-                                              decoration: _sortValue == SortingValues.ReleaseDateAscending
-                                                  ? TextDecoration.underline
-                                                  : null),
-                                        ),
-                                      ),
-                                      PopupMenuItem<SortingValues>(
-                                        value: SortingValues.AlphaDescending,
-                                        child: Text(
-                                          'Alpha Descending',
-                                          style: TextStyle(
-                                              decoration: _sortValue == SortingValues.AlphaDescending
-                                                  ? TextDecoration.underline
-                                                  : null),
-                                        ),
-                                      ),
-                                      PopupMenuItem<SortingValues>(
-                                        value: SortingValues.AlphaAscending,
-                                        child: Container(
-                                          child: Text(
-                                            'Alpha Ascending',
-                                            style: TextStyle(
-                                                decoration: _sortValue == SortingValues.AlphaAscending
-                                                    ? TextDecoration.underline
-                                                    : null),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                    onSelected: (SortingValues result) {
-                                      if (_sortValue != result) {
-                                        _sortValue = result;
-                                        setState(() {
-                                          updateDisplayedCredits();
-                                        });
-                                      }
-                                    },
-                                  ),
+                                  SortDropdown(sortValue: _sortValue, onSelected: (result) => onSortSelected(result)),
                                   PopupMenuButton<Filters>(
                                     onSelected: (Filters result) {
                                       switch (result) {
@@ -210,6 +157,11 @@ class _ActorDetailsState extends State<ActorDetails> {
                                           break;
                                       }
                                     },
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(15.0),
+                                      ),
+                                    ),
                                     itemBuilder: (BuildContext context) => <PopupMenuEntry<Filters>>[
                                       CheckedPopupMenuItem<Filters>(
                                         checked: _showOnlySeen,
@@ -346,6 +298,15 @@ class _ActorDetailsState extends State<ActorDetails> {
       _seenCredits.removeWhere((element) => element.id == credit.id);
       media.isSeen = false;
     });
+  }
+
+  void onSortSelected(SortingValues result) {
+    if (_sortValue != result) {
+      _sortValue = result;
+      setState(() {
+        updateDisplayedCredits();
+      });
+    }
   }
 
   void sortCredits(List<ActorCredit> credits) {

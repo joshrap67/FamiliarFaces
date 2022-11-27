@@ -49,7 +49,10 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
           if (!_isSeen)
             TextButton(
               onPressed: () => setMediaSeen(),
-              child: const Text('SET SEEN'),
+              child: const Text(
+                'SET SEEN',
+                style: TextStyle(color: Colors.white),
+              ),
             )
         ],
       ),
