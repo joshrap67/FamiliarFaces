@@ -27,52 +27,11 @@ class MediaService {
     return movie;
   }
 
-  // bad path, loop through every actor in the movie and return their credits
-  static Future<List<Actor>> getActorsFromMovie(int movieId, {String? characterName}) async {
-    var movieActors = <Actor>[];
-    var savedMedia = await SavedMediaService.getAll();
-
-    var movieWithCast = await TmdbService.getMovieWithCastAsync(movieId);
-    cleanCast(movieWithCast.cast);
-
-    await Future.wait(movieWithCast.cast
-        .map((castMember) => TmdbService.getPersonCreditsAsync(castMember.id).then((value) => movieActors.add(value))));
-
-    var actors = new List<Actor>.from(movieActors);
-    actors.forEach((element) {
-      applySeenMedia(element.credits, savedMedia);
-      cleanActorCredits(element.credits);
-    });
-
-    return actors;
-  }
-
   static Future<TvShow> getTvShowWithCast(int tvId) async {
     var tvShow = await TmdbService.getTvShowWithCastAsync(tvId);
     cleanCast(tvShow.cast);
 
     return tvShow;
-  }
-
-  // bad path, loop through every actor in the movie and return their credits
-  static Future<List<Actor>> getActorsFromTv(int tvId, {String? characterName}) async {
-    var tvShowActors = <Actor>[];
-    var savedMedia = await SavedMediaService.getAll();
-
-    var tvWithCast = await TmdbService.getTvShowWithCastAsync(tvId);
-    cleanCast(tvWithCast.cast);
-
-    await Future.wait(tvWithCast.cast.map((castMember) async {
-      return TmdbService.getPersonCreditsAsync(castMember.id).then((value) => tvShowActors.add(value));
-    }));
-
-    var actors = new List<Actor>.from(tvShowActors);
-    actors.forEach((element) {
-      applySeenMedia(element.credits, savedMedia);
-      cleanActorCredits(element.credits);
-    });
-
-    return actors;
   }
 
   static void applySeenMedia(List<ActorCredit> credits, List<SavedMedia> savedMedia) {

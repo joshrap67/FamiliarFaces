@@ -7,51 +7,51 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="drawing.svg"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   inkscape:export-ydpi="35.092701"
-   inkscape:export-xdpi="35.092701"
-   inkscape:export-filename="C:\Users\Josh\Downloads\bitmap.png"
-   id="svg8"
-   version="1.1"
-   viewBox="0 0 132.49375 198.57501"
+   width="500.76379"
    height="750.51971"
-   width="500.76379">
+   viewBox="0 0 132.49375 198.57501"
+   version="1.1"
+   id="svg8"
+   inkscape:export-filename="C:\Users\Josh\Downloads\not_found.png"
+   inkscape:export-xdpi="35.092701"
+   inkscape:export-ydpi="35.092701"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="not_found.svg">
   <defs
      id="defs2">
     <rect
-       id="rect847"
-       height="267.60715"
-       width="204.8631"
+       x="6.0476189"
        y="10.583333"
-       x="6.0476189" />
+       width="204.8631"
+       height="267.60715"
+       id="rect847" />
     <rect
-       id="rect837"
-       height="306.16071"
-       width="217.71429"
+       x="13.607143"
        y="11.339286"
-       x="13.607143" />
+       width="217.71429"
+       height="306.16071"
+       id="rect837" />
   </defs>
   <sodipodi:namedview
-     units="px"
-     inkscape:window-maximized="1"
-     inkscape:window-y="-11"
-     inkscape:window-x="-11"
-     inkscape:window-height="986"
-     inkscape:window-width="1920"
-     showgrid="false"
-     inkscape:document-rotation="0"
-     inkscape:current-layer="layer1"
-     inkscape:document-units="mm"
-     inkscape:cy="510.62657"
-     inkscape:cx="395.81581"
-     inkscape:zoom="0.49497475"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     borderopacity="1.0"
-     bordercolor="#666666"
+     id="base"
      pagecolor="#ffffff"
-     id="base" />
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="395.81581"
+     inkscape:cy="356.14759"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     units="px" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -60,33 +60,45 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     id="layer1"
+     inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     inkscape:label="Layer 1">
+     id="layer1">
     <text
-       style="font-style:normal;font-weight:normal;font-size:105.833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect837);fill:#000000;fill-opacity:1;stroke:none;"
+       xml:space="preserve"
        id="text835"
-       xml:space="preserve" />
+       style="font-style:normal;font-weight:normal;font-size:105.833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect837);fill:#000000;fill-opacity:1;stroke:none;" />
     <rect
-       ry="19.055212"
-       y="-25.123337"
-       x="-35.279575"
-       height="258.71689"
-       width="208.47023"
+       style="fill:#cdc192;fill-opacity:1;stroke:#0b35ff;stroke-width:1.065;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0;paint-order:stroke fill markers"
        id="rect859"
-       style="fill:#252525;fill-opacity:1;stroke:#0b35ff;stroke-width:1.065;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0;paint-order:stroke fill markers" />
-    <text
-       transform="matrix(0.85866071,0,0,0.85866071,8.609938,-10.940512)"
-       style="font-style:normal;font-weight:normal;font-size:229.306px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect847);fill:#22d3b9;fill-opacity:1;stroke:none;stroke-width:1.1646;"
-       id="text845"
-       xml:space="preserve"><tspan
-         x="6.046875"
-         y="213.46605"><tspan
-           style="shape-inside:url(#rect847)">?</tspan></tspan></text>
+       width="208.47023"
+       height="258.71689"
+       x="-35.279575"
+       y="-25.123337"
+       ry="19.055212" />
+    <g
+       style="fill:#c15757;fill-opacity:1;stroke-width:0.531124"
+       id="g866-0-2"
+       transform="matrix(0.49806451,0,0,0.49824399,-61.257653,-28.262941)">
+      <path
+         style="fill:#c15757;fill-opacity:1;stroke-width:0.531124"
+         id="path4-9-5-1"
+         d="m 161.40111,197.51295 25.98275,3.23661 c 8.24135,1.01893 16.06314,-3.71611 19.03003,-11.47797 3.74607,-9.79972 8.96061,-17.53161 15.6436,-23.1657 9.47037,-7.97164 21.24772,-11.98743 35.33294,-11.98743 14.5947,0 26.2225,3.83598 34.85345,11.47796 8.63095,7.67196 12.91645,16.84234 12.91645,27.60105 0,7.7319 -2.42745,14.80448 -7.28236,21.21775 -3.1467,4.07573 -12.82655,12.64674 -28.9796,25.74301 -16.18303,13.09626 -26.94145,24.90358 -32.33579,35.39257 -5.51422,10.72906 -7.43221,22.62628 -7.91171,34.55407 -0.41926,10.21928 7.73189,18.73035 17.98115,18.73035 h 14.68459 c 9.3502,0 17.08209,-7.16248 17.92121,-16.45274 0.59937,-6.68269 1.70821,-11.74738 3.38675,-15.19377 2.81675,-5.90411 10.09911,-13.69593 21.78685,-23.40545 22.62597,-18.73066 37.37051,-33.53513 44.29355,-44.44369 6.89277,-10.87859 10.36912,-22.41649 10.36912,-34.6137 0,-22.0269 -9.38016,-41.35662 -28.17045,-57.95921 -18.76033,-16.60259 -44.0538,-24.90388 -75.82049,-24.90388 -30.20832,0 -54.57276,8.18141 -73.15327,24.57422 -15.82341,13.96536 -25.44332,30.50801 -28.82977,49.59799 -1.04919,5.57415 2.75681,10.78868 8.301,11.47796 z" />
+      <circle
+         transform="scale(-1,1)"
+         style="fill:#c15757;fill-opacity:1;stroke-width:0.531124"
+         cx="-254.73611"
+         cy="370.39008"
+         r="28.625271"
+         id="circle4-4-8" />
+      <path
+         id="path994-2"
+         d="M -102.60394,515.08148 614.604,-3.0815446 v 0"
+         style="opacity:1;fill:#c15757;fill-opacity:1;stroke:#000000;stroke-width:0.572555;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0;paint-order:stroke fill markers" />
+    </g>
   </g>
 </svg>

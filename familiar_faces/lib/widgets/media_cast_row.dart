@@ -1,29 +1,27 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/contracts/cast.dart';
-import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:flutter/material.dart';
 
+import '../imports/globals.dart';
+
 class MediaCastRow extends StatelessWidget {
-  const MediaCastRow({Key? key, required this.castMember, this.rowClicked}) : super(key: key);
+  const MediaCastRow({Key? key, required this.castMember, required this.rowClicked}) : super(key: key);
 
   final Cast castMember;
-  final Function(Cast)? rowClicked;
+  final Function(Cast) rowClicked;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => rowClicked!(castMember),
+      onTap: () => rowClicked(castMember),
       child: Container(
         height: 150,
         decoration: BoxDecoration(
-          color: Color(0xff2a2f38),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10),
-            topRight: Radius.circular(10),
-            bottomLeft: Radius.circular(10),
-            bottomRight: Radius.circular(10),
+          color: Globals.TILE_COLOR,
+          borderRadius: BorderRadius.all(
+            Radius.circular(10)
           ),
         ),
         child: Row(
@@ -39,7 +37,7 @@ class MediaCastRow extends StatelessWidget {
                       width: 100,
                       height: 140,
                       child: CachedNetworkImage(
-                        imageUrl: getImageUrl(castMember.profilePath),
+                        imageUrl: getTmdbPicture(castMember.profilePath),
                         placeholder: (context, url) => Center(
                           child: SizedBox(
                             child: const CircularProgressIndicator(),
@@ -66,10 +64,9 @@ class MediaCastRow extends StatelessWidget {
                                       text: '${castMember.name}',
                                       style: const TextStyle(fontSize: 26),
                                     ),
-                                    if (Globals.settings.showCharacters)
-                                      TextSpan(
-                                          text: '\n${castMember.characterName}',
-                                          style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic)),
+                                    TextSpan(
+                                        text: '\n${castMember.characterName}',
+                                        style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic)),
                                   ],
                                 ),
                                 minFontSize: 10,
@@ -87,9 +84,9 @@ class MediaCastRow extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.arrow_forward_ios),
               iconSize: 36,
-              color: Colors.white,
+              color: Colors.black,
               tooltip: 'Full filmography',
-              onPressed: () => rowClicked!(castMember),
+              onPressed: () => rowClicked(castMember),
             )
           ],
         ),

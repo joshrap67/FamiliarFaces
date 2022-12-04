@@ -5,7 +5,7 @@ bool isStringNullOrEmpty(String? value) {
   return value?.isEmpty ?? true;
 }
 
-String getImageUrl(String? path) {
+String getTmdbPicture(String? path) {
   if (path == null) {
     return 'https://familiar-faces-images.s3.amazonaws.com/not_found.png';
   } else {
@@ -72,16 +72,13 @@ void showLoadingDialog(BuildContext context, {String msg = 'Loading...', bool di
       return WillPopScope(
         onWillPop: () async => dismissible,
         child: AlertDialog(
-          content: Flex(
-            direction: Axis.horizontal,
+          title: Text(msg),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              CircularProgressIndicator(),
-              Padding(
-                padding: EdgeInsets.all(20),
-              ),
-              Flexible(
-                flex: 8,
-                child: Text(msg),
+              const Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: const LinearProgressIndicator(),
               )
             ],
           ),

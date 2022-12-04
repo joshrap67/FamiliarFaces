@@ -35,7 +35,8 @@ class ModelCreator {
   static Movie getMovieWithCastResponse(MovieResponse movie) {
     var cast = <Cast>[];
     for (var castMember in movie.cast) {
-      cast.add(new Cast(castMember.id, castMember.name, castMember.characterName, castMember.profilePath));
+      cast.add(new Cast(castMember.id, castMember.name, getCharacterName(castMember.characterName!.split(",")),
+          castMember.profilePath));
     }
     return new Movie(movie.id, movie.title, parseDate(movie.releaseDate), movie.posterImagePath, cast);
   }
@@ -43,7 +44,8 @@ class ModelCreator {
   static TvShow getTvShowWithCastResponse(TvShowResponse tvShow) {
     var cast = <Cast>[];
     for (var castMember in tvShow.cast) {
-      cast.add(new Cast(castMember.id, castMember.name, castMember.characterName, castMember.profilePath));
+      cast.add(new Cast(castMember.id, castMember.name, getCharacterName(castMember.characterName!.split(",")),
+          castMember.profilePath));
     }
     return new TvShow(
         tvShow.id, tvShow.name, parseDate(tvShow.firstAirDate), parseDate(tvShow.lastAirDate), tvShow.posterPath, cast);
@@ -91,9 +93,9 @@ class ModelCreator {
 
   static List<ActorCredit> getPersonCreditsResponse(List<PersonCreditResponse> personCredits) {
     /*
-    	Essentially, since this API is a mess for tv shows, some rows from the get aggregate credits call are duplicated with different
-    	character names. What I'm doing here is looping through all of the duplicated ids and combining all the character
-    	names into one string, and then putting a singular media back into the return list. So damn stupid.
+    	Essentially when there are multiple characters for the same media, more than one 'row' is returned.
+    	What I'm doing here is looping through all of the duplicated media ids and combining all the character
+    	names into one string, and then putting a singular media back into the return list.
      */
 
     // first ensure all the media are distinct (by id)

@@ -17,10 +17,11 @@ If pulling from this repository, Flutter is required in order to run the applica
 
 ## Deployment
 
-Due to potential copyright issues and potential unmoderated data, this app is not currently published on Google Play. A signed app bundle is available in this repository for downloading.
+Due to potential copyright issues and potential un-moderated data, this app is not currently published on Google Play. A signed app bundle is available in this repository for downloading.
 
 If pulling from this repository, open the project and run it using Flutter (can be done via CLI). If doing it this way, you may need to ensure that you have developer options enabled on your device.
 
+If already installed you _must_ update the app with the command `adb install -r` as otherwise the local SQLite database will be wiped.
 ## Built With
 
 - [Flutter](https://flutter.dev/) - Framework that the frontend was built with.
@@ -35,6 +36,4 @@ If pulling from this repository, open the project and run it using Flutter (can 
 
 ## Acknowledgments
 
-App logo drawn by Mike O. Sexton.
-
-[Source of drawer background image](https://unsplash.com/photos/bTxMLuJOff4)
+[App Logo Derived From Existing SVG](https://www.svgrepo.com/svg/190443/video-player-movie)

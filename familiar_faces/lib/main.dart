@@ -1,4 +1,4 @@
-import 'package:familiar_faces/screens/home_screen.dart';
+import 'package:familiar_faces/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -6,8 +6,10 @@ import 'imports/utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.black));
   runApp(MyApp());
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.black
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -15,33 +17,40 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          primarySwatch: Palette.colorSwatch,
-          cardColor: Color(0xff2a2a2a),
-          scaffoldBackgroundColor: Colors.black,
-          brightness: Brightness.dark),
+        primarySwatch: Palette.colorSwatch,
+        scaffoldBackgroundColor: Color(0xfffffcf0),
+        brightness: Brightness.light,
+      ),
       home: GestureDetector(
         onTap: () => hideKeyboard(context),
-        child: HomeScreen(),
+        child: Home(),
       ),
     );
   }
 }
 
 class Palette {
-  static const MaterialColor colorSwatch = const MaterialColor(
-    0xff5a9e6c, // 0%
-    const <int, Color>{
-      50: const Color(0xff518e61), //10%
-      100: const Color(0xff487e56), //20%
-      200: const Color(0xff487e56), //30%
-      300: const Color(0xff365f41), //40%
-      400: const Color(0xff2d4f36), //50%
-      500: const Color(0xff243f2b), //60%
-      600: const Color(0xff1b2f20), //70%
-      700: const Color(0xff122016), //80%
-      800: const Color(0xff09100b), //90%
-      900: const Color(0xff000000), //100%
-    },
-  );
+  static const MaterialColor colorSwatch = MaterialColor(primaryColor, <int, Color>{
+    50: Color(0xFFF8EBEB),
+    100: Color(0xFFECCDCD),
+    200: Color(0xFFE0ABAB),
+    300: Color(0xFFD48989),
+    400: Color(0xFFCA7070),
+    500: Color(primaryColor),
+    600: Color(0xFFBB4F4F),
+    700: Color(0xFFB34646),
+    800: Color(0xFFAB3C3C),
+    900: Color(0xFF9E2C2C),
+  });
+  static const int primaryColor = 0xFFC15757;
+
+  static const MaterialColor accentSwatch = MaterialColor(accent, <int, Color>{
+    100: Color(0xFFFFE1E1),
+    200: Color(accent),
+    400: Color(0xFFFF7B7B),
+    700: Color(0xFFFF6262),
+  });
+  static const int accent = 0xFFFFAEAE;
 }
