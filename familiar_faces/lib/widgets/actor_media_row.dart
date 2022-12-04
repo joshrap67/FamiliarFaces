@@ -93,7 +93,7 @@ class ActorMediaRow extends StatelessWidget {
                             child: Align(
                               alignment: Alignment.centerLeft,
                               child: AutoSizeText(
-                                '${media.mediaType == MediaType.Movie ? 'MOVIE' : 'SHOW'} SEEN',
+                                '${media.mediaType == MediaType.Movie ? 'MOVIE' : 'TV SHOW'} SEEN',
                                 minFontSize: 5,
                                 style: TextStyle(
                                   fontSize: 12,
@@ -110,7 +110,7 @@ class ActorMediaRow extends StatelessWidget {
                         child: TextButton(
                           onPressed: () => addToSeenClicked(media),
                           child: Text(
-                            'SET ${media.mediaType == MediaType.Movie ? 'MOVIE' : 'SHOW'} AS SEEN',
+                            'SET ${media.mediaType == MediaType.Movie ? 'MOVIE' : 'TV SHOW'} AS SEEN',
                             style: TextStyle(
                               color: getAccentColor(),
                             ),

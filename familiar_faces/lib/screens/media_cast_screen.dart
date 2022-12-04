@@ -6,7 +6,7 @@ import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/movie.dart';
 import 'package:familiar_faces/contracts/tv_show.dart';
 import 'package:familiar_faces/screens/actor_details.dart';
-import 'package:familiar_faces/screens/media_cast_row.dart';
+import 'package:familiar_faces/widgets/media_cast_row.dart';
 import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:familiar_faces/contracts_sql/saved_media.dart';
@@ -52,31 +52,37 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
               onPressed: () => setMediaSeen(),
               child: const Text(
                 'SET SEEN',
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
               ),
             )
         ],
       ),
       body: Stack(
         children: [
-          Container(
-            child: Scrollbar(
-              child: ListView.separated(
-                key: new PageStorageKey<String>('media_cast_screen:list'),
-                separatorBuilder: (BuildContext context, int index) => Divider(height: 15),
-                itemCount: widget.cast.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return MediaCastRow(
-                    castMember: widget.cast[index],
-                    rowClicked: (actor) => {actorClicked(actor)},
-                  );
-                },
+          Padding(
+            padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
+            child: Container(
+              child: Scrollbar(
+                child: ListView.separated(
+                  key: new PageStorageKey<String>('media_cast_screen:list'),
+                  separatorBuilder: (BuildContext context, int index) => Divider(
+                    height: 15,
+                    color: Colors.transparent,
+                  ),
+                  itemCount: widget.cast.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return MediaCastRow(
+                      castMember: widget.cast[index],
+                      rowClicked: (actor) => {actorClicked(actor)},
+                    );
+                  },
+                ),
               ),
             ),
           ),
           Visibility(
             visible: _isLoading,
-            child: LinearProgressIndicator(
+            child: const LinearProgressIndicator(
               color: Colors.white,
             ),
           )

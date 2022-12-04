@@ -186,6 +186,48 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
     );
   }
 
+  Widget movieCount() {
+    return FilterChip(
+      label: Text(
+        '${_allSavedMedia.where((element) => element.mediaType == MediaType.Movie).length} movies',
+        style: TextStyle(color: Colors.white),
+      ),
+      selectedColor: Theme.of(context).colorScheme.secondary,
+      checkmarkColor: Colors.white,
+      backgroundColor: Colors.black54,
+      selected: _showMovies,
+      onSelected: (bool value) {
+        setState(() {
+          _showMovies = value;
+          filterMedia();
+        });
+      },
+    );
+  }
+
+  Widget tvCount() {
+    return FilterChip(
+      label: Text(
+        '${_allSavedMedia.where((element) => element.mediaType == MediaType.TV).length} TV shows',
+        style: TextStyle(color: Colors.white),
+      ),
+      selectedColor: Theme.of(context).colorScheme.secondary,
+      checkmarkColor: Colors.white,
+      backgroundColor: Colors.black54,
+      selected: _showTV,
+      onSelected: (bool value) {
+        setState(() {
+          _showTV = value;
+          filterMedia();
+        });
+      },
+    );
+  }
+
+  String formattedMovieTitle(SavedMedia savedMedia) {
+    return '${savedMedia.title} (${formatDateYearOnly(savedMedia.releaseDate)})';
+  }
+
   void onSortSelected(SortingValues result) {
     if (_sortValue != result) {
       _sortValue = result;
@@ -193,6 +235,68 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
         sortDisplayedMedia();
       });
     }
+  }
+
+  void sortDisplayedMedia() {
+    switch (_sortValue) {
+      case SortingValues.AlphaDescending:
+        _displayedSavedMedia.sort((a, b) {
+          if (a.title == null || b.title == null) {
+            return 1;
+          } else {
+            return b.title!.toLowerCase().compareTo(a.title!.toLowerCase());
+          }
+        });
+        break;
+      case SortingValues.AlphaAscending:
+        _displayedSavedMedia.sort((a, b) {
+          if (a.title == null || b.title == null) {
+            return 1;
+          } else {
+            return a.title!.toLowerCase().compareTo(b.title!.toLowerCase());
+          }
+        });
+        break;
+      case SortingValues.ReleaseDateDescending:
+        _displayedSavedMedia.sort((a, b) {
+          if (a.releaseDate == null || b.releaseDate == null) {
+            return 1;
+          } else {
+            return b.releaseDate!.compareTo(a.releaseDate!);
+          }
+        });
+        break;
+      case SortingValues.ReleaseDateAscending:
+        _displayedSavedMedia.sort((a, b) {
+          if (a.releaseDate == null || b.releaseDate == null) {
+            return 1;
+          } else {
+            return a.releaseDate!.compareTo(b.releaseDate!);
+          }
+        });
+        break;
+    }
+  }
+
+  void filterMedia() {
+    setState(() {
+      // easier to just clear search input when changing the filters
+      hideKeyboard(context);
+      _mediaSearchController.text = '';
+
+      _displayedSavedMedia = List.from(_allSavedMedia.where((element) => mediaFilter(element)));
+      sortDisplayedMedia();
+    });
+  }
+
+  bool mediaFilter(SavedMedia media) {
+    if (media.mediaType == MediaType.Movie && _showMovies) {
+      return true;
+    }
+    if (media.mediaType == MediaType.TV && _showTV) {
+      return true;
+    }
+    return false;
   }
 
   void addPopup() {
@@ -264,46 +368,123 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
     );
   }
 
-  Widget movieCount() {
-    return FilterChip(
-      label: Text(
-        '${_allSavedMedia.where((element) => element.mediaType == MediaType.Movie).length} movies',
-        style: TextStyle(color: Colors.white),
-      ),
-      selectedColor: Theme.of(context).colorScheme.secondary,
-      checkmarkColor: Colors.white,
-      backgroundColor: Colors.black54,
-      selected: _showMovies,
-      onSelected: (bool value) {
-        setState(() {
-          _showMovies = value;
-          filterMedia();
-        });
-      },
-    );
+  void onMediaInputCleared() {
+    setState(() {
+      _mediaAddController.text = '';
+      hideKeyboard(context);
+    });
   }
 
-  Widget tvCount() {
-    return FilterChip(
-      label: Text(
-        '${_allSavedMedia.where((element) => element.mediaType == MediaType.TV).length} TV shows',
-        style: TextStyle(color: Colors.white),
-      ),
-      selectedColor: Theme.of(context).colorScheme.secondary,
-      checkmarkColor: Colors.white,
-      backgroundColor: Colors.black54,
-      selected: _showTV,
-      onSelected: (bool value) {
-        setState(() {
-          _showTV = value;
-          filterMedia();
-        });
-      },
-    );
+  void searchSavedMedia(String searchText) {
+    setState(() {
+      _displayedSavedMedia = List.from(_allSavedMedia.where((element) {
+        if (element.title == null) {
+          return false;
+        }
+        return element.title!.toLowerCase().contains(searchText.toLowerCase()) && mediaFilter(element);
+      }));
+      sortDisplayedMedia();
+    });
   }
 
   bool modalShowing() {
     return ModalRoute.of(context)?.isCurrent != true;
+  }
+
+  void rowClicked(int index) {
+    var media = _displayedSavedMedia[index];
+    var loading = false;
+    hideKeyboard(context);
+
+    showModalBottomSheet<void>(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      builder: (BuildContext buildContext) {
+        return StatefulBuilder(builder: (BuildContext statefulContext, StateSetter myState) {
+          return Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
+                  child: ListTile(
+                    title: AutoSizeText(
+                      formattedMovieTitle(media),
+                      minFontSize: 12,
+                    ),
+                    subtitle: AutoSizeText(
+                      media.mediaType == MediaType.Movie ? 'Movie' : 'TV Show',
+                      minFontSize: 12,
+                    ),
+                    leading: Container(
+                      child: Image.network(
+                        getTmdbPicture(media.posterPath),
+                        fit: BoxFit.fitHeight,
+                      ),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: loading,
+                  maintainSize: true,
+                  maintainAnimation: true,
+                  maintainState: true,
+                  child: LinearProgressIndicator(),
+                ),
+                InkWell(
+                  customBorder: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  onTap: () {
+                    myState(() {
+                      loading = true;
+                    });
+                    mediaClicked(media);
+                  },
+                  child: ListTile(
+                    title: const Text('Show Cast'),
+                    trailing: IconButton(
+                      onPressed: () {
+                        myState(() {
+                          loading = true;
+                        });
+                        mediaClicked(media);
+                      },
+                      icon: const Icon(Icons.arrow_forward_ios),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
+                  child: InkWell(
+                    customBorder: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    onTap: () {
+                      Navigator.pop(buildContext);
+                      deleteSavedMedia(media);
+                    },
+                    child: ListTile(
+                      title: const Text('Remove Media'),
+                      trailing: IconButton(
+                        onPressed: () {
+                          Navigator.pop(buildContext);
+                          deleteSavedMedia(media);
+                        },
+                        icon: const Icon(Icons.delete),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
+      },
+    );
   }
 
   Future<void> mediaClicked(SavedMedia media) async {
@@ -312,7 +493,7 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
         var movie = await MediaService.getMovieWithCast(media.mediaId);
 
         if (modalShowing()) {
-          closePopup(context); // important this is done first b/c otherwise it pops the newly pushed route
+          closePopup(context);
         }
 
         Navigator.push(
@@ -328,7 +509,7 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
         var tvShow = await MediaService.getTvShowWithCast(media.mediaId);
 
         if (modalShowing()) {
-          closePopup(context); // important this is done first b/c otherwise it pops the newly pushed route
+          closePopup(context);
         }
 
         Navigator.push(
@@ -342,54 +523,10 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
         ).then((value) => updateSavedMedia());
       }
     } catch (e) {
+      showSnackbar('There was a problem loading the media', context);
       if (modalShowing()) {
         closePopup(context);
       }
-    }
-  }
-
-  String formattedMovieTitle(SavedMedia savedMedia) {
-    return '${savedMedia.title} (${formatDateYearOnly(savedMedia.releaseDate)})';
-  }
-
-  void sortDisplayedMedia() {
-    switch (_sortValue) {
-      case SortingValues.AlphaDescending:
-        _displayedSavedMedia.sort((a, b) {
-          if (a.title == null || b.title == null) {
-            return 1;
-          } else {
-            return b.title!.toLowerCase().compareTo(a.title!.toLowerCase());
-          }
-        });
-        break;
-      case SortingValues.AlphaAscending:
-        _displayedSavedMedia.sort((a, b) {
-          if (a.title == null || b.title == null) {
-            return 1;
-          } else {
-            return a.title!.toLowerCase().compareTo(b.title!.toLowerCase());
-          }
-        });
-        break;
-      case SortingValues.ReleaseDateDescending:
-        _displayedSavedMedia.sort((a, b) {
-          if (a.releaseDate == null || b.releaseDate == null) {
-            return 1;
-          } else {
-            return b.releaseDate!.compareTo(a.releaseDate!);
-          }
-        });
-        break;
-      case SortingValues.ReleaseDateAscending:
-        _displayedSavedMedia.sort((a, b) {
-          if (a.releaseDate == null || b.releaseDate == null) {
-            return 1;
-          } else {
-            return a.releaseDate!.compareTo(b.releaseDate!);
-          }
-        });
-        break;
     }
   }
 
@@ -443,146 +580,9 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
               child: const Text('YES'),
             ),
           ],
-          title: Text('Delete Media'),
-          content: Text('Are you sure you want to permanently delete this media from your list?'),
+          title: const Text('Delete Media'),
+          content: const Text('Are you sure you want to permanently delete this media from your list?'),
         );
-      },
-    );
-  }
-
-  void onMediaInputCleared() {
-    setState(() {
-      _mediaAddController.text = '';
-      hideKeyboard(context);
-    });
-  }
-
-  void filterMedia() {
-    setState(() {
-      // easier to just clear search input when changing the filters
-      hideKeyboard(context);
-      _mediaSearchController.text = '';
-
-      _displayedSavedMedia = List.from(_allSavedMedia.where((element) {
-        return mediaFilter(element);
-      }));
-      sortDisplayedMedia();
-    });
-  }
-
-  bool mediaFilter(SavedMedia media) {
-    if (media.mediaType == MediaType.Movie && _showMovies) {
-      return true;
-    }
-    if (media.mediaType == MediaType.TV && _showTV) {
-      return true;
-    }
-    return false;
-  }
-
-  void searchSavedMedia(String searchText) {
-    setState(() {
-      _displayedSavedMedia = List.from(_allSavedMedia.where((element) {
-        if (element.title == null) {
-          return false;
-        }
-        return element.title!.toLowerCase().contains(searchText.toLowerCase()) && mediaFilter(element);
-      }));
-      sortDisplayedMedia();
-    });
-  }
-
-  void rowClicked(int index) {
-    var media = _displayedSavedMedia[index];
-    var loading = false;
-    hideKeyboard(context);
-    showModalBottomSheet<void>(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      builder: (BuildContext buildContext) {
-        return StatefulBuilder(builder: (BuildContext statefulContext, StateSetter myState) {
-          return Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
-                  child: ListTile(
-                    title: AutoSizeText(
-                      formattedMovieTitle(media),
-                      minFontSize: 12,
-                    ),
-                    subtitle: AutoSizeText(
-                      media.mediaType == MediaType.Movie ? 'Movie' : 'TV Show',
-                      minFontSize: 12,
-                    ),
-                    leading: Container(
-                      child: Image.network(
-                        getTmdbPicture(media.posterPath),
-                        fit: BoxFit.fitHeight,
-                      ),
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: loading,
-                  maintainSize: true,
-                  maintainAnimation: true,
-                  maintainState: true,
-                  child: LinearProgressIndicator(),
-                ),
-                InkWell(
-                  customBorder: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  onTap: () {
-                    myState(() {
-                      loading = true;
-                    });
-                    mediaClicked(media);
-                  },
-                  child: ListTile(
-                    title: Text('Show Cast'),
-                    trailing: IconButton(
-                      onPressed: () {
-                        myState(() {
-                          loading = true;
-                        });
-                        mediaClicked(media);
-                      },
-                      icon: const Icon(Icons.arrow_forward_ios),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
-                  child: InkWell(
-                    customBorder: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    onTap: () {
-                      Navigator.pop(buildContext);
-                      deleteSavedMedia(media);
-                    },
-                    child: ListTile(
-                      title: Text('Remove Media'),
-                      trailing: IconButton(
-                        onPressed: () {
-                          Navigator.pop(buildContext);
-                          deleteSavedMedia(media);
-                        },
-                        icon: const Icon(Icons.delete),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        });
       },
     );
   }

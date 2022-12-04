@@ -12,10 +12,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final PageController _pageController = PageController();
+
   int _selectedIndex = 0;
   List<Widget> _screens = <Widget>[MainScreen(), SavedMediaScreen(), AboutScreen()];
   List<int> _navStack = <int>[];
-  final PageController _pageController = PageController();
 
   @override
   void initState() {

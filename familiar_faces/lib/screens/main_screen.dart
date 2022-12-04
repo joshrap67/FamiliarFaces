@@ -21,17 +21,17 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMixin {
+  final TextEditingController _mediaSearchController = TextEditingController();
+  final TextEditingController _characterSearchController = TextEditingController();
+  final FocusNode _searchMediaFocusNode = new FocusNode();
+  final FocusNode _searchCharacterFocusNode = new FocusNode();
+
   SearchMediaResult? _selectedSearch;
   List<Cast> _castForSelectedMedia = <Cast>[];
   Cast? _selectedCharacter;
   bool _isLoading = false;
 
   String _buttonText() => _selectedCharacter == null ? 'WHERE HAVE I SEEN THIS CAST?' : 'WHERE HAVE I SEEN THIS ACTOR?';
-
-  final TextEditingController _mediaSearchController = TextEditingController();
-  final TextEditingController _characterSearchController = TextEditingController();
-  final FocusNode _searchMediaFocusNode = new FocusNode();
-  final FocusNode _searchCharacterFocusNode = new FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -270,7 +270,7 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
     if (_selectedSearch != null) {
       await navigate();
     } else {
-      showSnackbar('Movie/show must not be empty', context);
+      showSnackbar('Media must not be empty', context);
     }
   }
 

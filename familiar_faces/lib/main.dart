@@ -7,9 +7,9 @@ import 'imports/utils.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    systemNavigationBarColor: Colors.black
-  ));
+  // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+  //   systemNavigationBarColor: Colors.black
+  // ));
 }
 
 class MyApp extends StatelessWidget {

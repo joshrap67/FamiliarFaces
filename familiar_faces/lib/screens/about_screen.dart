@@ -71,7 +71,7 @@ class _AboutScreenState extends State<AboutScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8.0, 30.0, 8.0, 8.0),
-                  child: AutoSizeText(
+                  child: const AutoSizeText(
                     'This product uses the TMDB API but is not endorsed or certified by TMDB.',
                     style: const TextStyle(
                       fontStyle: FontStyle.italic,

@@ -5,7 +5,7 @@ import 'package:familiar_faces/contracts/actor_credit.dart';
 import 'package:familiar_faces/contracts/actor.dart';
 import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/imports/utils.dart';
-import 'package:familiar_faces/screens/actor_media_row.dart';
+import 'package:familiar_faces/widgets/actor_media_row.dart';
 import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/services/saved_media_database.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
@@ -55,175 +55,181 @@ class _ActorDetailsState extends State<ActorDetails> {
       ),
       body: Stack(
         children: [
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(4.0, 0, 0, 0),
-                child: Container(
-                  height: 150,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      CachedNetworkImage(
-                        imageUrl: getTmdbPicture(widget.actor.profileImagePath),
-                        placeholder: (context, url) => Center(
-                          child: SizedBox(
-                            child: const CircularProgressIndicator(),
-                            height: 50,
-                            width: 50,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 8.0, 0.0, 0.0),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4.0, 0, 0, 0),
+                  child: Container(
+                    height: 150,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: getTmdbPicture(widget.actor.profileImagePath),
+                          placeholder: (context, url) => Center(
+                            child: SizedBox(
+                              child: const CircularProgressIndicator(),
+                              height: 50,
+                              width: 50,
+                            ),
                           ),
+                          fit: BoxFit.fitWidth,
                         ),
-                        fit: BoxFit.fitWidth,
-                      ),
-                      Expanded(
-                        child: Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                        Expanded(
+                          child: Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      AutoSizeText(
+                                        '${widget.actor.name}',
+                                        textAlign: TextAlign.start,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        minFontSize: 10,
+                                        style: const TextStyle(fontSize: 24),
+                                      ),
+                                      if (widget.actor.birthday != null) // ffs
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                                          child: AutoSizeText(
+                                            '${getAge(widget.actor.birthday!, widget.actor.deathDay)}',
+                                            style: const TextStyle(fontSize: 14),
+                                            maxLines: 1,
+                                            minFontSize: 10,
+                                            textAlign: TextAlign.start,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: Row(
                                   children: [
-                                    AutoSizeText(
-                                      '${widget.actor.name}',
-                                      textAlign: TextAlign.start,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      minFontSize: 10,
-                                      style: const TextStyle(fontSize: 24),
-                                    ),
-                                    if (widget.actor.birthday != null) // ffs
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-                                        child: AutoSizeText(
-                                          '${getAge(widget.actor.birthday!, widget.actor.deathDay)}',
-                                          style: const TextStyle(fontSize: 14),
-                                          maxLines: 1,
-                                          minFontSize: 10,
-                                          textAlign: TextAlign.start,
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
+                                        child: Visibility(
+                                          visible: _seenCredits.length > 0,
+                                          maintainSize: true,
+                                          maintainAnimation: true,
+                                          maintainSemantics: true,
+                                          maintainState: true,
+                                          child: AutoSizeText(
+                                            'Seen ${_seenCredits.length} of their credits',
+                                            style: const TextStyle(fontSize: 14),
+                                            maxLines: 1,
+                                            minFontSize: 10,
+                                            textAlign: TextAlign.start,
+                                          ),
                                         ),
                                       ),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        SortDropdown(
+                                            sortValue: _sortValue, onSelected: (result) => onSortSelected(result)),
+                                        PopupMenuButton<Filters>(
+                                          onSelected: (Filters result) {
+                                            switch (result) {
+                                              case Filters.ShowOnlySeen:
+                                                setState(() {
+                                                  _showOnlySeen = !_showOnlySeen;
+                                                  updateDisplayedCredits();
+                                                });
+                                                break;
+                                              case Filters.IncludeMovies:
+                                                setState(() {
+                                                  _includeMovies = !_includeMovies;
+                                                  updateDisplayedCredits();
+                                                });
+                                                break;
+                                              case Filters.IncludeTv:
+                                                setState(() {
+                                                  _includeTv = !_includeTv;
+                                                  updateDisplayedCredits();
+                                                });
+                                                break;
+                                            }
+                                          },
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(15.0),
+                                            ),
+                                          ),
+                                          itemBuilder: (BuildContext context) => <PopupMenuEntry<Filters>>[
+                                            CheckedPopupMenuItem<Filters>(
+                                              checked: _showOnlySeen,
+                                              value: Filters.ShowOnlySeen,
+                                              child: const Text('Include Seen Media Only'),
+                                            ),
+                                            const PopupMenuDivider(),
+                                            CheckedPopupMenuItem<Filters>(
+                                              value: Filters.IncludeMovies,
+                                              checked: _includeMovies,
+                                              child: Text('Include Movies'),
+                                            ),
+                                            const PopupMenuDivider(),
+                                            CheckedPopupMenuItem<Filters>(
+                                              value: Filters.IncludeTv,
+                                              checked: _includeTv,
+                                              child: Text('Include TV Shows'),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
                                   ],
                                 ),
                               ),
-                            ),
-                            Align(
-                              alignment: Alignment.bottomRight,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
-                                      child: Visibility(
-                                        visible: _seenCredits.length > 0,
-                                        maintainSize: true,
-                                        maintainAnimation: true,
-                                        maintainSemantics: true,
-                                        maintainState: true,
-                                        child: AutoSizeText(
-                                          'Seen ${_seenCredits.length} of their credits',
-                                          style: const TextStyle(fontSize: 14),
-                                          maxLines: 1,
-                                          minFontSize: 10,
-                                          textAlign: TextAlign.start,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      SortDropdown(
-                                          sortValue: _sortValue, onSelected: (result) => onSortSelected(result)),
-                                      PopupMenuButton<Filters>(
-                                        onSelected: (Filters result) {
-                                          switch (result) {
-                                            case Filters.ShowOnlySeen:
-                                              setState(() {
-                                                _showOnlySeen = !_showOnlySeen;
-                                                updateDisplayedCredits();
-                                              });
-                                              break;
-                                            case Filters.IncludeMovies:
-                                              setState(() {
-                                                _includeMovies = !_includeMovies;
-                                                updateDisplayedCredits();
-                                              });
-                                              break;
-                                            case Filters.IncludeTv:
-                                              setState(() {
-                                                _includeTv = !_includeTv;
-                                                updateDisplayedCredits();
-                                              });
-                                              break;
-                                          }
-                                        },
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(15.0),
-                                          ),
-                                        ),
-                                        itemBuilder: (BuildContext context) => <PopupMenuEntry<Filters>>[
-                                          CheckedPopupMenuItem<Filters>(
-                                            checked: _showOnlySeen,
-                                            value: Filters.ShowOnlySeen,
-                                            child: const Text('Include Seen Media Only'),
-                                          ),
-                                          const PopupMenuDivider(),
-                                          CheckedPopupMenuItem<Filters>(
-                                            value: Filters.IncludeMovies,
-                                            checked: _includeMovies,
-                                            child: Text('Include Movies'),
-                                          ),
-                                          const PopupMenuDivider(),
-                                          CheckedPopupMenuItem<Filters>(
-                                            value: Filters.IncludeTv,
-                                            checked: _includeTv,
-                                            child: Text('Include TV Shows'),
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(2.0, 10.0, 2.0, 2.0),
-                  child: _displayedCredits.length > 0
-                      ? Scrollbar(
-                          child: ListView.separated(
-                            key: new PageStorageKey<String>('actor_details:list'),
-                            separatorBuilder: (BuildContext context, int index) => Divider(height: 15),
-                            itemCount: _displayedCredits.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return ActorMediaRow(
-                                media: _displayedCredits[index],
-                                rowClicked: (credit) => mediaClicked(credit),
-                                addToSeenClicked: (credit) => addToSeenSync(credit),
-                                removeFromSeenClicked: (credit) => removeFromSeen(credit),
-                              );
-                            },
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(2.0, 10.0, 2.0, 2.0),
+                    child: _displayedCredits.length > 0
+                        ? Scrollbar(
+                            child: ListView.separated(
+                              key: new PageStorageKey<String>('actor_details:list'),
+                              separatorBuilder: (BuildContext context, int index) => Divider(
+                                height: 15,
+                                color: Colors.transparent,
+                              ),
+                              itemCount: _displayedCredits.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return ActorMediaRow(
+                                  media: _displayedCredits[index],
+                                  rowClicked: (credit) => mediaClicked(credit),
+                                  addToSeenClicked: (credit) => addToSeenSync(credit),
+                                  removeFromSeenClicked: (credit) => removeFromSeen(credit),
+                                );
+                              },
+                            ),
+                          )
+                        : Center(
+                            child: const Text(
+                              'No credits',
+                              style: const TextStyle(fontSize: 20),
+                            ),
                           ),
-                        )
-                      : Center(
-                          child: const Text(
-                            'No credits',
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                        ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           Visibility(
             visible: _isLoading,
@@ -269,7 +275,7 @@ class _ActorDetailsState extends State<ActorDetails> {
         ).then((value) => updateSeenAsync());
       }
     } catch (e) {
-      closePopup(context);
+      showSnackbar('There was a problem loading the media', context);
     }
 
     setState(() {
