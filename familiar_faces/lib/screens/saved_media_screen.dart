@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:familiar_faces/contracts/media_type.dart';
 import 'package:familiar_faces/contracts/search_media_result.dart';
@@ -49,137 +51,138 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return WillPopScope(
-      onWillPop: onBackPressed,
-      child: Stack(
-        children: [
-          Column(
-            children: [
-              if (_allSavedMedia.isNotEmpty)
-                Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                        child: Stack(
-                          alignment: Alignment.centerRight,
-                          children: [
-                            TextFormField(
-                              controller: _mediaSearchController,
-                              onChanged: (input) => searchSavedMedia(input),
-                              focusNode: _searchFocusNode,
-                              decoration: InputDecoration(
-                                  prefixIcon: const Icon(Icons.search),
-                                  border: OutlineInputBorder(),
-                                  suffixIcon: _mediaSearchController.text.isNotEmpty
-                                      ? IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              _mediaSearchController.clear();
-                                              hideKeyboard(context);
-                                              searchSavedMedia(_mediaSearchController.text);
-                                            });
-                                          },
-                                          icon: Icon(Icons.clear),
-                                        )
-                                      : null,
-                                  labelText: 'Search My Media',
-                                  hintText: 'Search Movie or TV Show'),
-                            ),
-                          ],
-                        ),
+    return Stack(
+      children: [
+        Column(
+          children: [
+            if (_allSavedMedia.isNotEmpty)
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+                      child: Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          TextFormField(
+                            controller: _mediaSearchController,
+                            onChanged: (input) => searchSavedMedia(input),
+                            focusNode: _searchFocusNode,
+                            decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.search),
+                                border: OutlineInputBorder(),
+                                suffixIcon: _mediaSearchController.text.isNotEmpty
+                                    ? IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _mediaSearchController.clear();
+                                            hideKeyboard(context);
+                                            searchSavedMedia(_mediaSearchController.text);
+                                          });
+                                        },
+                                        icon: Icon(Icons.clear),
+                                      )
+                                    : null,
+                                labelText: 'Search My Media',
+                                hintText: 'Search Movie or TV Show'),
+                          ),
+                        ],
                       ),
+                    ),
+                  )
+                ],
+              ),
+            if (_allSavedMedia.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        movieCount(),
+                        Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0)),
+                        tvCount(),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SortDropdown(sortValue: _sortValue, onSelected: (result) => onSortSelected(result)),
                     )
                   ],
                 ),
-              if (_allSavedMedia.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          movieCount(),
-                          Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0)),
-                          tvCount(),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SortDropdown(sortValue: _sortValue, onSelected: (result) => onSortSelected(result)),
-                      )
-                    ],
-                  ),
-                ),
-              Expanded(
-                child: _displayedSavedMedia.isNotEmpty
-                    ? Scrollbar(
-                        interactive: true,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
-                          // list has to be wrapped in a material... https://github.com/flutter/flutter/issues/86584
-                          child: Material(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            child: ListView.separated(
-                              separatorBuilder: (BuildContext context, int index) => Divider(
-                                height: 10,
-                                color: Colors.transparent,
-                              ),
-                              key: new PageStorageKey<String>('saved_media_screen:list'),
-                              itemCount: _displayedSavedMedia.length,
-                              itemBuilder: (context, index) {
-                                return InkWell(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  onTap: () => rowClicked(index),
-                                  child: ListTile(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    title: AutoSizeText(
-                                      formattedMovieTitle(_displayedSavedMedia[index]),
-                                      minFontSize: 12,
-                                    ),
-                                    tileColor: Globals.TILE_COLOR,
-                                    leading: Container(
-                                      height: 50,
-                                      width: 50,
-                                      child: Image.network(
-                                        getProfilePictureUrl(_displayedSavedMedia[index].posterPath),
-                                        fit: BoxFit.cover,
-                                      ),
+              ),
+            Expanded(
+              child: _displayedSavedMedia.isNotEmpty
+                  ? Scrollbar(
+                      interactive: true,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
+                        // list has to be wrapped in a material... https://github.com/flutter/flutter/issues/86584
+                        child: Material(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          child: ListView.separated(
+                            separatorBuilder: (BuildContext context, int index) => Divider(
+                              height: 10,
+                              color: Colors.transparent,
+                            ),
+                            key: new PageStorageKey<String>('saved_media_screen:list'),
+                            itemCount: _displayedSavedMedia.length,
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                borderRadius: BorderRadius.circular(10.0),
+                                onTap: () => rowClicked(index),
+                                child: ListTile(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  title: AutoSizeText(
+                                    _displayedSavedMedia[index].title!,
+                                    minFontSize: 12,
+                                  ),
+                                  subtitle: AutoSizeText(
+                                    formatDateYearOnly(_displayedSavedMedia[index].releaseDate),
+                                    minFontSize: 12,
+                                  ),
+                                  tileColor: Globals.TILE_COLOR,
+                                  leading: Container(
+                                    height: 160,
+                                    width: 50,
+                                    child: Image.network(
+                                      getTmdbPicture(_displayedSavedMedia[index].posterPath),
+                                      fit: BoxFit.fitHeight,
                                     ),
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                              );
+                            },
                           ),
                         ),
-                      )
-                    : Center(
-                        child: const Text(
-                          'No saved media',
-                          style: const TextStyle(fontSize: 20),
-                        ),
                       ),
-              ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: FloatingActionButton(
-                onPressed: () {
-                  addPopup();
-                },
-                child: Icon(Icons.add),
-              ),
+                    )
+                  : Center(
+                      child: const Text(
+                        'No saved media',
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
             ),
-          )
-        ],
-      ),
+          ],
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FloatingActionButton(
+              onPressed: () {
+                addPopup();
+              },
+              child: Icon(Icons.add),
+            ),
+          ),
+        )
+      ],
     );
   }
 
@@ -193,6 +196,7 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
   }
 
   void addPopup() {
+    hideKeyboard(context);
     showDialog(
       context: context,
       builder: (context) {
@@ -239,7 +243,7 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
                         height: 50,
                         width: 50,
                         child: Image.network(
-                          getProfilePictureUrl(result.posterPath),
+                          getTmdbPicture(result.posterPath),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -262,8 +266,13 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
 
   Widget movieCount() {
     return FilterChip(
-      label: Text('${_allSavedMedia.where((element) => element.mediaType == MediaType.Movie).length} movies'),
-      selectedColor: Color(0xffffe477),
+      label: Text(
+        '${_allSavedMedia.where((element) => element.mediaType == MediaType.Movie).length} movies',
+        style: TextStyle(color: Colors.white),
+      ),
+      selectedColor: Theme.of(context).colorScheme.secondary,
+      checkmarkColor: Colors.white,
+      backgroundColor: Colors.black54,
       selected: _showMovies,
       onSelected: (bool value) {
         setState(() {
@@ -276,8 +285,13 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
 
   Widget tvCount() {
     return FilterChip(
-      label: Text('${_allSavedMedia.where((element) => element.mediaType == MediaType.TV).length} TV shows'),
-      selectedColor: Color(0xffffe477),
+      label: Text(
+        '${_allSavedMedia.where((element) => element.mediaType == MediaType.TV).length} TV shows',
+        style: TextStyle(color: Colors.white),
+      ),
+      selectedColor: Theme.of(context).colorScheme.secondary,
+      checkmarkColor: Colors.white,
+      backgroundColor: Colors.black54,
       selected: _showTV,
       onSelected: (bool value) {
         setState(() {
@@ -288,43 +302,49 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
     );
   }
 
-  Future<void> mediaClicked(SavedMedia media) async {
-    showLoadingDialog(context);
+  bool modalShowing() {
+    return ModalRoute.of(context)?.isCurrent != true;
+  }
 
+  Future<void> mediaClicked(SavedMedia media) async {
     try {
       if (media.mediaType == MediaType.Movie) {
-        var actorsOfMovie = await MediaService.getActorsFromMovie(media.mediaId);
         var movie = await MediaService.getMovieWithCast(media.mediaId);
 
-        closePopup(context); // important this is done first b/c otherwise it pops the newly pushed route
+        if (modalShowing()) {
+          closePopup(context); // important this is done first b/c otherwise it pops the newly pushed route
+        }
+
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => MediaCastScreen(
               cast: movie.cast,
-              actors: actorsOfMovie,
               movie: movie,
             ),
           ),
         ).then((value) => updateSavedMedia());
       } else if (media.mediaType == MediaType.TV) {
-        var actorsOfTvShow = await MediaService.getActorsFromTv(media.mediaId);
         var tvShow = await MediaService.getTvShowWithCast(media.mediaId);
 
-        closePopup(context);
+        if (modalShowing()) {
+          closePopup(context); // important this is done first b/c otherwise it pops the newly pushed route
+        }
+
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => MediaCastScreen(
               cast: tvShow.cast,
-              actors: actorsOfTvShow,
               tvShow: tvShow,
             ),
           ),
         ).then((value) => updateSavedMedia());
       }
     } catch (e) {
-      closePopup(context);
+      if (modalShowing()) {
+        closePopup(context);
+      }
     }
   }
 
@@ -375,7 +395,6 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
 
   Future<void> updateSavedMedia() async {
     _allSavedMedia = await SavedMediaService.getAll();
-    // todo honestly might just be better to have displayedmedia be a calculated field...
     filterMedia();
   }
 
@@ -425,7 +444,7 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
             ),
           ],
           title: Text('Delete Media'),
-          content: Text('Are you sure you wish to delete this media from your list?'),
+          content: Text('Are you sure you want to permanently delete this media from your list?'),
         );
       },
     );
@@ -473,93 +492,97 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
     });
   }
 
-  Future<bool> onBackPressed() async {
-    print(_searchFocusNode.hasPrimaryFocus);
-    // todo this is not being called due to being nested inside another willpop
-    if (_searchFocusNode.hasPrimaryFocus) {
-      _searchFocusNode.unfocus();
-      return false;
-    } else if (_addMediaFocusNode.hasPrimaryFocus) {
-      _addMediaFocusNode.unfocus();
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   void rowClicked(int index) {
     var media = _displayedSavedMedia[index];
-	hideKeyboard(context);
+    var loading = false;
+    hideKeyboard(context);
     showModalBottomSheet<void>(
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
       builder: (BuildContext buildContext) {
-        return Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 16.0),
-                child: ListTile(
-                  title: AutoSizeText(
-                    formattedMovieTitle(media),
-                    minFontSize: 12,
-                  ),
-                  subtitle: AutoSizeText(
-                    media.mediaType == MediaType.Movie ? 'Movie' : 'TV Show',
-                    minFontSize: 12,
-                  ),
-                  leading: Container(
-                    height: 60,
-                    width: 60,
-                    child: Image.network(
-                      getProfilePictureUrl(media.posterPath),
-                      fit: BoxFit.cover,
+        return StatefulBuilder(builder: (BuildContext statefulContext, StateSetter myState) {
+          return Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
+                  child: ListTile(
+                    title: AutoSizeText(
+                      formattedMovieTitle(media),
+                      minFontSize: 12,
+                    ),
+                    subtitle: AutoSizeText(
+                      media.mediaType == MediaType.Movie ? 'Movie' : 'TV Show',
+                      minFontSize: 12,
+                    ),
+                    leading: Container(
+                      child: Image.network(
+                        getTmdbPicture(media.posterPath),
+                        fit: BoxFit.fitHeight,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              InkWell(
-                customBorder: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                Visibility(
+                  visible: loading,
+                  maintainSize: true,
+                  maintainAnimation: true,
+                  maintainState: true,
+                  child: LinearProgressIndicator(),
                 ),
-                onTap: () => mediaClicked(media),
-                child: ListTile(
-                  title: Text('Show Cast'),
-                  trailing: IconButton(
-                    onPressed: () => mediaClicked(media),
-                    icon: const Icon(Icons.arrow_forward_ios),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
-                child: InkWell(
+                InkWell(
                   customBorder: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   onTap: () {
-                    Navigator.pop(buildContext);
-                    deleteSavedMedia(media);
+                    myState(() {
+                      loading = true;
+                    });
+                    mediaClicked(media);
                   },
                   child: ListTile(
-                    title: Text('Remove Media'),
+                    title: Text('Show Cast'),
                     trailing: IconButton(
                       onPressed: () {
-                        Navigator.pop(buildContext);
-                        deleteSavedMedia(media);
+                        myState(() {
+                          loading = true;
+                        });
+                        mediaClicked(media);
                       },
-                      icon: const Icon(Icons.delete),
+                      icon: const Icon(Icons.arrow_forward_ios),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
+                  child: InkWell(
+                    customBorder: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    onTap: () {
+                      Navigator.pop(buildContext);
+                      deleteSavedMedia(media);
+                    },
+                    child: ListTile(
+                      title: Text('Remove Media'),
+                      trailing: IconButton(
+                        onPressed: () {
+                          Navigator.pop(buildContext);
+                          deleteSavedMedia(media);
+                        },
+                        icon: const Icon(Icons.delete),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
       },
     );
   }

@@ -44,7 +44,7 @@ class ActorMediaRow extends StatelessWidget {
                   width: 100,
                   height: 140,
                   child: CachedNetworkImage(
-                    imageUrl: getProfilePictureUrl(media.posterPath),
+                    imageUrl: getTmdbPicture(media.posterPath),
                     placeholder: (context, url) => Center(
                       child: SizedBox(
                         child: const CircularProgressIndicator(),

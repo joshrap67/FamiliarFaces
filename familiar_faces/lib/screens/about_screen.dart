@@ -28,21 +28,36 @@ class _AboutScreenState extends State<AboutScreen> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              Container(
-                height: 150,
-                width: 150,
-                child: Image.asset(
-                  'assets/icon/logo.png',
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  height: 150,
+                  width: 150,
+                  child: Image.asset(
+                    'assets/icon/logo.png',
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Center(
-                  child: Text(
-                    '$_appName Version $_appVersion',
-                    style: const TextStyle(
-                      fontSize: 24,
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$_appName',
+                        style: const TextStyle(
+                          fontSize: 30,
+                        ),
+                      ),
+                      Text(
+                        'Version $_appVersion',
+                        style: const TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

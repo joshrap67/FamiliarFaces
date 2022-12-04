@@ -7,15 +7,15 @@ import 'package:flutter/material.dart';
 import '../imports/globals.dart';
 
 class MediaCastRow extends StatelessWidget {
-  const MediaCastRow({Key? key, required this.castMember, this.rowClicked}) : super(key: key);
+  const MediaCastRow({Key? key, required this.castMember, required this.rowClicked}) : super(key: key);
 
   final Cast castMember;
-  final Function(Cast)? rowClicked;
+  final Function(Cast) rowClicked;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => rowClicked!(castMember),
+      onTap: () => rowClicked(castMember),
       child: Container(
         height: 150,
         decoration: BoxDecoration(
@@ -37,7 +37,7 @@ class MediaCastRow extends StatelessWidget {
                       width: 100,
                       height: 140,
                       child: CachedNetworkImage(
-                        imageUrl: getProfilePictureUrl(castMember.profilePath),
+                        imageUrl: getTmdbPicture(castMember.profilePath),
                         placeholder: (context, url) => Center(
                           child: SizedBox(
                             child: const CircularProgressIndicator(),
@@ -86,7 +86,7 @@ class MediaCastRow extends StatelessWidget {
               iconSize: 36,
               color: Colors.black,
               tooltip: 'Full filmography',
-              onPressed: () => rowClicked!(castMember),
+              onPressed: () => rowClicked(castMember),
             )
           ],
         ),

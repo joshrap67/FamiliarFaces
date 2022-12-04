@@ -1,5 +1,5 @@
 import 'package:familiar_faces/imports/utils.dart';
-import 'package:familiar_faces/screens/home_screen.dart';
+import 'package:familiar_faces/screens/main_screen.dart';
 import 'package:familiar_faces/screens/saved_media_screen.dart';
 import 'package:familiar_faces/screens/about_screen.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
-  List<Widget> _screens = <Widget>[HomeScreen(), SavedMediaScreen(), AboutScreen()];
+  List<Widget> _screens = <Widget>[MainScreen(), SavedMediaScreen(), AboutScreen()];
   List<int> _navStack = <int>[];
   final PageController _pageController = PageController();
 
@@ -29,6 +29,7 @@ class _HomeState extends State<Home> {
       onWillPop: handleBackButton,
       child: SafeArea(
         child: Scaffold(
+          resizeToAvoidBottomInset: _selectedIndex != 0,
           body: PageView(
             children: _screens,
             physics: NeverScrollableScrollPhysics(),
@@ -36,9 +37,9 @@ class _HomeState extends State<Home> {
           ),
           bottomNavigationBar: BottomNavigationBar(
             items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(icon: Icon(Icons.movie), label: 'My Media'),
-              BottomNavigationBarItem(icon: Icon(Icons.help), label: 'About'),
+              BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
+              BottomNavigationBarItem(icon: Icon(Icons.movie_creation_rounded), label: 'My Media'),
+              BottomNavigationBarItem(icon: Icon(Icons.help_rounded), label: 'About'),
             ],
             currentIndex: _selectedIndex,
             onTap: onItemTapped,

@@ -5,7 +5,7 @@ bool isStringNullOrEmpty(String? value) {
   return value?.isEmpty ?? true;
 }
 
-String getProfilePictureUrl(String? path) {
+String getTmdbPicture(String? path) {
   if (path == null) {
     return 'https://familiar-faces-images.s3.amazonaws.com/not_found.png';
   } else {
