@@ -1,4 +1,4 @@
-import 'package:familiar_faces/contracts/media_type.dart';
+import 'package:familiar_faces/domain/media_type.dart';
 import 'package:familiar_faces/imports/utils.dart';
 
 final String tableSavedMedia = 'saved_media';
@@ -32,15 +32,6 @@ class SavedMedia {
         SavedMediaFields.posterPath: posterPath,
         SavedMediaFields.releaseDate: releaseDate != null ? releaseDate!.toIso8601String() : null,
       };
-
-  SavedMedia deepCopy(
-      {int? id, MediaType? mediaType, int? mediaId, String? title, String? posterPath, DateTime? releaseDate}) {
-    return new SavedMedia(mediaId ?? this.mediaId, mediaType ?? this.mediaType,
-        id: id ?? this.id,
-        title: title ?? this.title,
-        posterPath: posterPath ?? this.posterPath,
-        releaseDate: releaseDate ?? this.releaseDate);
-  }
 
   static SavedMedia fromJson(Map<String, Object?> rawJson) {
     var releaseDate = rawJson[SavedMediaFields.releaseDate] as String?;

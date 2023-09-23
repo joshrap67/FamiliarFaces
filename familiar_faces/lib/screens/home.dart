@@ -1,7 +1,8 @@
 import 'package:familiar_faces/imports/utils.dart';
+import 'package:familiar_faces/screens/about_screen.dart';
 import 'package:familiar_faces/screens/main_screen.dart';
 import 'package:familiar_faces/screens/saved_media_screen.dart';
-import 'package:familiar_faces/screens/about_screen.dart';
+import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -22,29 +23,57 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     _navStack.add(_selectedIndex);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SavedMediaService.load(context);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: handleBackButton,
-      child: SafeArea(
-        child: Scaffold(
-          resizeToAvoidBottomInset: _selectedIndex != 0,
-          body: PageView(
-            children: _screens,
-            physics: NeverScrollableScrollPhysics(),
-            controller: _pageController,
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          toolbarHeight: 0,
+        ),
+        resizeToAvoidBottomInset: _selectedIndex != 0,
+        body: PageView(
+          children: _screens,
+          physics: NeverScrollableScrollPhysics(),
+          controller: _pageController,
+        ),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: Theme.of(context).dividerColor,
+                width: 0.175,
+              ),
+            ),
           ),
-          bottomNavigationBar: BottomNavigationBar(
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
-              BottomNavigationBarItem(icon: Icon(Icons.movie_creation_rounded), label: 'My Media'),
-              BottomNavigationBarItem(icon: Icon(Icons.help_rounded), label: 'About'),
+          child: NavigationBar(
+            destinations: const <Widget>[
+              NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home_filled),
+                label: 'Home',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.movie_outlined),
+                selectedIcon: Icon(Icons.movie),
+                label: 'My Media',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.help_outline),
+                selectedIcon: Icon(Icons.help),
+                label: 'About',
+              ),
             ],
-            currentIndex: _selectedIndex,
-            onTap: onItemTapped,
-            elevation: 12.0,
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: onItemTapped,
+            elevation: 15,
+            surfaceTintColor: const Color(0x00000000),
           ),
         ),
       ),
@@ -65,15 +94,20 @@ class _HomeState extends State<Home> {
   }
 
   void onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
+    if (index != 0) {
+      // home is always at bottom of the stack
+      _navStack.removeWhere((element) => element == index);
       _navStack.insert(0, index);
+    }
+
+    setState(() {
       switchPages(index);
+      _selectedIndex = index;
     });
   }
 
   void switchPages(int index) {
     _pageController.animateToPage(index, duration: Duration(milliseconds: 400), curve: Curves.ease);
-    hideKeyboard(context);
+    hideKeyboard();
   }
 }

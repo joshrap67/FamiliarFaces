@@ -2,7 +2,7 @@ import 'media_type.dart';
 
 class ActorCredit {
   int id;
-  bool isSeen;
+  bool isSeenByUser;
   String? title;
   MediaType mediaType;
   String? characterName;
@@ -10,11 +10,11 @@ class ActorCredit {
   String? posterPath;
 
   ActorCredit(this.id, this.title, this.mediaType, this.characterName, this.releaseDate, this.posterPath,
-      {this.isSeen = false});
+      {this.isSeenByUser = false});
 
   @override
   String toString() {
-    return 'ActorCredit{id: $id, isSeen: $isSeen, title: $title, mediaType: $mediaType, '
+    return 'ActorCredit{id: $id, isSeenByUser: $isSeenByUser, title: $title, mediaType: $mediaType, '
         'characterName: $characterName, releaseDate: $releaseDate}, posterPath: $posterPath}';
   }
 }

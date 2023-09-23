@@ -3,7 +3,7 @@ import 'package:familiar_faces/imports/utils.dart';
 import 'package:flutter/material.dart';
 
 class SortDropdown extends StatelessWidget {
-  final SortingValues sortValue;
+  final SortValue sortValue;
   final Function onSelected;
 
   const SortDropdown({required this.sortValue, required this.onSelected, Key? key}) : super(key: key);
@@ -20,29 +20,29 @@ class SortDropdown extends StatelessWidget {
       ),
       initialValue: sortValue,
       itemBuilder: (context) {
-        hideKeyboard(context);
-        return <PopupMenuEntry<SortingValues>>[
-          PopupMenuItem<SortingValues>(
-            value: SortingValues.ReleaseDateDescending,
+        hideKeyboard();
+        return <PopupMenuEntry<SortValue>>[
+          PopupMenuItem<SortValue>(
+            value: SortValue.ReleaseDateDescending,
             child: Text('Release Date Descending'),
           ),
-          PopupMenuItem<SortingValues>(
-            value: SortingValues.ReleaseDateAscending,
+          PopupMenuItem<SortValue>(
+            value: SortValue.ReleaseDateAscending,
             child: Text('Release Date Ascending'),
           ),
-          PopupMenuItem<SortingValues>(
-            value: SortingValues.AlphaDescending,
+          PopupMenuItem<SortValue>(
+            value: SortValue.AlphaDescending,
             child: Text('Alpha Descending'),
           ),
-          PopupMenuItem<SortingValues>(
-            value: SortingValues.AlphaAscending,
+          PopupMenuItem<SortValue>(
+            value: SortValue.AlphaAscending,
             child: Container(
               child: Text('Alpha Ascending'),
             ),
           ),
         ];
       },
-      onSelected: (SortingValues result) => onSelected(result),
+      onSelected: (SortValue result) => onSelected(result),
     );
   }
 }

@@ -9,8 +9,7 @@ class SearchMediaResult {
   late bool isVideo;
   late bool isAdult;
 
-  SearchMediaResult(
-      this.id, this.title, this.mediaType, this.releaseDate, this.posterPath, this.isVideo, this.isAdult);
+  SearchMediaResult(this.id, this.title, this.mediaType, this.releaseDate, this.posterPath, this.isVideo, this.isAdult);
 
   @override
   String toString() {

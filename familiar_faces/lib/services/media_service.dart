@@ -1,18 +1,20 @@
-import 'package:familiar_faces/contracts/cast.dart';
-import 'package:familiar_faces/contracts/movie.dart';
-import 'package:familiar_faces/contracts/actor_credit.dart';
-import 'package:familiar_faces/contracts/actor.dart';
-import 'package:familiar_faces/contracts/search_media_result.dart';
-import 'package:familiar_faces/contracts/tv_show.dart';
+import 'package:familiar_faces/domain/actor.dart';
+import 'package:familiar_faces/domain/actor_credit.dart';
+import 'package:familiar_faces/domain/cast.dart';
+import 'package:familiar_faces/domain/movie.dart';
+import 'package:familiar_faces/domain/search_media_result.dart';
+import 'package:familiar_faces/domain/tv_show.dart';
+import 'package:familiar_faces/domain/saved_media.dart';
 import 'package:familiar_faces/imports/utils.dart';
-import 'package:familiar_faces/services/saved_media_service.dart';
+import 'package:familiar_faces/providers/saved_media_provider.dart';
 import 'package:familiar_faces/services/tmdb_service.dart';
-import 'package:familiar_faces/contracts_sql/saved_media.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
 class MediaService {
-  static Future<Actor> getActor(int id) async {
+  static Future<Actor> getActor(BuildContext buildContext, int id) async {
     var actor = await TmdbService.getPersonCreditsAsync(id);
-    var savedMedia = await SavedMediaService.getAll();
+    var savedMedia = buildContext.read<SavedMediaProvider>().savedMedia;
 
     applySeenMedia(actor.credits, savedMedia);
     cleanActorCredits(actor.credits);
@@ -37,7 +39,7 @@ class MediaService {
   static void applySeenMedia(List<ActorCredit> credits, List<SavedMedia> savedMedia) {
     for (var credit in credits) {
       if (savedMedia.any((element) => element.mediaId == credit.id && element.mediaType == credit.mediaType)) {
-        credit.isSeen = true;
+        credit.isSeenByUser = true;
       }
     }
   }
@@ -56,7 +58,8 @@ class MediaService {
   }
 
   // this method is the main source of data cleaning since this is the only way in the app to actually get media ids to query
-  static Future<List<SearchMediaResult>> searchMulti(String query, {bool showSavedMedia = true}) async {
+  static Future<List<SearchMediaResult>> searchMulti(BuildContext buildContext, String query,
+      {bool showSavedMedia = true}) async {
     if (isStringNullOrEmpty(query)) {
       return <SearchMediaResult>[];
     }
@@ -71,7 +74,7 @@ class MediaService {
     // according to TMDB docs, this field is set on things like BTS or short films but doesn't actually seem to matter
     search.removeWhere((element) => element.isVideo);
     if (!showSavedMedia) {
-      var savedMedia = await SavedMediaService.getAll();
+      var savedMedia = buildContext.read<SavedMediaProvider>().savedMedia;
       // don't show suggestions for ones the user has already saved
       search.removeWhere((element) => savedMedia
           .any((savedMedia) => savedMedia.mediaId == element.id && savedMedia.mediaType == element.mediaType));

@@ -1,17 +1,16 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:familiar_faces/contracts/cast.dart';
-import 'package:familiar_faces/contracts/media_type.dart';
-import 'package:familiar_faces/contracts/movie.dart';
-import 'package:familiar_faces/contracts/search_media_result.dart';
-import 'package:familiar_faces/contracts/tv_show.dart';
+import 'package:familiar_faces/domain/cast.dart';
+import 'package:familiar_faces/domain/media_type.dart';
+import 'package:familiar_faces/domain/movie.dart';
+import 'package:familiar_faces/domain/search_media_result.dart';
+import 'package:familiar_faces/domain/tv_show.dart';
+import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/screens/actor_details.dart';
 import 'package:familiar_faces/screens/media_cast_screen.dart';
 import 'package:familiar_faces/services/media_service.dart';
-import 'package:familiar_faces/imports/utils.dart';
+import 'package:familiar_faces/widgets/painters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-
-import '../imports/globals.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -40,12 +39,27 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 0.0),
           child: Container(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 32.0, 8.0, 8.0),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    child: ClipRect(
+                      child: Container(
+                        width: double.infinity,
+                        height: 15,
+                        child: CustomPaint(
+                          painter: FilmStrip(Theme.of(context).colorScheme.onTertiaryContainer),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
                   child: Stack(
                     alignment: Alignment.centerRight,
                     children: [
@@ -57,8 +71,12 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
                             // so x button can properly be hidden
                             setState(() {});
                           },
-                          decoration: const InputDecoration(
-                              prefixIcon: const Icon(Icons.search),
+                          decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.movie),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Theme.of(context).colorScheme.onTertiaryContainer, width: 1.5),
+                              ),
                               border: const OutlineInputBorder(),
                               labelText: 'Media Title',
                               hintText: 'Search Movie or TV Show'),
@@ -66,10 +84,10 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
                         hideOnLoading: true,
                         hideOnEmpty: true,
                         hideOnError: true,
-                        hideSuggestionsOnKeyboardHide: false,
+                        hideSuggestionsOnKeyboardHide: true,
                         debounceDuration: Duration(milliseconds: 300),
                         onSuggestionSelected: (media) => onMediaSelected(media),
-                        suggestionsCallback: (query) => MediaService.searchMulti(query),
+                        suggestionsCallback: (query) => MediaService.searchMulti(context, query),
                         itemBuilder: (context, SearchMediaResult result) {
                           return ListTile(
                             title: Text('${result.title} (${formatDateYearOnly(result.releaseDate)})'),
@@ -94,7 +112,7 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 32.0),
+                  padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
                   child: Stack(
                     alignment: Alignment.centerRight,
                     children: [
@@ -106,16 +124,20 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
                             // so x button can properly be hidden
                             setState(() {});
                           },
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                               labelText: 'Character',
                               prefixIcon: const Icon(Icons.person),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Theme.of(context).colorScheme.onTertiaryContainer, width: 1.5),
+                              ),
                               border: const OutlineInputBorder(),
                               hintText: 'Search Character (optional)'),
                         ),
                         hideOnLoading: true,
                         hideOnEmpty: true,
                         hideOnError: true,
-                        hideSuggestionsOnKeyboardHide: false,
+                        hideSuggestionsOnKeyboardHide: true,
                         onSuggestionSelected: onCharacterSelected,
                         suggestionsCallback: (query) => getCharacterResults(query),
                         itemBuilder: (context, Cast result) {
@@ -141,11 +163,24 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
                     ],
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+                  child: Container(
+                    child: ClipRect(
+                      child: Container(
+                        width: double.infinity,
+                        height: 15,
+                        child: CustomPaint(
+                          painter: FilmStrip(Theme.of(context).colorScheme.onTertiaryContainer),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
             decoration: BoxDecoration(
-              color: Globals.TILE_COLOR,
-              borderRadius: BorderRadius.all(Radius.circular(40)),
+              color: Theme.of(context).colorScheme.tertiaryContainer,
             ),
           ),
         ),
@@ -192,7 +227,7 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
                           style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.black,
                               shape: const StadiumBorder(),
-                              backgroundColor: Theme.of(context).colorScheme.secondary),
+                              backgroundColor: Theme.of(context).colorScheme.primary),
                           child: Text(
                             _buttonText(),
                             style: const TextStyle(color: Colors.white),
@@ -201,7 +236,7 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
                       : Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Theme.of(context).colorScheme.secondary,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           child: const Center(
                             child: const CircularProgressIndicator(
@@ -226,7 +261,7 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
       _mediaSearchController.text = '';
       _characterSearchController.text = '';
       _selectedCharacter = null;
-      hideKeyboard(context);
+      hideKeyboard();
     });
   }
 
@@ -234,7 +269,7 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
     setState(() {
       _selectedCharacter = null;
       _characterSearchController.text = '';
-      hideKeyboard(context);
+      hideKeyboard();
     });
   }
 
@@ -242,7 +277,7 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
     setState(() {
       _selectedCharacter = character;
       _characterSearchController.text = _selectedCharacter!.characterName!;
-      hideKeyboard(context);
+      hideKeyboard();
     });
   }
 
@@ -266,7 +301,7 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
   }
 
   Future<void> onMainButtonPressed() async {
-    hideKeyboard(context);
+    hideKeyboard();
     if (_selectedSearch != null) {
       await navigate();
     } else {
@@ -280,7 +315,7 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
     });
     try {
       if (_selectedCharacter != null) {
-        var actorCredits = await MediaService.getActor(_selectedCharacter!.id);
+        var actorCredits = await MediaService.getActor(context, _selectedCharacter!.id);
         Navigator.push(
           context,
           MaterialPageRoute(

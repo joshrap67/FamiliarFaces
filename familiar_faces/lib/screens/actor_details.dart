@@ -1,17 +1,18 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:familiar_faces/contracts/media_type.dart';
-import 'package:familiar_faces/contracts/actor_credit.dart';
-import 'package:familiar_faces/contracts/actor.dart';
+import 'package:familiar_faces/domain/actor.dart';
+import 'package:familiar_faces/domain/actor_credit.dart';
+import 'package:familiar_faces/domain/media_type.dart';
+import 'package:familiar_faces/domain/saved_media.dart';
 import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/imports/utils.dart';
-import 'package:familiar_faces/widgets/actor_media_row.dart';
+import 'package:familiar_faces/providers/saved_media_provider.dart';
 import 'package:familiar_faces/services/media_service.dart';
-import 'package:familiar_faces/services/saved_media_database.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
-import 'package:familiar_faces/contracts_sql/saved_media.dart';
+import 'package:familiar_faces/widgets/actor_media_card.dart';
 import 'package:familiar_faces/widgets/sort_dropdown.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'media_cast_screen.dart';
 
@@ -27,10 +28,9 @@ class ActorDetails extends StatefulWidget {
 enum Filters { ShowOnlySeen, IncludeMovies, IncludeTv }
 
 class _ActorDetailsState extends State<ActorDetails> {
-  late List<ActorCredit> _displayedCredits;
-  late List<ActorCredit> _allCredits;
-  late List<ActorCredit> _seenCredits = <ActorCredit>[];
-  SortingValues _sortValue = SortingValues.ReleaseDateDescending;
+  List<ActorCredit> _displayedCredits = [];
+  List<ActorCredit> _allCredits = [];
+  SortValue _sortValue = SortValue.ReleaseDateDescending;
   bool _showOnlySeen = false;
   bool _includeMovies = true;
   bool _includeTv = true;
@@ -52,6 +52,8 @@ class _ActorDetailsState extends State<ActorDetails> {
           'Actor Details',
           minFontSize: 10,
         ),
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        scrolledUnderElevation: 0,
       ),
       body: Stack(
         children: [
@@ -118,13 +120,13 @@ class _ActorDetailsState extends State<ActorDetails> {
                                       child: Padding(
                                         padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
                                         child: Visibility(
-                                          visible: _seenCredits.length > 0,
+                                          visible: _allCredits.where((element) => element.isSeenByUser).length > 0,
                                           maintainSize: true,
                                           maintainAnimation: true,
                                           maintainSemantics: true,
                                           maintainState: true,
                                           child: AutoSizeText(
-                                            'Seen ${_seenCredits.length} of their credits',
+                                            'Seen ${_allCredits.where((element) => element.isSeenByUser).length} of their credits',
                                             style: const TextStyle(fontSize: 14),
                                             maxLines: 1,
                                             minFontSize: 10,
@@ -203,19 +205,15 @@ class _ActorDetailsState extends State<ActorDetails> {
                     padding: const EdgeInsets.fromLTRB(2.0, 10.0, 2.0, 2.0),
                     child: _displayedCredits.length > 0
                         ? Scrollbar(
-                            child: ListView.separated(
+                            child: ListView.builder(
                               key: new PageStorageKey<String>('actor_details:list'),
-                              separatorBuilder: (BuildContext context, int index) => Divider(
-                                height: 15,
-                                color: Colors.transparent,
-                              ),
                               itemCount: _displayedCredits.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return ActorMediaRow(
+                                return ActorMediaCard(
                                   media: _displayedCredits[index],
-                                  rowClicked: (credit) => mediaClicked(credit),
-                                  addToSeenClicked: (credit) => addToSeenSync(credit),
-                                  removeFromSeenClicked: (credit) => removeFromSeen(credit),
+                                  arrowClicked: (credit) => mediaClicked(credit),
+                                  setSeenClicked: (credit) => setToSeen(credit),
+                                  removeAsSeenClicked: (credit) => removeAsSeen(credit),
                                 );
                               },
                             ),
@@ -234,7 +232,7 @@ class _ActorDetailsState extends State<ActorDetails> {
           Visibility(
             visible: _isLoading,
             child: LinearProgressIndicator(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.secondary,
             ),
           )
         ],
@@ -260,7 +258,7 @@ class _ActorDetailsState extends State<ActorDetails> {
               movie: movie,
             ),
           ),
-        ).then((value) => updateSeenAsync());
+        ).then((value) => updateSeenCredits());
       } else if (creditResponse.mediaType == MediaType.TV) {
         var tvShow = await MediaService.getTvShowWithCast(creditResponse.id);
 
@@ -272,7 +270,7 @@ class _ActorDetailsState extends State<ActorDetails> {
               tvShow: tvShow,
             ),
           ),
-        ).then((value) => updateSeenAsync());
+        ).then((value) => updateSeenCredits());
       }
     } catch (e) {
       showSnackbar('There was a problem loading the media', context);
@@ -283,41 +281,43 @@ class _ActorDetailsState extends State<ActorDetails> {
     });
   }
 
-  Future<void> updateSeenAsync() async {
-    var seenMedia = await SavedMediaService.getAll();
+  void updateSeenCredits() {
+    var seenMedia = context.read<SavedMediaProvider>().savedMedia;
     MediaService.applySeenMedia(_allCredits, seenMedia);
     setState(() {
       updateDisplayedCredits();
     });
   }
 
-  Future<void> addToSeenSync(ActorCredit creditResponse) async {
-    await SavedMediaDatabase.instance.create(new SavedMedia(creditResponse.id, creditResponse.mediaType,
-        title: creditResponse.title, posterPath: creditResponse.posterPath, releaseDate: creditResponse.releaseDate));
+  Future<void> setToSeen(ActorCredit creditResponse) async {
+    await SavedMediaService.add(
+        context,
+        new SavedMedia(creditResponse.id, creditResponse.mediaType,
+            title: creditResponse.title,
+            posterPath: creditResponse.posterPath,
+            releaseDate: creditResponse.releaseDate));
 
     setState(() {
       var media = _allCredits.firstWhere((element) => element.id == creditResponse.id);
-      _seenCredits.add(media);
-      media.isSeen = true;
+      media.isSeenByUser = true;
     });
   }
 
-  Future<void> removeFromSeen(ActorCredit credit) async {
+  Future<void> removeAsSeen(ActorCredit credit) async {
     var seenMedia = await SavedMediaService.getByMediaId(credit.id);
     if (seenMedia == null) {
       return;
     }
 
-    await SavedMediaDatabase.instance.delete(seenMedia.id!);
+    await SavedMediaService.remove(context, seenMedia.id!);
 
     setState(() {
       var media = _allCredits.firstWhere((element) => element.id == credit.id);
-      _seenCredits.removeWhere((element) => element.id == credit.id);
-      media.isSeen = false;
+      media.isSeenByUser = false;
     });
   }
 
-  void onSortSelected(SortingValues result) {
+  void onSortSelected(SortValue result) {
     if (_sortValue != result) {
       _sortValue = result;
       setState(() {
@@ -327,70 +327,77 @@ class _ActorDetailsState extends State<ActorDetails> {
   }
 
   void sortCredits(List<ActorCredit> credits) {
+    // seen credits are always on top
     switch (_sortValue) {
-      case SortingValues.AlphaDescending:
+      case SortValue.AlphaDescending:
         credits.sort((a, b) {
-          if (a.title == null || b.title == null) {
-            return 1;
-          } else {
-            return b.title!.toLowerCase().compareTo(a.title!.toLowerCase());
+          var sortBySeen = compareToBool(a.isSeenByUser, b.isSeenByUser);
+          if (sortBySeen == 0) {
+            if (a.title == null || b.title == null) {
+              return 1;
+            } else {
+              return b.title!.toLowerCase().compareTo(a.title!.toLowerCase());
+            }
           }
+          return sortBySeen;
         });
         break;
-      case SortingValues.AlphaAscending:
+      case SortValue.AlphaAscending:
         credits.sort((a, b) {
-          if (a.title == null || b.title == null) {
-            return 1;
-          } else {
-            return a.title!.toLowerCase().compareTo(b.title!.toLowerCase());
+          var sortBySeen = compareToBool(a.isSeenByUser, b.isSeenByUser);
+          if (sortBySeen == 0) {
+            if (a.title == null || b.title == null) {
+              return 1;
+            } else {
+              return a.title!.toLowerCase().compareTo(b.title!.toLowerCase());
+            }
           }
+          return sortBySeen;
         });
         break;
-      case SortingValues.ReleaseDateDescending:
+      case SortValue.ReleaseDateDescending:
         credits.sort((a, b) {
-          if (a.releaseDate == null || b.releaseDate == null) {
-            return 1;
-          } else {
-            return b.releaseDate!.compareTo(a.releaseDate!);
+          var sortBySeen = compareToBool(a.isSeenByUser, b.isSeenByUser);
+          if (sortBySeen == 0) {
+            if (a.releaseDate == null || b.releaseDate == null) {
+              return 1;
+            } else {
+              return b.releaseDate!.compareTo(a.releaseDate!);
+            }
           }
+          return sortBySeen;
         });
         break;
-      case SortingValues.ReleaseDateAscending:
+      case SortValue.ReleaseDateAscending:
         credits.sort((a, b) {
-          if (a.releaseDate == null || b.releaseDate == null) {
-            return 1;
-          } else {
-            return a.releaseDate!.compareTo(b.releaseDate!);
+          var sortBySeen = compareToBool(a.isSeenByUser, b.isSeenByUser);
+          if (sortBySeen == 0) {
+            if (a.releaseDate == null || b.releaseDate == null) {
+              return 1;
+            } else {
+              return a.releaseDate!.compareTo(b.releaseDate!);
+            }
           }
+          return sortBySeen;
         });
         break;
     }
   }
 
   void updateDisplayedCredits() {
-    _displayedCredits = List.from(_allCredits);
-    _seenCredits = <ActorCredit>[];
-    _seenCredits.addAll(_allCredits.where((element) => element.isSeen));
-    var seenCreditsTemp = List<ActorCredit>.from(_seenCredits);
+    var credits = List<ActorCredit>.from(_allCredits);
 
-    _displayedCredits.removeWhere((element) => element.isSeen); // so seen media isn't shown twice in same list
     if (_showOnlySeen) {
-      _displayedCredits.removeWhere((element) => !element.isSeen);
+      credits.removeWhere((element) => !element.isSeenByUser);
     }
-
     if (!_includeTv) {
-      _displayedCredits.removeWhere((element) => element.mediaType == MediaType.TV);
-      seenCreditsTemp.removeWhere((element) => element.mediaType == MediaType.TV);
+      credits.removeWhere((element) => element.mediaType == MediaType.TV);
     }
-
     if (!_includeMovies) {
-      _displayedCredits.removeWhere((element) => element.mediaType == MediaType.Movie);
-      seenCreditsTemp.removeWhere((element) => element.mediaType == MediaType.Movie);
+      credits.removeWhere((element) => element.mediaType == MediaType.Movie);
     }
 
-    sortCredits(seenCreditsTemp);
-    sortCredits(_displayedCredits);
-
-    _displayedCredits.insertAll(0, seenCreditsTemp);
+    sortCredits(credits);
+    _displayedCredits = credits;
   }
 }

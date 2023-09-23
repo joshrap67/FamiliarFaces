@@ -4,10 +4,10 @@ import 'package:familiar_faces/api_models/movie_response.dart';
 import 'package:familiar_faces/api_models/movie_search_response.dart';
 import 'package:familiar_faces/api_models/person_response.dart';
 import 'package:familiar_faces/api_models/tv_show_response.dart';
-import 'package:familiar_faces/contracts/movie.dart';
-import 'package:familiar_faces/contracts/actor.dart';
-import 'package:familiar_faces/contracts/search_media_result.dart';
-import 'package:familiar_faces/contracts/tv_show.dart';
+import 'package:familiar_faces/domain/actor.dart';
+import 'package:familiar_faces/domain/movie.dart';
+import 'package:familiar_faces/domain/search_media_result.dart';
+import 'package:familiar_faces/domain/tv_show.dart';
 import 'package:familiar_faces/gateways/http_action.dart';
 import 'package:familiar_faces/gateways/tmdb_gateway.dart';
 
