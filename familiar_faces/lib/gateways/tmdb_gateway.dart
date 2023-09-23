@@ -33,7 +33,7 @@ Future<ApiResult<String>> makeApiRequest(HttpAction action, String route, Map<St
         response = new http.Response('Error', 400);
     }
 
-    if (response.statusCode >= 200 || response.statusCode < 300) {
+    if (response.statusCode >= 200 && response.statusCode < 300) {
       retVal = new ApiResult.success(response.body);
     } else {
       retVal = new ApiResult.failure(response.body);

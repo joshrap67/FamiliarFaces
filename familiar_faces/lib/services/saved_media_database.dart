@@ -1,4 +1,4 @@
-import 'package:familiar_faces/contracts_sql/saved_media.dart';
+import 'package:familiar_faces/domain/saved_media.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -43,7 +43,8 @@ class SavedMediaDatabase {
   Future<SavedMedia> create(SavedMedia savedMedia) async {
     final db = await instance.database;
     final id = await db.insert(tableSavedMedia, savedMedia.toJson());
-    return savedMedia.deepCopy(id: id);
+    savedMedia.id = id;
+    return savedMedia;
   }
 
   Future<SavedMedia> get(int id) async {
@@ -62,18 +63,18 @@ class SavedMediaDatabase {
   }
 
   Future<SavedMedia?> getByMediaId(int mediaId) async {
-	  final db = await instance.database;
-	  final maps = await db.query(
-		  tableSavedMedia,
-		  columns: SavedMediaFields.columnNames,
-		  where: '${SavedMediaFields.mediaId} = ?',
-		  whereArgs: [mediaId],
-	  );
-	  if (maps.isNotEmpty) {
-		  return SavedMedia.fromJson(maps.first);
-	  } else {
-		  return null;
-	  }
+    final db = await instance.database;
+    final maps = await db.query(
+      tableSavedMedia,
+      columns: SavedMediaFields.columnNames,
+      where: '${SavedMediaFields.mediaId} = ?',
+      whereArgs: [mediaId],
+    );
+    if (maps.isNotEmpty) {
+      return SavedMedia.fromJson(maps.first);
+    } else {
+      return null;
+    }
   }
 
   Future<List<SavedMedia>> getAll() async {

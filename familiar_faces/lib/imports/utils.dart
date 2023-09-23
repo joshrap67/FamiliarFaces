@@ -29,6 +29,15 @@ String formatDateFull(DateTime? date) {
   return DateFormat.yMMMd('en_US').format(date!);
 }
 
+int compareToBool(bool a, bool b) {
+  if (a == b) {
+    return 0;
+  } else if (a) {
+    return -1;
+  }
+  return 1;
+}
+
 extension DurationExtensions on Duration {
   int inYears() {
     return this.inDays ~/ 365;
@@ -56,34 +65,10 @@ void showSnackbar(String message, BuildContext context, {int milliseconds = 1500
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
-void hideKeyboard(BuildContext context) {
-  FocusScope.of(context).requestFocus(new FocusNode());
+void hideKeyboard() {
+  FocusManager.instance.primaryFocus?.unfocus();
 }
 
 void closePopup(BuildContext context) {
   Navigator.of(context, rootNavigator: true).pop('dialog');
-}
-
-void showLoadingDialog(BuildContext context, {String msg = 'Loading...', bool dismissible = false}) {
-  showDialog(
-    barrierDismissible: false,
-    context: context,
-    builder: (context) {
-      return WillPopScope(
-        onWillPop: () async => dismissible,
-        child: AlertDialog(
-          title: Text(msg),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: const LinearProgressIndicator(),
-              )
-            ],
-          ),
-        ),
-      );
-    },
-  );
 }

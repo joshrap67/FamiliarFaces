@@ -2,16 +2,16 @@ import 'dart:collection';
 
 import 'package:familiar_faces/api_models/movie_response.dart';
 import 'package:familiar_faces/api_models/movie_search_response.dart';
-import 'package:familiar_faces/api_models/person_response.dart';
 import 'package:familiar_faces/api_models/person_credit_response.dart';
+import 'package:familiar_faces/api_models/person_response.dart';
 import 'package:familiar_faces/api_models/tv_show_response.dart';
-import 'package:familiar_faces/contracts/cast.dart';
-import 'package:familiar_faces/contracts/media_type.dart';
-import 'package:familiar_faces/contracts/movie.dart';
-import 'package:familiar_faces/contracts/actor_credit.dart';
-import 'package:familiar_faces/contracts/actor.dart';
-import 'package:familiar_faces/contracts/search_media_result.dart';
-import 'package:familiar_faces/contracts/tv_show.dart';
+import 'package:familiar_faces/domain/actor.dart';
+import 'package:familiar_faces/domain/actor_credit.dart';
+import 'package:familiar_faces/domain/cast.dart';
+import 'package:familiar_faces/domain/media_type.dart';
+import 'package:familiar_faces/domain/movie.dart';
+import 'package:familiar_faces/domain/search_media_result.dart';
+import 'package:familiar_faces/domain/tv_show.dart';
 import 'package:familiar_faces/imports/utils.dart';
 
 // converts raw data from api to consumable contracts for app

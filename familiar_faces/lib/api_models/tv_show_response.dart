@@ -25,18 +25,18 @@ class TvShowResponse {
       for (var role in characterNamesRaw) {
         characterNames.add(role['character'] as String);
       }
-      if (characterNames.length > 2) {
+      if (characterNames.length >= 2) {
         for (var i = 0; i < characterNames.length; i++) {
-          var charName = characterNames[i];
+          var charName = characterNames[i].trim();
           if (isStringNullOrEmpty(charName)) {
             continue;
           }
 
           // if actor has multiple characters, comma separate them
-          characterName += i == characterNames.length - 1 ? '$charName' : '$charName, ';
+          characterName += i == characterNames.length - 1 ? '$charName' : '$charName,';
         }
       } else if (characterNames.length == 1) {
-        characterName = characterNames[0];
+        characterName = characterNames[0].trim();
       }
       cast.add(new CastResponse(castMember['id'], castMember['name'], characterName, castMember['profile_path']));
     }
