@@ -4,7 +4,6 @@ import 'package:familiar_faces/domain/cast.dart';
 import 'package:familiar_faces/domain/movie.dart';
 import 'package:familiar_faces/domain/search_media_result.dart';
 import 'package:familiar_faces/domain/tv_show.dart';
-import 'package:familiar_faces/domain/saved_media.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/providers/saved_media_provider.dart';
 import 'package:familiar_faces/services/tmdb_service.dart';
@@ -14,9 +13,6 @@ import 'package:provider/provider.dart';
 class MediaService {
   static Future<Actor> getActor(BuildContext buildContext, int id) async {
     var actor = await TmdbService.getPersonCreditsAsync(id);
-    var savedMedia = buildContext.read<SavedMediaProvider>().savedMedia;
-
-    applySeenMedia(actor.credits, savedMedia);
     cleanActorCredits(actor.credits);
 
     return actor;
@@ -34,14 +30,6 @@ class MediaService {
     cleanCast(tvShow.cast);
 
     return tvShow;
-  }
-
-  static void applySeenMedia(List<ActorCredit> credits, List<SavedMedia> savedMedia) {
-    for (var credit in credits) {
-      if (savedMedia.any((element) => element.mediaId == credit.id && element.mediaType == credit.mediaType)) {
-        credit.isSeenByUser = true;
-      }
-    }
   }
 
   static void cleanActorCredits(List<ActorCredit> credits) {

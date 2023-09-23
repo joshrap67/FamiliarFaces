@@ -84,7 +84,6 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
                         hideOnLoading: true,
                         hideOnEmpty: true,
                         hideOnError: true,
-                        hideSuggestionsOnKeyboardHide: true,
                         debounceDuration: Duration(milliseconds: 300),
                         onSuggestionSelected: (media) => onMediaSelected(media),
                         suggestionsCallback: (query) => MediaService.searchMulti(context, query),
@@ -137,7 +136,6 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
                         hideOnLoading: true,
                         hideOnEmpty: true,
                         hideOnError: true,
-                        hideSuggestionsOnKeyboardHide: true,
                         onSuggestionSelected: onCharacterSelected,
                         suggestionsCallback: (query) => getCharacterResults(query),
                         itemBuilder: (context, Cast result) {
@@ -206,13 +204,18 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
                           fit: BoxFit.contain,
                         ),
                       ),
-                      if (_selectedCharacter != null)
-                        AutoSizeText(
-                          '${_selectedCharacter!.characterName}',
+                      Visibility(
+                        visible: _selectedCharacter != null,
+                        maintainAnimation: true,
+                        maintainSize: true,
+                        maintainState: true,
+                        child: AutoSizeText(
+                          '${_selectedCharacter?.characterName}',
                           maxLines: 1,
                           minFontSize: 10,
                           style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w300),
                         ),
+                      ),
                     ],
                   ),
                 ),

@@ -3,7 +3,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/domain/actor_credit.dart';
 import 'package:familiar_faces/domain/media_type.dart';
 import 'package:familiar_faces/imports/utils.dart';
+import 'package:familiar_faces/providers/saved_media_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ActorMediaCard extends StatelessWidget {
   final ActorCredit media;
@@ -21,8 +23,9 @@ class ActorMediaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var isSeenByUser = context.watch<SavedMediaProvider>().savedMediaSet.contains(media.id);
     return Card(
-      color: media.isSeenByUser ? Color(0xff009257) : Theme.of(context).cardColor,
+      color: isSeenByUser ? Color(0xff009257) : Theme.of(context).cardColor,
       child: Container(
         height: 150,
         child: Row(
@@ -64,7 +67,7 @@ class ActorMediaCard extends StatelessWidget {
                                     TextSpan(
                                       text: '${media.title} (${formatDateYearOnly(media.releaseDate)})',
                                       style: TextStyle(
-                                        color: getAccentColor(context),
+                                        color: getAccentColor(context, isSeenByUser),
                                       ),
                                     ),
                                     TextSpan(
@@ -72,7 +75,7 @@ class ActorMediaCard extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontStyle: FontStyle.italic,
-                                        color: getAccentColor(context),
+                                        color: getAccentColor(context, isSeenByUser),
                                       ),
                                     ),
                                   ],
@@ -83,7 +86,7 @@ class ActorMediaCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (media.isSeenByUser)
+                        if (isSeenByUser)
                           Expanded(
                             child: GestureDetector(
                               onLongPress: () => removeAsSeenClicked(media),
@@ -97,21 +100,21 @@ class ActorMediaCard extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontStyle: FontStyle.italic,
-                                      color: getAccentColor(context),
+                                      color: getAccentColor(context, isSeenByUser),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        if (!media.isSeenByUser)
+                        if (!isSeenByUser)
                           Expanded(
                             child: TextButton(
                               onPressed: () => setSeenClicked(media),
                               child: Text(
                                 'SET ${media.mediaType == MediaType.Movie ? 'MOVIE' : 'TV SHOW'} AS SEEN',
                                 style: TextStyle(
-                                  color: getAccentColor(context),
+                                  color: getAccentColor(context, isSeenByUser),
                                 ),
                               ),
                             ),
@@ -122,7 +125,7 @@ class ActorMediaCard extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.arrow_forward_ios),
                     iconSize: 28,
-                    color: getAccentColor(context),
+                    color: getAccentColor(context, isSeenByUser),
                     tooltip: 'Full Cast',
                     onPressed: () => arrowClicked(media),
                   )
@@ -135,7 +138,7 @@ class ActorMediaCard extends StatelessWidget {
     );
   }
 
-  Color getAccentColor(BuildContext context) {
-    return media.isSeenByUser ? Colors.white : Theme.of(context).colorScheme.onBackground;
+  Color getAccentColor(BuildContext context, isSeenByUser) {
+    return isSeenByUser ? Colors.white : Theme.of(context).colorScheme.onBackground;
   }
 }

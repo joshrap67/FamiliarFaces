@@ -1,5 +1,5 @@
 class PersonCreditResponse {
-  int id = -1;
+  late int id;
   String? title;
   String? name;
   String? mediaType;

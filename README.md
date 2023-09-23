@@ -15,7 +15,7 @@ An internet connection is required to run this application.
 
 If pulling from this repository, Flutter is required in order to run the application.
 
-## Deployment
+## Installation
 
 Due to potential copyright issues and potential un-moderated data, this app is not currently published on Google Play. A signed app bundle is available in this repository for downloading.
 

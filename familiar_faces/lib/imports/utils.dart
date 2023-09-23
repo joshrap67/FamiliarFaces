@@ -72,27 +72,3 @@ void hideKeyboard() {
 void closePopup(BuildContext context) {
   Navigator.of(context, rootNavigator: true).pop('dialog');
 }
-
-void showLoadingDialog(BuildContext context, {String msg = 'Loading...', bool dismissible = false}) {
-  showDialog(
-    barrierDismissible: false,
-    context: context,
-    builder: (context) {
-      return WillPopScope(
-        onWillPop: () async => dismissible,
-        child: AlertDialog(
-          title: Text(msg),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: const LinearProgressIndicator(),
-              )
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}

@@ -4,8 +4,9 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:familiar_faces/domain/cast.dart';
 import 'package:familiar_faces/domain/media_type.dart';
 import 'package:familiar_faces/domain/movie.dart';
-import 'package:familiar_faces/domain/tv_show.dart';
 import 'package:familiar_faces/domain/saved_media.dart';
+import 'package:familiar_faces/domain/tv_show.dart';
+import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/providers/saved_media_provider.dart';
 import 'package:familiar_faces/screens/actor_details.dart';
 import 'package:familiar_faces/services/media_service.dart';
@@ -13,8 +14,6 @@ import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:familiar_faces/widgets/media_cast_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../imports/utils.dart';
 
 class MediaCastScreen extends StatefulWidget {
   final List<Cast> cast;
@@ -43,7 +42,10 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
           if (!isSeen())
             TextButton(
               onPressed: () => setMediaSeen(),
-              child: const Text('SET SEEN'),
+              child: Text(
+                'SET SEEN',
+                style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer),
+              ),
             )
         ],
       ),
@@ -54,7 +56,7 @@ class _MediaCastScreenState extends State<MediaCastScreen> {
             child: Container(
               child: Scrollbar(
                 child: ListView.builder(
-                  key: new PageStorageKey<String>('media_cast_screen:list'),
+                  key: PageStorageKey<String>('media_cast_screen:list'),
                   itemCount: widget.cast.length,
                   itemBuilder: (BuildContext context, int index) {
                     return MediaCastCard(

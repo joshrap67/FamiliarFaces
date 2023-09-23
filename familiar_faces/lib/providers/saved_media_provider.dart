@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 
 class SavedMediaProvider with ChangeNotifier {
   bool _isLoading = true;
-  List<SavedMedia> _savedMedia = [];
+  List<SavedMedia> _savedMedia = <SavedMedia>[];
   SortValue _sort = SortValue.ReleaseDateDescending;
 
   List<SavedMedia> get savedMedia => [..._savedMedia]; // spread since otherwise widgets could bypass mutation methods
+  Set<int> get savedMediaSet => _savedMedia.map((m) => m.mediaId).toSet();
 
   bool get isLoading => _isLoading;
 
