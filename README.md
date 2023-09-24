@@ -5,7 +5,7 @@ The application interacts with a free REST API, [TMDB](https://developers.themov
 
 All data is currently only stored on the phone's hard drive. Since this is not published, it is doubtful I will go through the trouble of setting up user accounts/remote storage.
 
-[Demo of Familiar Faces version 1.1.0](https://www.youtube.com/watch?v=uTnG3hmFDcQ)
+[Demo of Familiar Faces version 1.2.0](https://www.youtube.com/watch?v=mzX-GcXjbMg)
 
 ## Prerequisites
 
