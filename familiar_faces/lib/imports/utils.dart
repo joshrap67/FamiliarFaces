@@ -1,3 +1,5 @@
+import 'package:familiar_faces/domain/media_type.dart';
+import 'package:familiar_faces/imports/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -71,4 +73,9 @@ void hideKeyboard() {
 
 void closePopup(BuildContext context) {
   Navigator.of(context, rootNavigator: true).pop('dialog');
+}
+
+bool isMediaSeen(int mediaId, MediaType mediaType, Set<String> seenMedia) {
+  var searchVal = '$mediaId$savedMediaDelimiter$mediaType';
+  return seenMedia.contains(searchVal);
 }

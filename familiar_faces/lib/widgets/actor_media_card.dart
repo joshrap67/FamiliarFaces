@@ -23,7 +23,7 @@ class ActorMediaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var isSeenByUser = context.watch<SavedMediaProvider>().savedMediaSet.contains(media.id);
+    var isSeenByUser = isMediaSeen(media.id, media.mediaType, context.watch<SavedMediaProvider>().savedMediaSet);
     return Card(
       color: isSeenByUser ? Color(0xff009257) : Theme.of(context).cardColor,
       child: Container(

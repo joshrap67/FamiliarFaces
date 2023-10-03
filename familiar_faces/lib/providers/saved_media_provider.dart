@@ -1,14 +1,23 @@
+import 'package:familiar_faces/domain/media_type.dart';
 import 'package:familiar_faces/domain/saved_media.dart';
 import 'package:familiar_faces/imports/globals.dart';
 import 'package:flutter/material.dart';
 
 class SavedMediaProvider with ChangeNotifier {
+
   bool _isLoading = true;
   List<SavedMedia> _savedMedia = <SavedMedia>[];
   SortValue _sort = SortValue.ReleaseDateDescending;
 
   List<SavedMedia> get savedMedia => [..._savedMedia]; // spread since otherwise widgets could bypass mutation methods
-  Set<int> get savedMediaSet => _savedMedia.map((m) => m.mediaId).toSet();
+  // absurd hack, but TMDB decided not to use globally unique identifiers for their records...
+  Set<String> get savedMediaSet => _savedMedia.map((m) {
+        if (m.mediaType == MediaType.Movie) {
+          return '${m.mediaId}$savedMediaDelimiter${MediaType.Movie}';
+        } else {
+          return '${m.mediaId}$savedMediaDelimiter${MediaType.TV}';
+        }
+      }).toSet();
 
   bool get isLoading => _isLoading;
 

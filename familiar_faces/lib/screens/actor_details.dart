@@ -247,7 +247,7 @@ class _ActorDetailsState extends State<ActorDetails> {
     var count = 0;
     var savedMediaSet = context.watch<SavedMediaProvider>().savedMediaSet;
     for (var credit in _allCredits) {
-      if (savedMediaSet.contains(credit.id)) {
+      if (isMediaSeen(credit.id, credit.mediaType, savedMediaSet)) {
         count++;
       }
     }
@@ -322,13 +322,13 @@ class _ActorDetailsState extends State<ActorDetails> {
     }
   }
 
-  void sortCredits(List<ActorCredit> credits, Set<int> seenMediaIds) {
+  void sortCredits(List<ActorCredit> credits, Set<String> seenMediaKeys) {
     // seen credits are always on top
     switch (_sortValue) {
       case SortValue.AlphaDescending:
         credits.sort((a, b) {
-          var aIsSeenByUser = seenMediaIds.contains(a.id);
-          var bIsSeenByUser = seenMediaIds.contains(b.id);
+          var aIsSeenByUser = isMediaSeen(a.id, a.mediaType, seenMediaKeys);
+          var bIsSeenByUser = isMediaSeen(b.id, b.mediaType, seenMediaKeys);
           var sortBySeen = compareToBool(aIsSeenByUser, bIsSeenByUser);
           if (sortBySeen == 0) {
             if (a.title == null || b.title == null) {
@@ -342,8 +342,8 @@ class _ActorDetailsState extends State<ActorDetails> {
         break;
       case SortValue.AlphaAscending:
         credits.sort((a, b) {
-          var aIsSeenByUser = seenMediaIds.contains(a.id);
-          var bIsSeenByUser = seenMediaIds.contains(b.id);
+          var aIsSeenByUser = isMediaSeen(a.id, a.mediaType, seenMediaKeys);
+          var bIsSeenByUser = isMediaSeen(b.id, b.mediaType, seenMediaKeys);
           var sortBySeen = compareToBool(aIsSeenByUser, bIsSeenByUser);
           if (sortBySeen == 0) {
             if (a.title == null || b.title == null) {
@@ -357,8 +357,8 @@ class _ActorDetailsState extends State<ActorDetails> {
         break;
       case SortValue.ReleaseDateDescending:
         credits.sort((a, b) {
-          var aIsSeenByUser = seenMediaIds.contains(a.id);
-          var bIsSeenByUser = seenMediaIds.contains(b.id);
+          var aIsSeenByUser = isMediaSeen(a.id, a.mediaType, seenMediaKeys);
+          var bIsSeenByUser = isMediaSeen(b.id, b.mediaType, seenMediaKeys);
           var sortBySeen = compareToBool(aIsSeenByUser, bIsSeenByUser);
           if (sortBySeen == 0) {
             if (a.releaseDate == null || b.releaseDate == null) {
@@ -372,8 +372,8 @@ class _ActorDetailsState extends State<ActorDetails> {
         break;
       case SortValue.ReleaseDateAscending:
         credits.sort((a, b) {
-          var aIsSeenByUser = seenMediaIds.contains(a.id);
-          var bIsSeenByUser = seenMediaIds.contains(b.id);
+          var aIsSeenByUser = isMediaSeen(a.id, a.mediaType, seenMediaKeys);
+          var bIsSeenByUser = isMediaSeen(b.id, b.mediaType, seenMediaKeys);
           var sortBySeen = compareToBool(aIsSeenByUser, bIsSeenByUser);
           if (sortBySeen == 0) {
             if (a.releaseDate == null || b.releaseDate == null) {
@@ -388,7 +388,7 @@ class _ActorDetailsState extends State<ActorDetails> {
     }
   }
 
-  void sortAndFilterCredits(Set<int> seenMediaIds) {
+  void sortAndFilterCredits(Set<String> seenMediaIds) {
     var credits = List<ActorCredit>.from(_allCredits);
 
     if (_showOnlySeen) {
