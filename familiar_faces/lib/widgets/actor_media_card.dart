@@ -13,13 +13,13 @@ class ActorMediaCard extends StatelessWidget {
   final Function(ActorCredit) setSeenClicked;
   final Function(ActorCredit) removeAsSeenClicked;
 
-  const ActorMediaCard(
-      {Key? key,
-      required this.media,
-      required this.arrowClicked,
-      required this.setSeenClicked,
-      required this.removeAsSeenClicked})
-      : super(key: key);
+  const ActorMediaCard({
+    Key? key,
+    required this.media,
+    required this.arrowClicked,
+    required this.setSeenClicked,
+    required this.removeAsSeenClicked,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,13 +42,8 @@ class ActorMediaCard extends StatelessWidget {
                       height: 140,
                       child: CachedNetworkImage(
                         imageUrl: getTmdbPicture(media.posterPath),
-                        placeholder: (context, url) => Center(
-                          child: SizedBox(
-                            child: const CircularProgressIndicator(),
-                            height: 50,
-                            width: 50,
-                          ),
-                        ),
+                        placeholder: (context, url) =>
+                            Center(child: SizedBox(child: const CircularProgressIndicator(), height: 50, width: 50)),
                         fit: BoxFit.fitWidth,
                       ),
                     ),
@@ -66,9 +61,7 @@ class ActorMediaCard extends StatelessWidget {
                                   children: [
                                     TextSpan(
                                       text: '${media.title} (${formatDateYearOnly(media.releaseDate)})',
-                                      style: TextStyle(
-                                        color: getAccentColor(context, isSeenByUser),
-                                      ),
+                                      style: TextStyle(color: getAccentColor(context, isSeenByUser)),
                                     ),
                                     TextSpan(
                                       text: '\n${media.characterName}',
@@ -113,12 +106,10 @@ class ActorMediaCard extends StatelessWidget {
                               onPressed: () => setSeenClicked(media),
                               child: Text(
                                 'SET ${media.mediaType == MediaType.Movie ? 'MOVIE' : 'TV SHOW'} AS SEEN',
-                                style: TextStyle(
-                                  color: getAccentColor(context, isSeenByUser),
-                                ),
+                                style: TextStyle(color: getAccentColor(context, isSeenByUser)),
                               ),
                             ),
-                          )
+                          ),
                       ],
                     ),
                   ),
@@ -128,10 +119,10 @@ class ActorMediaCard extends StatelessWidget {
                     color: getAccentColor(context, isSeenByUser),
                     tooltip: 'Full Cast',
                     onPressed: () => arrowClicked(media),
-                  )
+                  ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -139,6 +130,6 @@ class ActorMediaCard extends StatelessWidget {
   }
 
   Color getAccentColor(BuildContext context, isSeenByUser) {
-    return isSeenByUser ? Colors.white : Theme.of(context).colorScheme.onBackground;
+    return isSeenByUser ? Colors.white : Theme.of(context).colorScheme.onSurface;
   }
 }

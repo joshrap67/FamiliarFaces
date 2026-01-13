@@ -25,13 +25,13 @@ class SavedMedia {
   SavedMedia(this.mediaId, this.mediaType, {this.id, this.title, this.posterPath, this.releaseDate});
 
   Map<String, Object?> toJson() => {
-        SavedMediaFields.id: id,
-        SavedMediaFields.mediaId: mediaId,
-        SavedMediaFields.mediaType: mediaType.index,
-        SavedMediaFields.title: title,
-        SavedMediaFields.posterPath: posterPath,
-        SavedMediaFields.releaseDate: releaseDate != null ? releaseDate!.toIso8601String() : null,
-      };
+    SavedMediaFields.id: id,
+    SavedMediaFields.mediaId: mediaId,
+    SavedMediaFields.mediaType: mediaType.index,
+    SavedMediaFields.title: title,
+    SavedMediaFields.posterPath: posterPath,
+    SavedMediaFields.releaseDate: releaseDate != null ? releaseDate!.toIso8601String() : null,
+  };
 
   static SavedMedia fromJson(Map<String, Object?> rawJson) {
     var releaseDate = rawJson[SavedMediaFields.releaseDate] as String?;

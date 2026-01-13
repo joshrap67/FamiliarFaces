@@ -1,4 +1,4 @@
-import 'cast.dart';
+import 'cast_member.dart';
 
 class TvShow {
   late int id;
@@ -6,7 +6,7 @@ class TvShow {
   DateTime? firstAirDate;
   DateTime? lastAirDate;
   String? posterPath;
-  List<Cast> cast = <Cast>[];
+  List<CastMember> cast = <CastMember>[];
 
   TvShow(this.id, this.title, this.firstAirDate, this.lastAirDate, this.posterPath, this.cast);
 

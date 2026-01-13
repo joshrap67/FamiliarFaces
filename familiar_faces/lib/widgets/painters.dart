@@ -11,15 +11,9 @@ class FilmStrip extends CustomPainter {
     for (var i = 0; i < 20; i++) {
       Path path = Path();
       path.addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTRB(i * width, 0.0, ((i) * width) + 25, size.height),
-          Radius.circular(4),
-        ),
+        RRect.fromRectAndRadius(Rect.fromLTRB(i * width, 0.0, ((i) * width) + 25, size.height), Radius.circular(4)),
       );
-      canvas.drawPath(
-        path,
-        Paint()..color = this.color,
-      );
+      canvas.drawPath(path, Paint()..color = this.color);
     }
   }
 

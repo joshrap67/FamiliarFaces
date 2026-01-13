@@ -1,6 +1,6 @@
 import 'package:familiar_faces/domain/actor.dart';
 import 'package:familiar_faces/domain/actor_credit.dart';
-import 'package:familiar_faces/domain/cast.dart';
+import 'package:familiar_faces/domain/cast_member.dart';
 import 'package:familiar_faces/domain/movie.dart';
 import 'package:familiar_faces/domain/search_media_result.dart';
 import 'package:familiar_faces/domain/tv_show.dart';
@@ -40,14 +40,17 @@ class MediaService {
     credits.removeWhere((element) => element.title == null);
   }
 
-  static void cleanCast(List<Cast> cast) {
+  static void cleanCast(List<CastMember> cast) {
     cast.removeWhere((element) => element.profilePath == null);
     cast.removeWhere((element) => element.name == null);
   }
 
   // this method is the main source of data cleaning since this is the only way in the app to actually get media ids to query
-  static Future<List<SearchMediaResult>> searchMulti(BuildContext buildContext, String query,
-      {bool showSavedMedia = true}) async {
+  static Future<List<SearchMediaResult>> searchMulti(
+    BuildContext buildContext,
+    String query, {
+    bool showSavedMedia = true,
+  }) async {
     if (isStringNullOrEmpty(query)) {
       return <SearchMediaResult>[];
     }
@@ -64,8 +67,11 @@ class MediaService {
     if (!showSavedMedia) {
       var savedMedia = buildContext.read<SavedMediaProvider>().savedMedia;
       // don't show suggestions for ones the user has already saved
-      search.removeWhere((element) => savedMedia
-          .any((savedMedia) => savedMedia.mediaId == element.id && savedMedia.mediaType == element.mediaType));
+      search.removeWhere(
+        (element) => savedMedia.any(
+          (savedMedia) => savedMedia.mediaId == element.id && savedMedia.mediaType == element.mediaType,
+        ),
+      );
     }
 
     // if it hasn't been released don't show it
