@@ -13,32 +13,17 @@ class SortDropdown extends StatelessWidget {
     return PopupMenuButton(
       icon: Icon(Icons.sort_rounded),
       tooltip: 'Sort Media',
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(
-          Radius.circular(15.0),
-        ),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15.0))),
       initialValue: sortValue,
       itemBuilder: (context) {
         hideKeyboard();
         return <PopupMenuEntry<SortValue>>[
-          PopupMenuItem<SortValue>(
-            value: SortValue.ReleaseDateDescending,
-            child: Text('Release Date Descending'),
-          ),
-          PopupMenuItem<SortValue>(
-            value: SortValue.ReleaseDateAscending,
-            child: Text('Release Date Ascending'),
-          ),
-          PopupMenuItem<SortValue>(
-            value: SortValue.AlphaDescending,
-            child: Text('Alpha Descending'),
-          ),
+          PopupMenuItem<SortValue>(value: SortValue.ReleaseDateDescending, child: Text('Release Date Descending')),
+          PopupMenuItem<SortValue>(value: SortValue.ReleaseDateAscending, child: Text('Release Date Ascending')),
+          PopupMenuItem<SortValue>(value: SortValue.AlphaDescending, child: Text('Alpha Descending')),
           PopupMenuItem<SortValue>(
             value: SortValue.AlphaAscending,
-            child: Container(
-              child: Text('Alpha Ascending'),
-            ),
+            child: Container(child: Text('Alpha Ascending')),
           ),
         ];
       },

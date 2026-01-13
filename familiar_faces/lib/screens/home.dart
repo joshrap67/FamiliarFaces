@@ -1,9 +1,10 @@
-import 'package:familiar_faces/imports/utils.dart';
+import 'package:familiar_faces/providers/home_provider.dart';
 import 'package:familiar_faces/screens/about_screen.dart';
 import 'package:familiar_faces/screens/main_screen.dart';
 import 'package:familiar_faces/screens/saved_media_screen.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -13,16 +14,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final PageController _pageController = PageController();
-
-  int _selectedIndex = 0;
   List<Widget> _screens = <Widget>[MainScreen(), SavedMediaScreen(), AboutScreen()];
-  List<int> _navStack = <int>[];
 
   @override
   void initState() {
     super.initState();
-    _navStack.add(_selectedIndex);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       SavedMediaService.load(context);
     });
@@ -30,27 +26,19 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: handleBackButton,
+    var navStack = context.watch<HomeProvider>().navStack;
+    var pageController = context.watch<HomeProvider>().pageController;
+    var selectedIndex = context.watch<HomeProvider>().selectedIndex;
+    return PopScope(
+      canPop: navStack.length <= 1,
+      onPopInvokedWithResult: handleBackButton,
       child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          toolbarHeight: 0,
-        ),
-        resizeToAvoidBottomInset: _selectedIndex != 0,
-        body: PageView(
-          children: _screens,
-          physics: NeverScrollableScrollPhysics(),
-          controller: _pageController,
-        ),
+        appBar: AppBar(elevation: 0, toolbarHeight: 0),
+        resizeToAvoidBottomInset: selectedIndex != 0,
+        body: PageView(children: _screens, physics: NeverScrollableScrollPhysics(), controller: pageController),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                color: Theme.of(context).dividerColor,
-                width: 0.175,
-              ),
-            ),
+            border: Border(top: BorderSide(color: Theme.of(context).dividerColor, width: 0.175)),
           ),
           child: NavigationBar(
             destinations: const <Widget>[
@@ -64,13 +52,9 @@ class _HomeState extends State<Home> {
                 selectedIcon: Icon(Icons.movie),
                 label: 'My Media',
               ),
-              NavigationDestination(
-                icon: Icon(Icons.help_outline),
-                selectedIcon: Icon(Icons.help),
-                label: 'About',
-              ),
+              NavigationDestination(icon: Icon(Icons.help_outline), selectedIcon: Icon(Icons.help), label: 'About'),
             ],
-            selectedIndex: _selectedIndex,
+            selectedIndex: selectedIndex,
             onDestinationSelected: onItemTapped,
             elevation: 15,
             surfaceTintColor: const Color(0x00000000),
@@ -80,34 +64,11 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Future<bool> handleBackButton() async {
-    if (_navStack.length <= 1) {
-      return true;
-    } else {
-      setState(() {
-        _navStack.removeAt(0);
-        _selectedIndex = _navStack[0];
-        switchPages(_selectedIndex);
-      });
-      return false;
-    }
+  Future<void> handleBackButton(bool didPop, result) async {
+    context.read<HomeProvider>().handleBack(didPop, result);
   }
 
   void onItemTapped(int index) {
-    if (index != 0) {
-      // home is always at bottom of the stack
-      _navStack.removeWhere((element) => element == index);
-      _navStack.insert(0, index);
-    }
-
-    setState(() {
-      switchPages(index);
-      _selectedIndex = index;
-    });
-  }
-
-  void switchPages(int index) {
-    _pageController.animateToPage(index, duration: Duration(milliseconds: 400), curve: Curves.ease);
-    hideKeyboard();
+    context.read<HomeProvider>().navigateToPage(index);
   }
 }

@@ -9,9 +9,9 @@ import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/providers/saved_media_provider.dart';
 import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
+import 'package:familiar_faces/widgets/media_selector.dart';
 import 'package:familiar_faces/widgets/sort_dropdown.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
 
 import 'media_cast_screen.dart';
@@ -66,26 +66,27 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
                             },
                             focusNode: _searchFocusNode,
                             decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.search),
-                                border: OutlineInputBorder(),
-                                suffixIcon: _mediaSearchController.text.isNotEmpty
-                                    ? IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _mediaSearchController.clear();
-                                            hideKeyboard();
-                                          });
-                                        },
-                                        icon: Icon(Icons.clear),
-                                      )
-                                    : null,
-                                labelText: 'Search My Media',
-                                hintText: 'Search Movie or TV Show'),
+                              prefixIcon: const Icon(Icons.search),
+                              border: OutlineInputBorder(),
+                              suffixIcon: _mediaSearchController.text.isNotEmpty
+                                  ? IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _mediaSearchController.clear();
+                                          hideKeyboard();
+                                        });
+                                      },
+                                      icon: Icon(Icons.clear),
+                                    )
+                                  : null,
+                              labelText: 'Search My Media',
+                              hintText: 'Search Movie or TV Show',
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             if (context.read<SavedMediaProvider>().savedMedia.isNotEmpty)
@@ -105,7 +106,7 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SortDropdown(sortValue: _sortValue, onSelected: (result) => onSortSelected(result)),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -127,24 +128,13 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
                                   borderRadius: BorderRadius.circular(10.0),
                                   onTap: () => rowClicked(media),
                                   child: ListTile(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    title: AutoSizeText(
-                                      media.title!,
-                                      minFontSize: 12,
-                                    ),
-                                    subtitle: AutoSizeText(
-                                      formatDateYearOnly(media.releaseDate),
-                                      minFontSize: 12,
-                                    ),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                                    title: AutoSizeText(media.title!, minFontSize: 12),
+                                    subtitle: AutoSizeText(formatDateYearOnly(media.releaseDate), minFontSize: 12),
                                     leading: Container(
                                       height: 160,
                                       width: 50,
-                                      child: Image.network(
-                                        getTmdbPicture(media.posterPath),
-                                        fit: BoxFit.fitHeight,
-                                      ),
+                                      child: Image.network(getTmdbPicture(media.posterPath), fit: BoxFit.fitHeight),
                                     ),
                                   ),
                                 ),
@@ -154,12 +144,7 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
                         ),
                       ),
                     )
-                  : Center(
-                      child: const Text(
-                        'No seen media',
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                    ),
+                  : Center(child: const Text('No seen media', style: const TextStyle(fontSize: 20))),
             ),
           ],
         ),
@@ -175,7 +160,7 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
               icon: Icon(Icons.add),
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -256,66 +241,18 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
         return StatefulBuilder(
           builder: (dialogContext, setState) {
             return AlertDialog(
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.pop(context, 'OK'),
-                  child: const Text('DONE'),
-                )
-              ],
+              actions: <Widget>[TextButton(onPressed: () => Navigator.pop(context, 'OK'), child: const Text('DONE'))],
               insetPadding: EdgeInsets.all(8.0),
               title: const Text('Add Media'),
               content: SizedBox(
                 width: MediaQuery.of(context).size.width,
-                child: Stack(
-                  alignment: Alignment.centerRight,
-                  children: [
-                    TypeAheadField<SearchMediaResult>(
-                      textFieldConfiguration: TextFieldConfiguration(
-                        controller: _mediaAddController,
-                        onChanged: (_) {
-                          // so x button can properly be hidden
-                          setState(() {});
-                        },
-                        focusNode: _addMediaFocusNode,
-                        decoration: const InputDecoration(
-                            prefixIcon: const Icon(Icons.add),
-                            border: const OutlineInputBorder(),
-                            labelText: 'Add Media',
-                            hintText: 'Add Movie or TV Show'),
-                      ),
-                      hideOnLoading: true,
-                      hideOnEmpty: true,
-                      hideOnError: true,
-                      debounceDuration: Duration(milliseconds: 300),
-                      keepSuggestionsOnSuggestionSelected: true,
-                      onSuggestionSelected: (media) => onMediaSelected(media),
-                      suggestionsCallback: (query) => MediaService.searchMulti(context, query, showSavedMedia: false),
-                      itemBuilder: (context, SearchMediaResult result) {
-                        return ListTile(
-                          title: Text('${result.title} (${formatDateYearOnly(result.releaseDate)})'),
-                          leading: Container(
-                            height: 50,
-                            width: 50,
-                            child: Image.network(
-                              getTmdbPicture(result.posterPath),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    if (!isStringNullOrEmpty(_mediaAddController.text))
-                      IconButton(
-                        icon: const Icon(Icons.clear),
-                        tooltip: 'Clear media',
-                        onPressed: () {
-                          setState(() {
-                            _mediaAddController.text = '';
-                            hideKeyboard();
-                          });
-                        },
-                      ),
-                  ],
+                child: MediaSelector(
+                  onSelected: onMediaSelected,
+                  labelText: 'Search Media',
+                  hintText: 'Add Movie or TV Show',
+                  controller: _mediaAddController,
+                  focusNode: _addMediaFocusNode,
+                  clearOnSelect: true,
                 ),
               ),
             );
@@ -346,20 +283,9 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
                     child: ListTile(
-                      title: AutoSizeText(
-                        formattedMovieTitle(media),
-                        minFontSize: 12,
-                      ),
-                      subtitle: AutoSizeText(
-                        media.mediaType == MediaType.Movie ? 'Movie' : 'TV Show',
-                        minFontSize: 12,
-                      ),
-                      leading: Container(
-                        child: Image.network(
-                          getTmdbPicture(media.posterPath),
-                          fit: BoxFit.fitHeight,
-                        ),
-                      ),
+                      title: AutoSizeText(formattedMovieTitle(media), minFontSize: 12),
+                      subtitle: AutoSizeText(media.mediaType == MediaType.Movie ? 'Movie' : 'TV Show', minFontSize: 12),
+                      leading: Container(child: Image.network(getTmdbPicture(media.posterPath), fit: BoxFit.fitHeight)),
                     ),
                   ),
                   Visibility(
@@ -429,10 +355,7 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MediaCastScreen(
-              cast: movie.cast,
-              movie: movie,
-            ),
+            builder: (context) => MediaCastScreen(cast: movie.cast, movie: movie),
           ),
         );
       } else if (media.mediaType == MediaType.TV) {
@@ -445,10 +368,7 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MediaCastScreen(
-              cast: tvShow.cast,
-              tvShow: tvShow,
-            ),
+            builder: (context) => MediaCastScreen(cast: tvShow.cast, tvShow: tvShow),
           ),
         );
       }
@@ -460,13 +380,23 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
     }
   }
 
-  Future<void> onMediaSelected(SearchMediaResult selected) async {
-    var savedMedia = context.read<SavedMediaProvider>().savedMedia;
-    if (savedMedia.any((element) => element.mediaId == selected.id && element.mediaType == selected.mediaType)) {
+  Future<void> onMediaSelected(SearchMediaResult? selected) async {
+    if (selected == null) {
+      _mediaAddController.text = '';
+      return;
+    }
+
+    var savedMediaList = context.read<SavedMediaProvider>().savedMedia;
+    if (savedMediaList.any((element) => element.mediaId == selected.id && element.mediaType == selected.mediaType)) {
       showSnackbar('You already have added this media to your list.', context);
     } else {
-      var savedMedia = new SavedMedia(selected.id, selected.mediaType,
-          title: selected.title, posterPath: selected.posterPath, releaseDate: selected.releaseDate);
+      var savedMedia = new SavedMedia(
+        selected.id,
+        selected.mediaType,
+        title: selected.title,
+        posterPath: selected.posterPath,
+        releaseDate: selected.releaseDate,
+      );
       await SavedMediaService.add(context, savedMedia);
       showSnackbar('${selected.mediaType == MediaType.Movie ? 'Movie' : 'TV Show'} Added', context);
       setState(() {
@@ -482,10 +412,7 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
       builder: (builderContext) {
         return AlertDialog(
           actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(builderContext),
-              child: const Text('NO'),
-            ),
+            TextButton(onPressed: () => Navigator.pop(builderContext), child: const Text('NO')),
             TextButton(
               onPressed: () async {
                 Navigator.pop(builderContext);

@@ -1,11 +1,11 @@
-import 'cast.dart';
+import 'cast_member.dart';
 
 class Movie {
   late int id;
   String? title;
   DateTime? releaseDate;
   String? posterImagePath;
-  List<Cast> cast = <Cast>[];
+  List<CastMember> cast = <CastMember>[];
 
   Movie(this.id, this.title, this.releaseDate, this.posterImagePath, this.cast);
 

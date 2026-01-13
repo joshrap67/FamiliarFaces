@@ -9,8 +9,12 @@ import 'http_action.dart';
 const String rootUrl = 'api.themoviedb.org';
 const int version = 3;
 
-Future<ApiResult<String>> makeApiRequest(HttpAction action, String route, Map<String, String> queryParameters,
-    {Map<String, dynamic>? requestContent}) async {
+Future<ApiResult<String>> makeApiRequest(
+  HttpAction action,
+  String route,
+  Map<String, String> queryParameters, {
+  Map<String, dynamic>? requestContent,
+}) async {
   ApiResult<String> retVal;
 
   try {
@@ -29,8 +33,6 @@ Future<ApiResult<String>> makeApiRequest(HttpAction action, String route, Map<St
       case HttpAction.DELETE:
         response = await http.delete(url);
         break;
-      default:
-        response = new http.Response('Error', 400);
     }
 
     if (response.statusCode >= 200 && response.statusCode < 300) {

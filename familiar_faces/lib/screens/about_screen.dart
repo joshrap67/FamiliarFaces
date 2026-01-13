@@ -30,13 +30,7 @@ class _AboutScreenState extends State<AboutScreen> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  height: 150,
-                  width: 150,
-                  child: Image.asset(
-                    'assets/icon/logo.png',
-                  ),
-                ),
+                child: Container(height: 150, width: 150, child: Image.asset('assets/icon/logo.png')),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -45,18 +39,8 @@ class _AboutScreenState extends State<AboutScreen> {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        '$_appName',
-                        style: const TextStyle(
-                          fontSize: 30,
-                        ),
-                      ),
-                      Text(
-                        'Version $_appVersion',
-                        style: const TextStyle(
-                          fontSize: 20,
-                        ),
-                      ),
+                      Text('$_appName', style: const TextStyle(fontSize: 30)),
+                      Text('Version $_appVersion', style: const TextStyle(fontSize: 20)),
                     ],
                   ),
                 ),
@@ -73,19 +57,16 @@ class _AboutScreenState extends State<AboutScreen> {
                   padding: const EdgeInsets.fromLTRB(8.0, 30.0, 8.0, 8.0),
                   child: const AutoSizeText(
                     'This product uses the TMDB API but is not endorsed or certified by TMDB.',
-                    style: const TextStyle(
-                      fontStyle: FontStyle.italic,
-                      fontSize: 11,
-                    ),
+                    style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 11),
                     maxLines: 1,
                     minFontSize: 8,
                   ),
                 ),
-                Image.asset('assets/images/tmdb_logo.png')
+                Image.asset('assets/images/tmdb_logo.png'),
               ],
             ),
           ),
-        )
+        ),
       ],
     );
   }

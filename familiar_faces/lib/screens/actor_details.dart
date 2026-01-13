@@ -48,10 +48,7 @@ class _ActorDetailsState extends State<ActorDetails> {
     return Scaffold(
       key: GlobalKey(),
       appBar: AppBar(
-        title: const AutoSizeText(
-          'Actor Details',
-          minFontSize: 10,
-        ),
+        title: const AutoSizeText('Actor Details', minFontSize: 10),
         backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
         scrolledUnderElevation: 0,
       ),
@@ -70,13 +67,8 @@ class _ActorDetailsState extends State<ActorDetails> {
                       children: [
                         CachedNetworkImage(
                           imageUrl: getTmdbPicture(widget.actor.profileImagePath),
-                          placeholder: (context, url) => Center(
-                            child: SizedBox(
-                              child: const CircularProgressIndicator(),
-                              height: 50,
-                              width: 50,
-                            ),
-                          ),
+                          placeholder: (context, url) =>
+                              Center(child: SizedBox(child: const CircularProgressIndicator(), height: 50, width: 50)),
                           fit: BoxFit.fitWidth,
                         ),
                         Expanded(
@@ -139,7 +131,9 @@ class _ActorDetailsState extends State<ActorDetails> {
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         SortDropdown(
-                                            sortValue: _sortValue, onSelected: (result) => onSortSelected(result)),
+                                          sortValue: _sortValue,
+                                          onSelected: (result) => onSortSelected(result),
+                                        ),
                                         PopupMenuButton<Filters>(
                                           onSelected: (Filters result) {
                                             switch (result) {
@@ -147,29 +141,30 @@ class _ActorDetailsState extends State<ActorDetails> {
                                                 setState(() {
                                                   _showOnlySeen = !_showOnlySeen;
                                                   sortAndFilterCredits(
-                                                      context.read<SavedMediaProvider>().savedMediaSet);
+                                                    context.read<SavedMediaProvider>().savedMediaSet,
+                                                  );
                                                 });
                                                 break;
                                               case Filters.IncludeMovies:
                                                 setState(() {
                                                   _includeMovies = !_includeMovies;
                                                   sortAndFilterCredits(
-                                                      context.read<SavedMediaProvider>().savedMediaSet);
+                                                    context.read<SavedMediaProvider>().savedMediaSet,
+                                                  );
                                                 });
                                                 break;
                                               case Filters.IncludeTv:
                                                 setState(() {
                                                   _includeTv = !_includeTv;
                                                   sortAndFilterCredits(
-                                                      context.read<SavedMediaProvider>().savedMediaSet);
+                                                    context.read<SavedMediaProvider>().savedMediaSet,
+                                                  );
                                                 });
                                                 break;
                                             }
                                           },
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(
-                                              Radius.circular(15.0),
-                                            ),
+                                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                           ),
                                           itemBuilder: (BuildContext context) => <PopupMenuEntry<Filters>>[
                                             CheckedPopupMenuItem<Filters>(
@@ -190,7 +185,7 @@ class _ActorDetailsState extends State<ActorDetails> {
                                               child: Text('Include TV Shows'),
                                             ),
                                           ],
-                                        )
+                                        ),
                                       ],
                                     ),
                                   ],
@@ -221,12 +216,7 @@ class _ActorDetailsState extends State<ActorDetails> {
                               },
                             ),
                           )
-                        : Center(
-                            child: const Text(
-                              'No credits',
-                              style: const TextStyle(fontSize: 20),
-                            ),
-                          ),
+                        : Center(child: const Text('No credits', style: const TextStyle(fontSize: 20))),
                   ),
                 ),
               ],
@@ -234,10 +224,8 @@ class _ActorDetailsState extends State<ActorDetails> {
           ),
           Visibility(
             visible: _isLoading,
-            child: LinearProgressIndicator(
-              color: Theme.of(context).colorScheme.secondary,
-            ),
-          )
+            child: LinearProgressIndicator(color: Theme.of(context).colorScheme.secondary),
+          ),
         ],
       ),
     );
@@ -267,10 +255,7 @@ class _ActorDetailsState extends State<ActorDetails> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MediaCastScreen(
-              cast: movie.cast,
-              movie: movie,
-            ),
+            builder: (context) => MediaCastScreen(cast: movie.cast, movie: movie),
           ),
         );
       } else if (creditResponse.mediaType == MediaType.TV) {
@@ -279,10 +264,7 @@ class _ActorDetailsState extends State<ActorDetails> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MediaCastScreen(
-              cast: tvShow.cast,
-              tvShow: tvShow,
-            ),
+            builder: (context) => MediaCastScreen(cast: tvShow.cast, tvShow: tvShow),
           ),
         );
       }
@@ -297,11 +279,15 @@ class _ActorDetailsState extends State<ActorDetails> {
 
   Future<void> setToSeen(ActorCredit creditResponse) async {
     await SavedMediaService.add(
-        context,
-        new SavedMedia(creditResponse.id, creditResponse.mediaType,
-            title: creditResponse.title,
-            posterPath: creditResponse.posterPath,
-            releaseDate: creditResponse.releaseDate));
+      context,
+      new SavedMedia(
+        creditResponse.id,
+        creditResponse.mediaType,
+        title: creditResponse.title,
+        posterPath: creditResponse.posterPath,
+        releaseDate: creditResponse.releaseDate,
+      ),
+    );
   }
 
   Future<void> removeAsSeen(ActorCredit credit) async {

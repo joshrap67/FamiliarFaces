@@ -7,7 +7,7 @@ import 'package:familiar_faces/api_models/person_response.dart';
 import 'package:familiar_faces/api_models/tv_show_response.dart';
 import 'package:familiar_faces/domain/actor.dart';
 import 'package:familiar_faces/domain/actor_credit.dart';
-import 'package:familiar_faces/domain/cast.dart';
+import 'package:familiar_faces/domain/cast_member.dart';
 import 'package:familiar_faces/domain/media_type.dart';
 import 'package:familiar_faces/domain/movie.dart';
 import 'package:familiar_faces/domain/search_media_result.dart';
@@ -33,22 +33,40 @@ class ModelCreator {
   }
 
   static Movie getMovieWithCastResponse(MovieResponse movie) {
-    var cast = <Cast>[];
+    var cast = <CastMember>[];
     for (var castMember in movie.cast) {
-      cast.add(new Cast(castMember.id, castMember.name, getCharacterName(castMember.characterName!.split(",")),
-          castMember.profilePath));
+      cast.add(
+        new CastMember(
+          castMember.id,
+          castMember.name,
+          getCharacterName(castMember.characterName!.split(",")),
+          castMember.profilePath,
+        ),
+      );
     }
     return new Movie(movie.id, movie.title, parseDate(movie.releaseDate), movie.posterImagePath, cast);
   }
 
   static TvShow getTvShowWithCastResponse(TvShowResponse tvShow) {
-    var cast = <Cast>[];
+    var cast = <CastMember>[];
     for (var castMember in tvShow.cast) {
-      cast.add(new Cast(castMember.id, castMember.name, getCharacterName(castMember.characterName!.split(",")),
-          castMember.profilePath));
+      cast.add(
+        new CastMember(
+          castMember.id,
+          castMember.name,
+          getCharacterName(castMember.characterName!.split(",")),
+          castMember.profilePath,
+        ),
+      );
     }
     return new TvShow(
-        tvShow.id, tvShow.name, parseDate(tvShow.firstAirDate), parseDate(tvShow.lastAirDate), tvShow.posterPath, cast);
+      tvShow.id,
+      tvShow.name,
+      parseDate(tvShow.firstAirDate),
+      parseDate(tvShow.lastAirDate),
+      tvShow.posterPath,
+      cast,
+    );
   }
 
   static MediaType getMediaType(String? mediaType) {
@@ -69,9 +87,7 @@ class ModelCreator {
         return title;
       case MediaType.TV:
         return name;
-      default:
-        return title;
-    }
+      }
   }
 
   static DateTime? getReleaseDate(String? releaseDate, String? firstAirDate, String? mediaType) {
@@ -81,14 +97,18 @@ class ModelCreator {
         return parseDate(releaseDate);
       case MediaType.TV:
         return parseDate(firstAirDate);
-      default:
-        return null;
-    }
+      }
   }
 
   static Actor getActor(PersonResponse person) {
-    return new Actor(person.id, person.name!, person.profileImagePath, parseDate(person.birthday),
-        parseDate(person.deathDay), getPersonCreditsResponse(person.credits));
+    return new Actor(
+      person.id,
+      person.name!,
+      person.profileImagePath,
+      parseDate(person.birthday),
+      parseDate(person.deathDay),
+      getPersonCreditsResponse(person.credits),
+    );
   }
 
   static List<ActorCredit> getPersonCreditsResponse(List<PersonCreditResponse> personCredits) {
