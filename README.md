@@ -17,9 +17,13 @@ If pulling from this repository, Flutter is required in order to run the applica
 
 ## Installation
 
-Due to potential copyright issues and potential un-moderated data, this app is not currently published on Google Play. A signed app bundle is available in this repository for downloading.
+Due to potential copyright issues and potential un-moderated data, this app is not currently published on Google Play. A signed app APK is available in this repository for downloading.
 
 If pulling from this repository, open the project and run it using Flutter (can be done via CLI). If doing it this way, you may need to ensure that you have developer options enabled on your device.
+
+To build a production apk:
+
+`flutter build apk --release`
 
 If already installed you _must_ update the app with the command `adb install -r` as otherwise the local SQLite database will be wiped.
 ## Built With
