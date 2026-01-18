@@ -398,7 +398,6 @@ class _SavedMediaScreenState extends State<SavedMediaScreen> with AutomaticKeepA
         releaseDate: selected.releaseDate,
       );
       await SavedMediaService.add(context, savedMedia);
-      showSnackbar('${selected.mediaType == MediaType.Movie ? 'Movie' : 'TV Show'} Added', context);
       setState(() {
         _mediaAddController.text = '';
         _addMediaFocusNode.requestFocus();

@@ -1,4 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:familiar_faces/imports/utils.dart';
+import 'package:familiar_faces/services/saved_media_database.dart';
+import 'package:familiar_faces/services/saved_media_service.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -45,6 +49,27 @@ class _AboutScreenState extends State<AboutScreen> {
                   ),
                 ),
               ),
+              ElevatedButton.icon(
+                onPressed: promptBackup,
+                icon: Icon(Icons.backup, color: Colors.white),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.black,
+                  shape: const StadiumBorder(),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                ),
+                label: Text('Backup to File', style: const TextStyle(color: Colors.white)),
+              ),
+              SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: promptRestore,
+                icon: Icon(Icons.restore, color: Colors.white),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.black,
+                  shape: const StadiumBorder(),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                ),
+                label: Text('Restore from File', style: const TextStyle(color: Colors.white)),
+              ),
             ],
           ),
         ),
@@ -69,6 +94,33 @@ class _AboutScreenState extends State<AboutScreen> {
         ),
       ],
     );
+  }
+
+  Future<void> promptBackup() async {
+    await SavedMediaDatabase.instance.exportDatabase(context: context);
+  }
+
+  Future<void> promptRestore() async {
+    try {
+      var result = await FilePicker.platform.pickFiles(type: FileType.any, allowMultiple: false);
+
+      if (result != null && result.files.single.path != null) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => Center(child: LinearProgressIndicator(color: Theme.of(context).colorScheme.secondary)),
+        );
+
+        await SavedMediaDatabase.instance.restoreDB(result.files.single.path!);
+
+        Navigator.pop(context);
+        showSnackbar('Database import success!', context);
+        SavedMediaService.load(context);
+      }
+    } catch (e) {
+      // close loading dialog
+      Navigator.pop(context);
+    }
   }
 
   Future<void> getAppVersion() async {
