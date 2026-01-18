@@ -9,6 +9,7 @@ class SavedMediaProvider with ChangeNotifier {
   SortValue _sort = SortValue.ReleaseDateDescending;
 
   List<SavedMedia> get savedMedia => [..._savedMedia]; // spread since otherwise widgets could bypass mutation methods
+
   // absurd hack, but TMDB decided not to use globally unique identifiers for their records...
   Set<String> get savedMediaSet => _savedMedia.map((m) {
     if (m.mediaType == MediaType.Movie) {

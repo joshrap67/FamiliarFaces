@@ -19,11 +19,23 @@ If pulling from this repository, Flutter is required in order to run the applica
 
 Due to potential copyright issues and potential un-moderated data, this app is not currently published on Google Play. A signed app APK is available in this repository for downloading.
 
-If pulling from this repository, open the project and run it using Flutter (can be done via CLI). If doing it this way, you may need to ensure that you have developer options enabled on your device.
+To deploy the app you can deploy either in an IDE or command line using flutter.
+
+Flavors are used for this app to allow for testing on different environments.
+
+To run a sandbox build use the `dev` flavor.
+
+`flutter run --release --flavor dev`
+
+To run a production build use the `prod` flavor.
+
+`flutter run --release --flavor prod`
 
 To build a production apk:
 
-`flutter build apk --release`
+`flutter build apk --release --flavor prod`
+
+Note for either a production run or build you must use the upload key to sign the APK. This requires the key.properties file to be set.
 
 If already installed you _must_ update the app with the command `adb install -r` as otherwise the local SQLite database will be wiped.
 ## Built With
