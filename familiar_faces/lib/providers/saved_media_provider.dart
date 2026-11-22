@@ -1,7 +1,7 @@
 import 'package:familiar_faces/domain/media_type.dart';
 import 'package:familiar_faces/domain/saved_media.dart';
 import 'package:familiar_faces/imports/globals.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class SavedMediaProvider with ChangeNotifier {
   bool _isLoading = true;

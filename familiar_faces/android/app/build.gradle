@@ -1,6 +1,5 @@
 plugins {
     id "com.android.application"
-    id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -42,8 +41,13 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = '17'
+    lintOptions {
+        checkReleaseBuilds false
+    }
+
+    buildFeatures {
+        buildConfig = true
+        resValues = true
     }
 
     defaultConfig {
@@ -89,6 +93,12 @@ android {
             dimension "env"
             resValue "string", "app_name", "Familiar Faces"
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 

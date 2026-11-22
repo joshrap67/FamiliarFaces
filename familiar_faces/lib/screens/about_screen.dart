@@ -3,7 +3,7 @@ import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/services/saved_media_database.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -102,16 +102,16 @@ class _AboutScreenState extends State<AboutScreen> {
 
   Future<void> promptRestore() async {
     try {
-      var result = await FilePicker.platform.pickFiles(type: FileType.any, allowMultiple: false);
+      var result = await FilePicker.pickFile(type: FileType.any);
 
-      if (result != null && result.files.single.path != null) {
+      if (result != null && result.path != null) {
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (context) => Center(child: LinearProgressIndicator(color: Theme.of(context).colorScheme.secondary)),
         );
 
-        await SavedMediaDatabase.instance.restoreDB(result.files.single.path!);
+        await SavedMediaDatabase.instance.restoreDB(result.path!);
 
         Navigator.pop(context);
         showSnackbar('Database import success!', context);

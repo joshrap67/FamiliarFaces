@@ -1,5 +1,5 @@
 import 'package:familiar_faces/imports/utils.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class HomeProvider with ChangeNotifier {
   final PageController _pageController = PageController();

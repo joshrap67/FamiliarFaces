@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familiar_faces/domain/cast_member.dart';
 import 'package:familiar_faces/imports/utils.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class MediaCastCard extends StatelessWidget {
   const MediaCastCard({Key? key, required this.castMember, required this.rowClicked}) : super(key: key);

@@ -11,7 +11,7 @@ import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/widgets/character_selector.dart';
 import 'package:familiar_faces/widgets/media_selector.dart';
 import 'package:familiar_faces/widgets/painters.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);

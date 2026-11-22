@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:familiar_faces/domain/search_media_result.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/services/media_service.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class MediaSelector extends StatefulWidget {
   final void Function(SearchMediaResult? selection) onSelected;

@@ -1,6 +1,6 @@
 import 'package:familiar_faces/domain/media_type.dart';
 import 'package:familiar_faces/imports/globals.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart';
 
 bool isStringNullOrEmpty(String? value) {
