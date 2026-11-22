@@ -1,6 +1,6 @@
 import 'package:familiar_faces/domain/cast_member.dart';
 import 'package:familiar_faces/imports/utils.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class CharacterSelector extends StatefulWidget {
   final void Function(CastMember? selection) onSelected;

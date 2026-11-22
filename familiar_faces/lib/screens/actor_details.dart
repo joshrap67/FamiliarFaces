@@ -11,7 +11,7 @@ import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:familiar_faces/widgets/actor_media_card.dart';
 import 'package:familiar_faces/widgets/sort_dropdown.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import 'media_cast_screen.dart';

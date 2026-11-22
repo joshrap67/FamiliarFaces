@@ -4,7 +4,7 @@ import 'package:familiar_faces/domain/actor_credit.dart';
 import 'package:familiar_faces/domain/media_type.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/providers/saved_media_provider.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class ActorMediaCard extends StatelessWidget {

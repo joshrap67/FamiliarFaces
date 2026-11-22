@@ -1,8 +1,8 @@
 import 'package:familiar_faces/providers/home_provider.dart';
 import 'package:familiar_faces/providers/saved_media_provider.dart';
 import 'package:familiar_faces/screens/home.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import 'imports/theme.dart';
@@ -21,7 +21,26 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  void initState() {
+    super.initState();
+
+    // i have no idea why this is necessary for the nav bar to properly be set, but im so over this damn framework i don't care anymore
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          systemNavigationBarIconBrightness: Brightness.light,
+          systemNavigationBarContrastEnforced: false,
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(

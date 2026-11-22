@@ -12,7 +12,7 @@ import 'package:familiar_faces/screens/actor_details.dart';
 import 'package:familiar_faces/services/media_service.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
 import 'package:familiar_faces/widgets/media_cast_card.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class MediaCastScreen extends StatefulWidget {

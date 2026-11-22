@@ -7,7 +7,7 @@ import 'package:familiar_faces/domain/tv_show.dart';
 import 'package:familiar_faces/imports/utils.dart';
 import 'package:familiar_faces/providers/saved_media_provider.dart';
 import 'package:familiar_faces/services/tmdb_service.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class MediaService {

@@ -3,7 +3,7 @@ import 'package:familiar_faces/screens/about_screen.dart';
 import 'package:familiar_faces/screens/main_screen.dart';
 import 'package:familiar_faces/screens/saved_media_screen.dart';
 import 'package:familiar_faces/services/saved_media_service.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {

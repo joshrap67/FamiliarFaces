@@ -1,6 +1,6 @@
 import 'package:familiar_faces/imports/globals.dart';
 import 'package:familiar_faces/imports/utils.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class SortDropdown extends StatelessWidget {
   final SortValue sortValue;

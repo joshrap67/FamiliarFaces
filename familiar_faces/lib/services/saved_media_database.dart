@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:familiar_faces/domain/saved_media.dart';
 import 'package:familiar_faces/imports/utils.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
